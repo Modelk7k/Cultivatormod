@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/handheld",
+  "textures": {
+    "layer0": "cultivatormod:item/low_grade_jade_hoe"
+  }
+}

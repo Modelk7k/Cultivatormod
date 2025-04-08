@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "clicked=false": {
+      "model": "cultivatormod:block/chinese_lamp_unlit"
+    },
+    "clicked=true": {
+      "model": "cultivatormod:block/chinese_lamp_lit"
+    }
+  }
+}

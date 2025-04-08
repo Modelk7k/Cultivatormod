@@ -1,0 +1,9 @@
+// 1.21.1	2025-04-03T15:00:34.7206767	Tags for minecraft:item mod id cultivatormod
+153f40a6b05e8be9d5c992e949676f52b0507e6c data/cultivatormod/tags/item/cultivator_items.json
+d39852142d5ba8b73061b2c4f127f52941d57a26 data/minecraft/tags/item/axes.json
+c918ed085b8735bf6ce32c23d4559e8cdd425101 data/minecraft/tags/item/hoes.json
+f28bbd9f6f62278dd0b966ae6daff44eabc736d6 data/minecraft/tags/item/logs_that_burn.json
+d0f60ec30ef7d690a843f8e5b3e8f4d880ae671b data/minecraft/tags/item/pickaxes.json
+e91a03740797bbc0308e43a02a20eefe872fb845 data/minecraft/tags/item/planks.json
+0164e4ce6cd1af085b808ef89ca5a0a947c57a2d data/minecraft/tags/item/shovels.json
+53b92ebea5d92e703ae8fa34d4e0e4a6c83ab533 data/minecraft/tags/item/swords.json

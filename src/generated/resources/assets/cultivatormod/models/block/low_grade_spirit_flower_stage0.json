@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/crop",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "crop": "cultivatormod:block/low_grade_spirit_flower_stage0"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "values": {
+    "cultivatormod:low_grade_spirit_flower_bundle": {
+      "chance": 0.25
+    },
+    "cultivatormod:low_grade_spirit_flower_seeds": {
+      "chance": 0.25
+    }
+  }
+}

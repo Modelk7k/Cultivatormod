@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "cultivatormod:block/alien_dirt_block",
+    "side": "cultivatormod:block/grey_grass_block",
+    "top": "cultivatormod:block/grey_grass_block_top"
+  }
+}

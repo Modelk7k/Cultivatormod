@@ -1,0 +1,7 @@
+// 1.21.1	2025-04-03T16:51:33.6170905	Recipes
+19d207d68f4fd4abee7e19095f84d058bfa99dc3 data/cultivatormod/advancement/recipes/misc/jade_ore_crafting.json
+1cfba1bd8a8fe3cf4460c5d44328f3b8caea9262 data/cultivatormod/advancement/recipes/misc/low_grade_jade_stone_from_smelting_low_grade_jade.json
+49be2a6f23f02bf8d572d5141b420b1e5d85d782 data/cultivatormod/advancement/recipes/misc/quark_planks_crafting.json
+fd7e25df75263b34e03a9b881a61bd661c0f0b81 data/cultivatormod/recipe/jade_ore_crafting.json
+da8cbd38d9a4395ea8bf3c2d2f0c3a6969b25f88 data/cultivatormod/recipe/low_grade_jade_stone_from_smelting_low_grade_jade.json
+3c3875ecfe0ca2d3fc51ab3d5a79767de4ecf955 data/cultivatormod/recipe/quark_planks_crafting.json

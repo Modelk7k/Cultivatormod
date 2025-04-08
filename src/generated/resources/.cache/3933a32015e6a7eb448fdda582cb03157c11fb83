@@ -1,0 +1,14 @@
+// 1.21.1	2025-04-06T01:40:01.4928568	Tags for minecraft:block mod id cultivatormod
+5cd1539961accc4104502208a6ec8911867e78ee data/cultivatormod/tags/block/incorrect_for_jade_tool.json
+32b13946c4cd1f944b029659ccce5fcb2adad4ff data/cultivatormod/tags/block/needs_jade_tool.json
+c152ceb91529bd9c39aff3c7dcf33e724592fc4b data/minecraft/tags/block/dirt.json
+58c93e87a5f7a32567110b5391b140845b914845 data/minecraft/tags/block/fences.json
+96d0c4b0fca55f10d785e7eb726e0d3df5862ef6 data/minecraft/tags/block/fence_gates.json
+f28bbd9f6f62278dd0b966ae6daff44eabc736d6 data/minecraft/tags/block/logs_that_burn.json
+506f63e9d2324f21659bbe0637d3f23363f16a3d data/minecraft/tags/block/mineable/axe.json
+750a270980d13e28f819d0c15578928ae2c41978 data/minecraft/tags/block/mineable/pickaxe.json
+e52e8a0ed3d0283a34754b7f511eba5607de3678 data/minecraft/tags/block/mineable/shovel.json
+e91a03740797bbc0308e43a02a20eefe872fb845 data/minecraft/tags/block/planks.json
+214d85885934c30c1f9c15c55d771704fd48381e data/minecraft/tags/block/sand.json
+4e6ac10d71a9d49a776d47f7c25e375b8e8e99aa data/minecraft/tags/block/trapdoors.json
+ec5eb87038ab258eb6edaeda37784e16c9b68304 data/minecraft/tags/block/walls.json

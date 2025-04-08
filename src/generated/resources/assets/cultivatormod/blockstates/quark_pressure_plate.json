@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "powered=false": {
+      "model": "cultivatormod:block/quark_pressure_plate"
+    },
+    "powered=true": {
+      "model": "cultivatormod:block/quark_pressure_plate_down"
+    }
+  }
+}

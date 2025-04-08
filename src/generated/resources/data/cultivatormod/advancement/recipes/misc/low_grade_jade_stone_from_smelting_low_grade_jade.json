@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_low_grade_jade": {
+      "conditions": {
+        "items": [
+          {
+            "items": "cultivatormod:low_grade_jade"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "cultivatormod:low_grade_jade_stone_from_smelting_low_grade_jade"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_low_grade_jade"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "cultivatormod:low_grade_jade_stone_from_smelting_low_grade_jade"
+    ]
+  }
+}

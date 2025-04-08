@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:smelting",
+  "category": "misc",
+  "cookingtime": 200,
+  "experience": 0.25,
+  "group": "jade",
+  "ingredient": {
+    "item": "cultivatormod:low_grade_jade"
+  },
+  "result": {
+    "count": 1,
+    "id": "cultivatormod:low_grade_jade_stone"
+  }
+}

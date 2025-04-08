@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "cultivatormod:item/low_grade_foundation_pill"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cross",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "cross": "cultivatormod:block/low_grade_yang_fruit_bush_stage2"
+  }
+}

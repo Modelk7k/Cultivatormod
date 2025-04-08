@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "cultivatormod:block/quark_slab"
+    },
+    "type=double": {
+      "model": "cultivatormod:block/quark_plank"
+    },
+    "type=top": {
+      "model": "cultivatormod:block/quark_slab_top"
+    }
+  }
+}
