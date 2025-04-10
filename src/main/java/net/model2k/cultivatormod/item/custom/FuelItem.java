@@ -1,4 +1,4 @@
-package net.model2k.item.custom;
+package net.model2k.cultivatormod.item.custom;
 
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;

@@ -2,14 +2,11 @@ package net.model2k.cultivatormod.effect;
 
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
-import net.model2k.item.ModItems;
+import net.model2k.cultivatormod.item.ModItems;
 
 
 public class SpiritPowerEffect extends MobEffect {

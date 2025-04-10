@@ -11,7 +11,7 @@ import net.minecraft.world.level.material.MapColor;
 import net.model2k.cultivatormod.CultivatorMod;
 import net.model2k.cultivatormod.block.custom.*;
 import net.model2k.cultivatormod.worldgen.tree.ModTreeGrowers;
-import net.model2k.item.ModItems;
+import net.model2k.cultivatormod.item.ModItems;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredRegister;

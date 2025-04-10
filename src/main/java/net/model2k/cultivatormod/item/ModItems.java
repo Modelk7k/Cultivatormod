@@ -1,15 +1,22 @@
-package net.model2k.item;
+package net.model2k.cultivatormod.item;
 
 
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.model2k.cultivatormod.CultivatorMod;
 import net.model2k.cultivatormod.block.ModBlocks;
 import net.model2k.cultivatormod.entity.ModEntities;
-import net.model2k.item.custom.*;
+import net.model2k.cultivatormod.item.custom.*;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import org.spongepowered.asm.mixin.injection.At;
+
+import java.util.UUID;
 
 public class ModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(CultivatorMod.MOD_ID);

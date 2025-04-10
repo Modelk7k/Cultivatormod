@@ -1,13 +1,11 @@
 package net.model2k.cultivatormod.effect;
 
-
-import com.google.gson.Gson;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
-import net.model2k.item.ModItems;
+import net.model2k.cultivatormod.item.ModItems;
 
 public class QiEffect extends MobEffect {
     public static int QiCharge = 0;

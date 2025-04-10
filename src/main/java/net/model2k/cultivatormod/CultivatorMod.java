@@ -1,8 +1,6 @@
 package net.model2k.cultivatormod;
 
 import net.minecraft.client.renderer.entity.EntityRenderers;
-import net.minecraft.client.renderer.entity.SlimeRenderer;
-import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.model2k.cultivatormod.block.ModBlocks;
 import net.model2k.cultivatormod.block.entity.ModBlockEntities;
@@ -13,8 +11,8 @@ import net.model2k.cultivatormod.entity.client.MindlessSlimeRenderer;
 import net.model2k.cultivatormod.recipe.ModRecipes;
 import net.model2k.cultivatormod.screen.ModMenuTypes;
 import net.model2k.cultivatormod.screen.custom.LowGradeJadeFurnaceScreen;
-import net.model2k.item.ModCreativeModeTabs;
-import net.model2k.item.ModItems;
+import net.model2k.cultivatormod.item.ModCreativeModeTabs;
+import net.model2k.cultivatormod.item.ModItems;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import org.slf4j.Logger;
 

@@ -1,4 +1,4 @@
-package net.model2k.item;
+package net.model2k.cultivatormod.item;
 
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;

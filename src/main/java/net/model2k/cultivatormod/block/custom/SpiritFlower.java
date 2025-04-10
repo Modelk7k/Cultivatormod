@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.model2k.item.ModItems;
+import net.model2k.cultivatormod.item.ModItems;
 
 public class SpiritFlower extends CropBlock {
     public static final int MAX_AGE = 3;

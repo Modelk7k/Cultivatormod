@@ -18,9 +18,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.model2k.cultivatormod.effect.QiEffect;
-import net.model2k.cultivatormod.effect.YangQiEffect;
 import net.model2k.cultivatormod.screen.custom.LowGradeJadeFurnaceMenu;
-import net.model2k.item.ModItems;
+import net.model2k.cultivatormod.item.ModItems;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nullable;

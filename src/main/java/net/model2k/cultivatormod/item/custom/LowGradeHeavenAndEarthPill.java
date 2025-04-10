@@ -1,7 +1,6 @@
-package net.model2k.item.custom;
+package net.model2k.cultivatormod.item.custom;
 
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
@@ -18,15 +17,13 @@ public class LowGradeHeavenAndEarthPill extends Item {
         super(properties);
     }
     public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity livingEntity) {
-        if (YangQiEffect.getYangQiTier() < 5 && usedTimes == 0 ) {
-           if(Minecraft.getInstance().player.hasEffect(ModEffects.YANG_QI_EFFECT)) {
+        if (YangQiEffect.getYangQiTier() < 5 && usedTimes == 0 && !level.isClientSide()) {
+           if(livingEntity.hasEffect(ModEffects.YANG_QI_EFFECT)) {
                YangQiEffect.setYangQiTier(YangQiEffect.getYangQiTier() + 1);
-               Minecraft.getInstance().player.sendSystemMessage(Component.literal("Yang Qi Quality: " +YangQiEffect.getYangQiString()));
+               livingEntity.sendSystemMessage(Component.literal("Yang Qi Quality: " +YangQiEffect.getYangQiString()));
                JadeFurnaceEntity.qiEfficiency();
                usedTimes++;
-
            }
-        return super.finishUsingItem(stack, level ,livingEntity);
         }if (usedTimes >= 1 ) {
             usedTimes = 0;
         }
