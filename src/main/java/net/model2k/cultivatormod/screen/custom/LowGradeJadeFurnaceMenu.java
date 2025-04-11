@@ -21,15 +21,12 @@ public class LowGradeJadeFurnaceMenu extends AbstractContainerMenu {
     public LowGradeJadeFurnaceMenu(int containerId, Inventory inv, FriendlyByteBuf extraData) {
         this(containerId, inv, inv.player.level().getBlockEntity(extraData.readBlockPos()));
     }
-
     public LowGradeJadeFurnaceMenu(int containerId, Inventory inv, BlockEntity blockEntity) {
         super(ModMenuTypes.LOW_GRADE_JADE_FURNACE_MENU.get(), containerId);
         this.blockEntity = ((JadeFurnaceEntity) blockEntity);
         this.level = inv.player.level();
-
         addPlayerInventory(inv);
         addPlayerHotbar(inv);
-
         for (int i = 0; i < this.blockEntity.inventory.getSlots(); i++) {
             switch (i) {
                 case 0:
@@ -40,6 +37,9 @@ public class LowGradeJadeFurnaceMenu extends AbstractContainerMenu {
                     break;
                 case 2:
                     this.addSlot(new SlotItemHandler(this.blockEntity.inventory, 2, 103, 35));
+                    break;
+                case 3:
+                    this.addSlot(new SlotItemHandler(this.blockEntity.inventory, 3, 134, 35));
                     break;
                 }
             }
@@ -52,14 +52,13 @@ public class LowGradeJadeFurnaceMenu extends AbstractContainerMenu {
     private static final int VANILLA_FIRST_SLOT_INDEX = 0;
     private static final int TE_INVENTORY_FIRST_SLOT_INDEX = VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT;
 
-    private static final int TE_INVENTORY_SLOT_COUNT = 3;
+    private static final int TE_INVENTORY_SLOT_COUNT = 4;
     @Override
     public ItemStack quickMoveStack(Player playerIn, int pIndex) {
         Slot sourceSlot = slots.get(pIndex);
         if (sourceSlot == null || !sourceSlot.hasItem()) return ItemStack.EMPTY;  //EMPTY_ITEM
         ItemStack sourceStack = sourceSlot.getItem();
         ItemStack copyOfSourceStack = sourceStack.copy();
-
         // Check if the slot clicked is one of the vanilla container slots
         if (pIndex < VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT) {
             // This is a vanilla container slot so merge the stack into the tile inventory

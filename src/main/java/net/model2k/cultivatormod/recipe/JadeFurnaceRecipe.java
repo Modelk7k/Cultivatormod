@@ -22,11 +22,9 @@ public record JadeFurnaceRecipe(List<Ingredient> inputItems, ItemStack output) i
     public NonNullList<Ingredient> getIngredients() {
         return NonNullList.copyOf(inputItems);
     }
-
     @Override
     public boolean matches(JadeFurnaceRecipeInput jadeFurnaceRecipeInput, Level level) {
         if (level.isClientSide()) return false;
-
         List<ItemStack> inputStacks = jadeFurnaceRecipeInput.input();
         List<Ingredient> ingredientsCopy = new ArrayList<>(inputItems);
 
@@ -42,10 +40,8 @@ public record JadeFurnaceRecipe(List<Ingredient> inputItems, ItemStack output) i
             }
             if (!matched) return false; // If any item doesn't match, return false
         }
-
         return ingredientsCopy.isEmpty(); // If all ingredients are matched, return true
     }
-
     @Override
     public ItemStack assemble(JadeFurnaceRecipeInput input, HolderLookup.Provider registries) {
         return output.copy();
@@ -67,7 +63,6 @@ public record JadeFurnaceRecipe(List<Ingredient> inputItems, ItemStack output) i
         return ModRecipes.JADE_FURNACE_TYPE.get();
     }
     public static class Serializer implements RecipeSerializer<JadeFurnaceRecipe> {
-
         public static final MapCodec<JadeFurnaceRecipe> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
                 Ingredient.CODEC_NONEMPTY.listOf().fieldOf("ingredients").forGetter(JadeFurnaceRecipe::inputItems),
                 ItemStack.CODEC.fieldOf("result").forGetter(JadeFurnaceRecipe::output)
@@ -78,12 +73,10 @@ public record JadeFurnaceRecipe(List<Ingredient> inputItems, ItemStack output) i
                         Ingredient.CONTENTS_STREAM_CODEC.apply(ByteBufCodecs.list()), JadeFurnaceRecipe::inputItems,
                         ItemStack.STREAM_CODEC, JadeFurnaceRecipe::output,
                         JadeFurnaceRecipe::new);
-
         @Override
         public MapCodec<JadeFurnaceRecipe> codec() {
             return CODEC;
         }
-
         @Override
         public StreamCodec<RegistryFriendlyByteBuf, JadeFurnaceRecipe> streamCodec() {
             return STREAM_CODEC;

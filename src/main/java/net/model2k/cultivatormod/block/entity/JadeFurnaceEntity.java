@@ -1,6 +1,5 @@
 package net.model2k.cultivatormod.block.entity;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -16,7 +15,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.model2k.cultivatormod.effect.QiEffect;
@@ -24,7 +22,6 @@ import net.model2k.cultivatormod.recipe.JadeFurnaceRecipe;
 import net.model2k.cultivatormod.recipe.JadeFurnaceRecipeInput;
 import net.model2k.cultivatormod.recipe.ModRecipes;
 import net.model2k.cultivatormod.screen.custom.LowGradeJadeFurnaceMenu;
-import net.model2k.cultivatormod.item.ModItems;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nullable;
@@ -34,8 +31,11 @@ import java.util.Optional;
 
 public class JadeFurnaceEntity extends BlockEntity implements MenuProvider {
     static int QiCost = 10;
-    private static final int OUTPUT_SLOT = 1;
-    public final ItemStackHandler inventory = new ItemStackHandler(3) {
+    public final ItemStackHandler inventory = new ItemStackHandler(4) {
+        @Override
+        public boolean isItemValid(int slot, ItemStack stack) {
+            return slot != 3;
+        }
         @Override
         protected int getStackLimit(int slot, ItemStack stack) {
             return 1;
@@ -46,7 +46,10 @@ public class JadeFurnaceEntity extends BlockEntity implements MenuProvider {
             if (!level.isClientSide()) {
                 level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
                 if (QiEffect.Qi - QiCost >= 0) {
-                    hasRecipe();
+                    if (hasRecipe()) {
+                        qiEfficiency();
+                        QiEffect.setQi(QiEffect.getQi() - QiCost);
+                    }
                 }
             }
         }
@@ -56,13 +59,13 @@ public class JadeFurnaceEntity extends BlockEntity implements MenuProvider {
     }
     public void drops() {
         SimpleContainer inv = new SimpleContainer(this.inventory.getSlots());
-        for (int i = 0; i < this.inventory.getSlots(); i++) {
+        for (int i = 0; i < 3; i++) {
             inv.setItem(i, this.inventory.getStackInSlot(i));
         }
         Containers.dropContents(this.level, this.worldPosition, inv);
     }
     public void clearContents() {
-        for (int i = 0; i < this.inventory.getSlots(); i++) {
+        for (int i = 0; i < 3; i++) {
             this.inventory.setStackInSlot(i, ItemStack.EMPTY);
         }
     }
@@ -77,22 +80,17 @@ public class JadeFurnaceEntity extends BlockEntity implements MenuProvider {
         this.inventory.deserializeNBT(registries, tag.getCompound("inventory"));
     }
     private boolean hasRecipe() {
-        // Ensure all slots are filled with valid items
         for (int i = 0; i < 3; i++) {
             if (this.inventory.getStackInSlot(i).isEmpty()) {
-                System.out.println("Slot " + i + " is empty or contains air, skipping recipe match.");
                 return false;
             }
         }
-        // Proceed to check the recipe
         Optional<RecipeHolder<JadeFurnaceRecipe>> recipe = getCurrentRecipe();
-
         if (recipe.isEmpty()) {
-            System.out.println("No matching recipe found.");
             return false;
         }
         clearContents();
-        this.inventory.setStackInSlot(1, recipe.get().value().output().copy()); // assuming slot 1 is output
+        this.inventory.setStackInSlot(3, recipe.get().value().output().copy());
         return true;
     }
     private Optional<RecipeHolder<JadeFurnaceRecipe>> getCurrentRecipe() {

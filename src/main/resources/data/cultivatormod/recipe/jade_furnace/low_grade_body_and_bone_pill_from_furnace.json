@@ -1,0 +1,11 @@
+{
+  "type": "cultivatormod:jade_furnace",
+  "ingredients": [
+    { "item": "cultivatormod:low_grade_ginseng" },
+    { "item": "cultivatormod:low_grade_ginseng" },
+    { "item": "cultivatormod:low_grade_ginseng" }
+  ],
+  "result": {
+    "id": "cultivatormod:low_grade_body_and_bone_pill"
+  }
+}
