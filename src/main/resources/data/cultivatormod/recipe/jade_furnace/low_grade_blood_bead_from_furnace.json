@@ -1,0 +1,11 @@
+{
+  "type": "cultivatormod:jade_furnace",
+  "ingredients": [
+    { "item": "cultivatormod:blood_from_earth" },
+    { "item": "cultivatormod:blood_from_earth" },
+    { "item": "cultivatormod:blood_from_earth" }
+  ],
+  "result": {
+    "id": "cultivatormod:low_grade_blood_bead"
+  }
+}

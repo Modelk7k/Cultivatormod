@@ -15,17 +15,26 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.model2k.cultivatormod.effect.QiEffect;
+import net.model2k.cultivatormod.recipe.JadeFurnaceRecipe;
+import net.model2k.cultivatormod.recipe.JadeFurnaceRecipeInput;
+import net.model2k.cultivatormod.recipe.ModRecipes;
 import net.model2k.cultivatormod.screen.custom.LowGradeJadeFurnaceMenu;
 import net.model2k.cultivatormod.item.ModItems;
 import net.neoforged.neoforge.items.ItemStackHandler;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class JadeFurnaceEntity extends BlockEntity implements MenuProvider {
     static int QiCost = 10;
+    private static final int OUTPUT_SLOT = 1;
     public final ItemStackHandler inventory = new ItemStackHandler(3) {
         @Override
         protected int getStackLimit(int slot, ItemStack stack) {
@@ -36,31 +45,8 @@ public class JadeFurnaceEntity extends BlockEntity implements MenuProvider {
             setChanged();
             if (!level.isClientSide()) {
                 level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
-                for (int i = 0; i < inventory.getSlots(); i++) {
-                if(!(inventory.getStackInSlot(i).isEmpty()))
-                    switch (i) {
-                        case 0 :
-                                lowGradeFoundationPillRecipeChecker();
-                                spiritPillRecipeChecker();
-                                bodyAndBonePillRecipeChecker();
-                                heavenAndEarthPillRecipeChecker();
-                                bloodBeadRecipeChecker();
-                            break;
-                        case 1 :
-                                lowGradeFoundationPillRecipeChecker();
-                                spiritPillRecipeChecker();
-                                bodyAndBonePillRecipeChecker();
-                                heavenAndEarthPillRecipeChecker();
-                                bloodBeadRecipeChecker();
-                            break;
-                        case 2 :
-                                lowGradeFoundationPillRecipeChecker();
-                                spiritPillRecipeChecker();
-                                bodyAndBonePillRecipeChecker();
-                                heavenAndEarthPillRecipeChecker();
-                                bloodBeadRecipeChecker();
-                            break;
-                    }
+                if (QiEffect.Qi - QiCost >= 0) {
+                    hasRecipe();
                 }
             }
         }
@@ -90,92 +76,46 @@ public class JadeFurnaceEntity extends BlockEntity implements MenuProvider {
         super.loadAdditional(tag, registries);
         this.inventory.deserializeNBT(registries, tag.getCompound("inventory"));
     }
-    public void lowGradeFoundationPillRecipeChecker(){
-        for (int i = 0; i < this.inventory.getSlots(); i++) {
-            if (this.inventory.getStackInSlot(i).is(ModItems.LOW_GRADE_HERB_CLUMP)) {
-                for (int o = 0; o < this.inventory.getSlots(); o++) {
-                    if (this.inventory.getStackInSlot(o).is(ModItems.LOW_GRADE_SPIRIT_FLOWER_BUNDLE)) {
-                        for(int k = 0; k < this.inventory.getSlots(); k++) {
-                            if(this.inventory.getStackInSlot(k).is(ModItems.LOW_GRADE_GINSENG)) {
-                              if (QiEffect.getQi() >= 10  && !(QiEffect.getQi() - QiCost < 0)) {
-                                    clearContents();
-                                    this.inventory.setStackInSlot(1, ModItems.LOW_GRADE_FOUNDATION_PILL.toStack(1));
-                                    QiEffect.setQi(QiEffect.getQi() - QiCost);
-                                    Minecraft.getInstance().player.sendSystemMessage(Component.literal(QiEffect.getQiString()));
-                                }
-                            }
-                        }
-                    }
-                }
+    private boolean hasRecipe() {
+        // Ensure all slots are filled with valid items
+        for (int i = 0; i < 3; i++) {
+            if (this.inventory.getStackInSlot(i).isEmpty()) {
+                System.out.println("Slot " + i + " is empty or contains air, skipping recipe match.");
+                return false;
             }
         }
-    }
-    public void spiritPillRecipeChecker() {
-        int slotsFull = 0;
-        for (int i = 0; i < this.inventory.getSlots(); i++) {
-            if (this.inventory.getStackInSlot(i).is(ModItems.LOW_GRADE_SPIRIT_FLOWER_BUNDLE)) {
-                  slotsFull++;
-              if (slotsFull == this.inventory.getSlots()  && !(QiEffect.getQi()- QiCost < 0)) {
-                  clearContents();
-                  this.inventory.setStackInSlot(1, ModItems.LOW_GRADE_SPIRIT_PILL.toStack());
-                  QiEffect.setQi(QiEffect.getQi() - QiCost);
-                  Minecraft.getInstance().player.sendSystemMessage(Component.literal(QiEffect.getQiString()));
-                  slotsFull = 0;
-               }
-            }
-        }
-    }
+        // Proceed to check the recipe
+        Optional<RecipeHolder<JadeFurnaceRecipe>> recipe = getCurrentRecipe();
 
-    public void bodyAndBonePillRecipeChecker(){
-        int slotsFull = 0;
-        for (int i = 0; i < this.inventory.getSlots(); i++) {
-            if (this.inventory.getStackInSlot(i).is(ModItems.LOW_GRADE_GINSENG )) {
-                    slotsFull++;
-                if (slotsFull == this.inventory.getSlots() && !(QiEffect.getQi() - QiCost < 0)) {
-                    clearContents();
-                    this.inventory.setStackInSlot(1, ModItems.LOW_GRADE_BODY_AND_BONE_PILL.toStack());
-                    QiEffect.setQi(QiEffect.getQi() - QiCost);
-                    Minecraft.getInstance().player.sendSystemMessage(Component.literal(QiEffect.getQiString()));
-                    slotsFull = 0;
-                }
-            }
+        if (recipe.isEmpty()) {
+            System.out.println("No matching recipe found.");
+            return false;
         }
+        clearContents();
+        this.inventory.setStackInSlot(1, recipe.get().value().output().copy()); // assuming slot 1 is output
+        return true;
     }
-    public void bloodBeadRecipeChecker()  {
-        int slotsFull = 0;
-        for (int i = 0; i < this.inventory.getSlots(); i++) {
-            if (this.inventory.getStackInSlot(i).is(ModItems.BLOOD_FROM_EARTH )) {
-                slotsFull++;
-                if (slotsFull == this.inventory.getSlots() && !(QiEffect.getQi() - QiCost < 0)) {
-                    clearContents();
-                    this.inventory.setStackInSlot(1, ModItems.LOW_GRADE_BLOOD_BEAD.toStack());
-                    QiEffect.setQi(QiEffect.getQi() - QiCost);
-                    Minecraft.getInstance().player.sendSystemMessage(Component.literal(QiEffect.getQiString()));
-                    slotsFull = 0;
-                }
+    private Optional<RecipeHolder<JadeFurnaceRecipe>> getCurrentRecipe() {
+        List<ItemStack> inputs = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            ItemStack stack = this.inventory.getStackInSlot(i);
+            inputs.add(stack);
+        }
+        JadeFurnaceRecipeInput input = new JadeFurnaceRecipeInput(inputs);
+        List<RecipeHolder<JadeFurnaceRecipe>> allRecipes = level.getRecipeManager().getAllRecipesFor(ModRecipes.JADE_FURNACE_TYPE.get());
+        for (RecipeHolder<JadeFurnaceRecipe> recipeHolder : allRecipes) {
+            if (recipeHolder.value().matches(input, level)) {
+                return Optional.of(recipeHolder);
+            } else {
+                System.out.println("No match for this recipe.");
             }
         }
-    }
-    public void heavenAndEarthPillRecipeChecker()  {
-        for (int i = 0; i < this.inventory.getSlots(); i++) {
-            if (this.inventory.getStackInSlot(i).is(ModItems.LOW_GRADE_GINSENG )) {
-                for(int o = 0; o < this.inventory.getSlots(); o++) {
-                    if(this.inventory.getStackInSlot(o).is(ModItems.LOW_GRADE_SPIRIT_FLOWER_BUNDLE)){
-                if (!(QiEffect.getQi() - QiCost <= 0)) {
-                    clearContents();
-                    this.inventory.setStackInSlot(1, ModItems.LOW_GRADE_HEAVEN_AND_EARTH_PILL.toStack());
-                    QiEffect.setQi(QiEffect.getQi() - QiCost);
-                    Minecraft.getInstance().player.sendSystemMessage(Component.literal(QiEffect.getQiString()));
-                      }
-                   }
-                }
-            }
-        }
+        System.out.println("No matching recipe found.");
+        return Optional.empty();
     }
     public static void qiEfficiency () {
        QiCost -= 1;
     }
-
     @Override
     public Component getDisplayName() {
         return Component.literal("Jade Furnace");

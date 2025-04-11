@@ -3,13 +3,18 @@ package net.model2k.cultivatormod.recipe;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeInput;
 
-public record JadeFurnaceRecipeInput(ItemStack input) implements RecipeInput {
+import java.util.List;
+
+public record JadeFurnaceRecipeInput(List<ItemStack> input) implements RecipeInput {
     @Override
     public ItemStack getItem(int index) {
-        return input;
+        if (index < 0 || index >= input.size()) {
+            return ItemStack.EMPTY;
+        }
+        return input.get(index);
     }
     @Override
     public int size() {
-        return 1;
+        return input.size();
     }
 }

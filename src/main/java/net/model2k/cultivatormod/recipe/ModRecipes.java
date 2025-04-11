@@ -17,7 +17,7 @@ public class ModRecipes {
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<JadeFurnaceRecipe>> JADE_FURNACE_SERIALIZER =
             SERIALIZERS.register("jade_furnace", JadeFurnaceRecipe.Serializer::new);
     public static final DeferredHolder<RecipeType<?>, RecipeType<JadeFurnaceRecipe>> JADE_FURNACE_TYPE =
-            TYPES.register("jade_furnace", () -> new RecipeType<JadeFurnaceRecipe>() {
+            TYPES.register("jade_furnace", () -> new RecipeType<>() {
                 @Override
                 public String toString() {
                     return "jade_furnace";

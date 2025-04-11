@@ -1,0 +1,11 @@
+{
+  "type": "cultivatormod:jade_furnace",
+  "ingredients": [
+    { "item": "cultivatormod:low_grade_spirit_flower_bundle" },
+    { "item": "cultivatormod:low_grade_spirit_flower_bundle" },
+    { "item": "cultivatormod:low_grade_spirit_flower_bundle" }
+  ],
+  "result": {
+    "id": "cultivatormod:low_grade_spirit_pill"
+  }
+}

@@ -18,9 +18,6 @@ public class LowGradeJadeFurnaceMenu extends AbstractContainerMenu {
 
     public final JadeFurnaceEntity blockEntity;
     public final Level level;
-
-
-
     public LowGradeJadeFurnaceMenu(int containerId, Inventory inv, FriendlyByteBuf extraData) {
         this(containerId, inv, inv.player.level().getBlockEntity(extraData.readBlockPos()));
     }
@@ -47,9 +44,6 @@ public class LowGradeJadeFurnaceMenu extends AbstractContainerMenu {
                 }
             }
         }
-
-
-
     private static final int HOTBAR_SLOT_COUNT = 9;
     private static final int PLAYER_INVENTORY_ROW_COUNT = 3;
     private static final int PLAYER_INVENTORY_COLUMN_COUNT = 9;
@@ -59,8 +53,6 @@ public class LowGradeJadeFurnaceMenu extends AbstractContainerMenu {
     private static final int TE_INVENTORY_FIRST_SLOT_INDEX = VANILLA_FIRST_SLOT_INDEX + VANILLA_SLOT_COUNT;
 
     private static final int TE_INVENTORY_SLOT_COUNT = 3;
-
-
     @Override
     public ItemStack quickMoveStack(Player playerIn, int pIndex) {
         Slot sourceSlot = slots.get(pIndex);
@@ -93,13 +85,11 @@ public class LowGradeJadeFurnaceMenu extends AbstractContainerMenu {
         sourceSlot.onTake(playerIn, sourceStack);
         return copyOfSourceStack;
     }
-
     @Override
     public boolean stillValid(Player player) {
         return stillValid(ContainerLevelAccess.create(level, blockEntity.getBlockPos()),
                 player, ModBlocks.LOW_GRADE_JADE_FURNACE.get());
     }
-
     private void addPlayerInventory(Inventory playerInventory) {
         for (int i = 0; i < 3; ++i) {
             for (int l = 0; l < 9; ++l) {
@@ -107,13 +97,9 @@ public class LowGradeJadeFurnaceMenu extends AbstractContainerMenu {
             }
         }
     }
-
     private void addPlayerHotbar(Inventory playerInventory) {
         for (int i = 0; i < 9; ++i) {
             this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
         }
     }
-
-
-
 }
