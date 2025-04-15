@@ -15,14 +15,7 @@ public class ModEffects {
     public static final DeferredRegister<MobEffect> MOB_EFFECTS =
             DeferredRegister.create(BuiltInRegistries.MOB_EFFECT, CultivatorMod.MOD_ID);
 
-    public static final Holder<MobEffect> QI_EFFECT = MOB_EFFECTS.register("qi",
-            () -> new QiEffect(MobEffectCategory.BENEFICIAL, 0x36ebab)
-                    .addAttributeModifier(Attributes.MOVEMENT_SPEED, ResourceLocation.fromNamespaceAndPath(CultivatorMod.MOD_ID,
-                            "qi"),1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
-    public static final Holder<MobEffect> SPIRIT_POWER_EFFECT = MOB_EFFECTS.register("spirit_power",
-            () -> new SpiritPowerEffect(MobEffectCategory.BENEFICIAL, 0x36ebab)
-                    .addAttributeModifier(Attributes.ATTACK_DAMAGE, ResourceLocation.fromNamespaceAndPath(CultivatorMod.MOD_ID,
-                            "spirit_power"),1, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL));
+
     public static final Holder<MobEffect> YANG_QI_EFFECT = MOB_EFFECTS.register("yang_qi",
             () -> new YangQiEffect(MobEffectCategory.BENEFICIAL, 0x36ebab)
                     .addAttributeModifier(Attributes.ATTACK_DAMAGE, ResourceLocation.fromNamespaceAndPath(CultivatorMod.MOD_ID,

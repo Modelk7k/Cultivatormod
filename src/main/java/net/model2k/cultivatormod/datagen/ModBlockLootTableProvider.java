@@ -85,6 +85,10 @@ public class ModBlockLootTableProvider extends BlockLootSubProvider {
 
 
 
+        this.dropSelf(ModBlocks.NUKE.get());
+
+
+
 
 
 

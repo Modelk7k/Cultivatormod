@@ -17,7 +17,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.model2k.cultivatormod.effect.QiEffect;
+import net.model2k.cultivatormod.datagen.ModAttachments;
+import net.model2k.cultivatormod.datagen.PlayerData;
 import net.model2k.cultivatormod.recipe.JadeFurnaceRecipe;
 import net.model2k.cultivatormod.recipe.JadeFurnaceRecipeInput;
 import net.model2k.cultivatormod.recipe.ModRecipes;
@@ -31,6 +32,7 @@ import java.util.Optional;
 
 public class JadeFurnaceEntity extends BlockEntity implements MenuProvider {
     static int QiCost = 10;
+    static Player CurrentPlayer;
     public final ItemStackHandler inventory = new ItemStackHandler(4) {
         @Override
         public boolean isItemValid(int slot, ItemStack stack) {
@@ -38,6 +40,9 @@ public class JadeFurnaceEntity extends BlockEntity implements MenuProvider {
         }
         @Override
         protected int getStackLimit(int slot, ItemStack stack) {
+            if (slot == 3) {
+                return 64;
+            }
             return 1;
         }
         @Override
@@ -45,10 +50,10 @@ public class JadeFurnaceEntity extends BlockEntity implements MenuProvider {
             setChanged();
             if (!level.isClientSide()) {
                 level.sendBlockUpdated(getBlockPos(), getBlockState(), getBlockState(), 3);
-                if (QiEffect.Qi - QiCost >= 0) {
+                PlayerData data = CurrentPlayer.getData(ModAttachments.PLAYER_DATA);
+                if (data.getQi() - QiCost >= 0) {
                     if (hasRecipe()) {
-                        qiEfficiency();
-                        QiEffect.setQi(QiEffect.getQi() - QiCost);
+                        data.setQi(data.getQi() - QiCost);
                     }
                 }
             }
@@ -89,9 +94,11 @@ public class JadeFurnaceEntity extends BlockEntity implements MenuProvider {
         if (recipe.isEmpty()) {
             return false;
         }
-        clearContents();
-        this.inventory.setStackInSlot(3, recipe.get().value().output().copy());
-        return true;
+        if (this.inventory.getStackInSlot(3).isEmpty()) {
+            clearContents();
+            this.inventory.setStackInSlot(3, recipe.get().value().output().copy());
+            return true;
+        } return false;
     }
     private Optional<RecipeHolder<JadeFurnaceRecipe>> getCurrentRecipe() {
         List<ItemStack> inputs = new ArrayList<>();
@@ -131,5 +138,9 @@ public class JadeFurnaceEntity extends BlockEntity implements MenuProvider {
     @Override
     public CompoundTag getUpdateTag(HolderLookup.Provider pRegistries) {
         return saveWithoutMetadata(pRegistries);
+    }
+    public static void onPlayerInteracts(Player player) {
+        CurrentPlayer = player;
+        System.out.println("Player " + player.getName().getString() + " interacted with the block!");
     }
 }

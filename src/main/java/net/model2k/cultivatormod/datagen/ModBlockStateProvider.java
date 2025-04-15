@@ -10,7 +10,6 @@ import net.model2k.cultivatormod.block.ModBlocks;
 import net.model2k.cultivatormod.block.custom.ChineseLamp;
 import net.model2k.cultivatormod.block.custom.SpiritFlower;
 import net.model2k.cultivatormod.block.custom.YangQiTree;
-import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.model.generators.BlockStateProvider;
 import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
@@ -45,7 +44,6 @@ public class ModBlockStateProvider extends BlockStateProvider {
         blockWithItem(ModBlocks.RAINBOW_SAND);
         blockWithItem(ModBlocks.MAGENTA_SAND);
 
-
         simpleBlockWithItem(ModBlocks.LOW_GRADE_HERB.get(), models().cross("low_grade_herb",modLoc("block/low_grade_herb")).renderType("cutout"));
 
         stairsBlock(ModBlocks.QUARK_STAIRS.get(), blockTexture(ModBlocks.QUARK_PLANK.get()));
@@ -65,12 +63,10 @@ public class ModBlockStateProvider extends BlockStateProvider {
         doorBlockWithRenderType(ModBlocks.QUARK_DOOR.get(), modLoc("block/quark_plank"), modLoc("block/quark_plank"), "cutout");
         trapdoorBlockWithRenderType(ModBlocks.QUARK_TRAP_DOOR.get(), modLoc("block/quark_plank"), true, "cutout");
 
-
         logBlock((RotatedPillarBlock) ModBlocks.QUARK_LOG.get());
         axisBlock(((RotatedPillarBlock) ModBlocks.QUARK_WOOD.get()), blockTexture(ModBlocks.QUARK_LOG.get()), blockTexture(ModBlocks.QUARK_LOG.get()));
         logBlock((RotatedPillarBlock) ModBlocks.QUARK_STRIPPED_LOG.get());
         axisBlock((RotatedPillarBlock) ModBlocks.QUARK_STRIPPED_WOOD.get(), blockTexture(ModBlocks.QUARK_STRIPPED_LOG.get()), blockTexture(ModBlocks.QUARK_STRIPPED_LOG.get()));
-
 //Grass
         simpleBlockWithItem(ModBlocks.ALIEN_DIRT.get(), models().cubeAll("alien_dirt_block", modLoc("block/alien_dirt_block")));
         simpleBlockWithItem(ModBlocks.GREEN_GRASS.get(), models().cubeBottomTop("green_grass_block", modLoc("block/green_grass_block"), modLoc("block/alien_dirt_block"), modLoc("block/green_grass_block_top")));
@@ -99,49 +95,31 @@ public class ModBlockStateProvider extends BlockStateProvider {
         blockItem(ModBlocks.QUARK_WOOD);
         blockItem(ModBlocks.QUARK_STRIPPED_WOOD);
 
-
-
-
-
-        customLamp();
-
-
-
-
         makeCrop((CropBlock) ModBlocks.LOW_GRADE_SPIRIT_FLOWER.get(), "low_grade_spirit_flower_stage", "low_grade_spirit_flower_stage");
-
         makeBush(((SweetBerryBushBlock) ModBlocks.LOW_GRADE_YANG_FRUIT_BUSH.get()), "low_grade_yang_fruit_bush_stage", "low_grade_yang_fruit_bush_stage");
-
         leavesBlock(ModBlocks.QUARK_LEAVES);
         saplingBlock(ModBlocks.QUARK_SAPLING);
-
-
+        //simpleBlock(ModBlocks.OLD_SCHOOL_FIRE.get(), models().cross("old_school_fire", modLoc("block/fire_layer_0")).renderType("cutout"));
+        customLamp();
     }
-
     private void saplingBlock(DeferredBlock<Block> blockRegistryObject) {
         simpleBlock(blockRegistryObject.get(),
                 models().cross(BuiltInRegistries.BLOCK.getKey(blockRegistryObject.get()).getPath(), blockTexture(blockRegistryObject.get())).renderType("cutout"));
     }
-
     private void leavesBlock(DeferredBlock<Block> blockRegistryObject) {
         simpleBlockWithItem(blockRegistryObject.get(),
                 models().singleTexture(BuiltInRegistries.BLOCK.getKey(blockRegistryObject.get()).getPath(), ResourceLocation.parse("minecraft:block/leaves"),
                         "all", blockTexture(blockRegistryObject.get())).renderType("cutout"));
     }
-
-
     public void makeBush(BushBlock block, String modelName, String textureName) {
         Function<BlockState, ConfiguredModel[]> function = state -> states(state, modelName, textureName);
 
         getVariantBuilder(block).forAllStates(function);
     }
-
-
     private ConfiguredModel[] states(BlockState state, String modelName, String textureName) {
         ConfiguredModel[] models = new ConfiguredModel[1];
         models[0] = new ConfiguredModel(models().cross(modelName + state.getValue(YangQiTree.AGE),
                 ResourceLocation.fromNamespaceAndPath(CultivatorMod.MOD_ID, "block/" + textureName + state.getValue(YangQiTree.AGE))).renderType("cutout"));
-
         return models;
     }
     public void makeCrop(CropBlock block, String modelName, String textureName) {
@@ -149,15 +127,12 @@ public class ModBlockStateProvider extends BlockStateProvider {
 
         getVariantBuilder(block).forAllStates(function);
     }
-
     private ConfiguredModel[] states(BlockState state, CropBlock block, String modelName, String textureName) {
         ConfiguredModel[] models = new ConfiguredModel[1];
         models[0] = new ConfiguredModel(models().crop(modelName + state.getValue(((SpiritFlower) block).getAgeProperty()),
                 ResourceLocation.fromNamespaceAndPath(CultivatorMod.MOD_ID, "block/" + textureName + state.getValue(((SpiritFlower) block).getAgeProperty()))).renderType("cutout"));
-
         return models;
     }
-
     private void customLamp() {
         getVariantBuilder(ModBlocks.CHINESE_LAMP.get()).forAllStates(state -> {
             if (state.getValue(ChineseLamp.CLICKED)) {
@@ -167,26 +142,17 @@ public class ModBlockStateProvider extends BlockStateProvider {
                 return new ConfiguredModel[]{new ConfiguredModel(models().cubeAll("chinese_lamp_unlit",
                         ResourceLocation.fromNamespaceAndPath(CultivatorMod.MOD_ID, "block/" + "chinese_lamp_unlit")))};
             }
-
         });
-
         simpleBlockItem(ModBlocks.CHINESE_LAMP.get(), models().cubeAll("chinese_lamp_lit",
                 ResourceLocation.fromNamespaceAndPath(CultivatorMod.MOD_ID, "block/" + "chinese_lamp_lit")));
-
     }
-
         private void blockWithItem (DeferredBlock < ? > deferredBlock) {
             simpleBlockWithItem(deferredBlock.get(), cubeAll(deferredBlock.get()));
         }
-
         private void blockItem (DeferredBlock < ? > deferredBlock) {
             simpleBlockItem(deferredBlock.get(), new ModelFile.UncheckedModelFile("cultivatormod:block/" + deferredBlock.getId().getPath()));
         }
-
         private void blockItem (DeferredBlock < ? > deferredBlock, String appendix){
             simpleBlockItem(deferredBlock.get(), new ModelFile.UncheckedModelFile("cultivatormod:block/" + deferredBlock.getId().getPath() + appendix));
         }
-
-
     }
-

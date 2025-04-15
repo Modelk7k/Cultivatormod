@@ -67,6 +67,7 @@ public class JadeFurnace extends BaseEntityBlock {
         if(level.getBlockEntity(pos) instanceof JadeFurnaceEntity jadeFurnaceEntity) {
             if(!player.isCrouching() && !level.isClientSide()){
                 ((ServerPlayer) player).openMenu(new SimpleMenuProvider(jadeFurnaceEntity, Component.literal("Jade Furnace")),pos);
+                JadeFurnaceEntity.onPlayerInteracts(player);
             }
               if(stack.isEmpty() && player.isCrouching()) {
                   jadeFurnaceEntity.drops();

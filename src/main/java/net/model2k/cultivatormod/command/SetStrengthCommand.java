@@ -9,16 +9,16 @@ import net.minecraft.network.chat.Component;
 import net.model2k.cultivatormod.datagen.ModAttachments;
 import net.model2k.cultivatormod.datagen.PlayerData;
 
-public class SetMaxQiCommand {
-    public SetMaxQiCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
+public class SetStrengthCommand {
+    public SetStrengthCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("set").requires(permission -> permission.hasPermission(4))
-                .then(Commands.literal("maxqi").then(Commands.argument("amount", IntegerArgumentType.integer(0))
-                .executes(qi -> IntegerArgumentType.getInteger(qi, "amount")).executes(this::execute))));
+                .then(Commands.literal("strength").then(Commands.argument("amount", IntegerArgumentType.integer(0))
+                        .executes(qi -> IntegerArgumentType.getInteger(qi, "amount")).executes(this::execute))));
     }
     private int execute(CommandContext<CommandSourceStack> context) {
         PlayerData data = context.getSource().getEntity().getData(ModAttachments.PLAYER_DATA);
-        data.setMaxQi(IntegerArgumentType.getInteger(context, "amount"));
-        context.getSource().sendSuccess(() -> Component.literal("Max qi set to " + data.getMaxQi()), true);
+        data.setStrength(IntegerArgumentType.getInteger(context, "amount"));
+        context.getSource().sendSuccess(() -> Component.literal("Strength set to " + data.getStrength()), true);
         return 1;
     }
 }

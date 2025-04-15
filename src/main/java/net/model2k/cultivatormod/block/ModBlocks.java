@@ -44,7 +44,7 @@ public class ModBlocks {
 
     //TreeStuff
     public static final DeferredBlock<Block> QUARK_LEAVES = registerBlock("quark_leaves",
-            () -> new LeavesBlock(BlockBehaviour.Properties.of().strength(0.2f, 0.2f).requiresCorrectToolForDrops().sound(SoundType.CHERRY_LEAVES).ignitedByLava()));
+            () -> new CustomLeavesBlock(BlockBehaviour.Properties.of().strength(0.2f, 0.2f).requiresCorrectToolForDrops().sound(SoundType.CHERRY_LEAVES).ignitedByLava().noOcclusion()));
 
     public static final DeferredBlock<Block> QUARK_SAPLING = registerBlock("quark_sapling",
             () -> new SaplingBlock(ModTreeGrowers.QUARK_TREE,BlockBehaviour.Properties.ofFullCopy(Blocks.OAK_SAPLING).instabreak().sound(SoundType.BAMBOO_SAPLING)));
@@ -193,6 +193,12 @@ public static final DeferredBlock<Block> RED_SAND = registerBlock("red_sand",
 
     public static final DeferredBlock<Block> LOW_GRADE_JADE_FURNACE = registerBlock("low_grade_jade_furnace",
             () -> new JadeFurnace(BlockBehaviour.Properties.of().noOcclusion()));
+
+    public static final DeferredBlock<Block> NUKE = registerBlock("nuke",
+            () -> new Nuke(BlockBehaviour.Properties.of()));
+
+    public static final DeferredBlock<Block> OLD_SCHOOL_FIRE = registerBlock("old_school_fire",
+            () -> new OldSchoolFireBlock(BlockBehaviour.Properties.of().speedFactor(5).noLootTable().randomTicks().replaceable().ignitedByLava().noCollission().instabreak().lightLevel(state -> 15)));
 
 
     //Junk

@@ -3,7 +3,6 @@ package net.model2k.cultivatormod.event;
 import net.model2k.cultivatormod.CultivatorMod;
 import net.model2k.cultivatormod.entity.ModEntities;
 import net.model2k.cultivatormod.entity.client.MindlessSlimeModel;
-import net.model2k.cultivatormod.entity.client.MindlessSlimeRenderer;
 import net.model2k.cultivatormod.entity.custom.SlimeEntity;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;

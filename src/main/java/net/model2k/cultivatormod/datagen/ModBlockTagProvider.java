@@ -74,7 +74,6 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                 .add(ModBlocks.QUARK_TRAP_DOOR.get());
         tag(BlockTags.WALLS)
                 .add(ModBlocks.QUARK_WALL.get());
-
         this.tag(BlockTags.LOGS_THAT_BURN)
                 .add(ModBlocks.QUARK_LOG.get())
                 .add(ModBlocks.QUARK_WOOD.get())
@@ -82,5 +81,7 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                 .add(ModBlocks.QUARK_STRIPPED_WOOD.get());
         tag(BlockTags.PLANKS)
                 .add(ModBlocks.QUARK_PLANK.get());
+        tag(BlockTags.FIRE)
+                .add(ModBlocks.OLD_SCHOOL_FIRE.get());
     }
 }
