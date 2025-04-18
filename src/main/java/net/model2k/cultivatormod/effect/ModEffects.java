@@ -15,7 +15,6 @@ public class ModEffects {
     public static final DeferredRegister<MobEffect> MOB_EFFECTS =
             DeferredRegister.create(BuiltInRegistries.MOB_EFFECT, CultivatorMod.MOD_ID);
 
-
     public static final Holder<MobEffect> YANG_QI_EFFECT = MOB_EFFECTS.register("yang_qi",
             () -> new YangQiEffect(MobEffectCategory.BENEFICIAL, 0x36ebab)
                     .addAttributeModifier(Attributes.ATTACK_DAMAGE, ResourceLocation.fromNamespaceAndPath(CultivatorMod.MOD_ID,

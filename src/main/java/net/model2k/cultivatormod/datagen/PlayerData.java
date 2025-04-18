@@ -1,19 +1,19 @@
 package net.model2k.cultivatormod.datagen;
 
-import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.model2k.cultivatormod.item.ModItems;
+import net.model2k.cultivatormod.network.packet.PlayerStatsClient;
 import net.neoforged.neoforge.common.util.INBTSerializable;
-import java.util.Arrays;
 
 public class PlayerData implements INBTSerializable {
     public  int tick = 0;
-    public  boolean FirstQiType = false;
+    private boolean CanFly = false;
+    private int Health = 20;
+    private boolean FirstQiType = false;
     private int MinorRealm = 0;
     private int MajorRealm = 0;
     private int Strength = 0;
@@ -29,6 +29,8 @@ public class PlayerData implements INBTSerializable {
     @Override
     public String toString() {
         return "PlayerData{" +
+                "CanFly=" + getCanFly() +
+                "Health=" + getHealth() +
                 "FirstQiType=" + getFirstQiType() +
                 "MinorRealm=" + getMinorRealm() +
                 "MajorRealm=" + getMajorRealm() +
@@ -44,6 +46,10 @@ public class PlayerData implements INBTSerializable {
                 ", HeavenlyQi=" + getHeavenlyQi() +
                 '}';
     }
+    public boolean getCanFly(){ return this.CanFly; }
+    public void setCanFly(boolean canFly) { this.CanFly = canFly; }
+    public int getHealth() { return this.Health; }
+    public void setHealth(int health) { this.Health = health; }
     public boolean getFirstQiType() { return this.FirstQiType; }
     public void setFirstQiType(boolean firstQiType) { this.FirstQiType = firstQiType; }
     public int getMinorRealm() { return this.MinorRealm; }
@@ -76,26 +82,26 @@ public class PlayerData implements INBTSerializable {
         if (tick >= 20) {
             if (player.isHolding(ModItems.BAODING_BALLS.get()) && data.getQi() + qiChargeEfficiency(data) <= data.getMaxQi() && player.isShiftKeyDown()) {
                 data.setQi(data.getQi() + qiChargeEfficiency(data));
-                player.sendSystemMessage(Component.literal("Qi: " + data.getQi()));
                 realmChecker(player);
+                syncQiToClient(player);
                 tick = 0;
             }
             if (player.isHolding(ModItems.BAODING_BALLS.get()) && data.getSpiritPower() + qiChargeEfficiency(data) <= data.getMaxSpiritPower() && player.isShiftKeyDown()) {
                 data.setSpiritPower(data.getSpiritPower() + data.spiritPowerChargeEfficiency(data));
-                player.sendSystemMessage(Component.literal("SpiritPower: " + data.getSpiritPower()));
                 realmChecker(player);
+                syncQiToClient(player);
                 tick = 0;
             }
             if (player.isHolding(ModItems.BAODING_BALLS.get()) && data.getQi() + qiChargeEfficiency(data) > data.getMaxQi() && player.isShiftKeyDown()) {
                 data.setQi(data.getMaxQi());
-                player.sendSystemMessage(Component.literal("Qi: " + data.getQi()));
                 realmChecker(player);
+                syncQiToClient(player);
                 tick = 0;
             }
             if (player.isHolding(ModItems.BAODING_BALLS.get()) && data.getSpiritPower() + qiChargeEfficiency(data) > data.getMaxSpiritPower() && player.isShiftKeyDown()) {
                 data.setSpiritPower(data.getMaxSpiritPower());
-                player.sendSystemMessage(Component.literal("SpiritPower: " + data.getSpiritPower()));
                 realmChecker(player);
+                syncQiToClient(player);
                 tick = 0;
             }
         }
@@ -168,6 +174,10 @@ public class PlayerData implements INBTSerializable {
                         if (getSpiritPower() >= 1000 && getQi() >= 1000 && getQiQuality() >= 5){
                             setMajorRealm(1);
                             player.sendSystemMessage( Component.literal("You broke through to Major realm " + getMajorRealm()));
+                            player.sendSystemMessage(Component.literal("You can fly nerd"));
+                            player.getAbilities().mayfly = true;  // Allow flying
+                            player.onUpdateAbilities();           // Sync to client
+                            setCanFly(true);
                             break;
                         }
                         break;
@@ -390,13 +400,17 @@ public class PlayerData implements INBTSerializable {
                 break;
         }
     }
-    public void SyncQiPacket(int qi, int maxQi) {
-        this.Qi = qi;
-        this.MaxQi = maxQi;
+    public void syncQiToClient(Player player) {
+        PlayerStatsClient.setMaxQi(getMaxQi());
+        PlayerStatsClient.setQi(getQi());
+        PlayerStatsClient.setSpiritPower(getSpiritPower());
+        PlayerStatsClient.setMaxSpiritPower(getMaxSpiritPower());
     }
     @Override
     public Tag serializeNBT(HolderLookup.Provider provider) {
         return new IntArrayTag(new int[]{
+                getCanFly() ? 1: 0,
+                getHealth(),
                 getFirstQiType() ? 1: 0,
                 getMinorRealm(),
                 getMajorRealm(),
@@ -416,19 +430,21 @@ public class PlayerData implements INBTSerializable {
     public void deserializeNBT(HolderLookup.Provider provider, Tag tag) {
         if (tag instanceof IntArrayTag array) {
             int[] values = array.getAsIntArray();
-            setFirstQiType(values[0] == 1);
-            setMinorRealm(values[1]);
-            setMajorRealm(values[2]);
-            setStrength(values[3]);
-            setQi(values[4]);
-            setMaxQi(values[5]);
-            setSpiritPower(values[6]);
-            setMaxSpiritPower(values[7]);
-            setQiQuality(values[8]);
-            setYangQi(values[9] == 1);
-            setYinQi(values[10] == 1);
-            setDemonQi(values[11] == 1);
-            setHeavenlyQi(values[12] == 1);
+            setCanFly(values[0] == 1);
+            setHealth(values[1]);
+            setFirstQiType(values[2] == 1);
+            setMinorRealm(values[3]);
+            setMajorRealm(values[4]);
+            setStrength(values[5]);
+            setQi(values[6]);
+            setMaxQi(values[7]);
+            setSpiritPower(values[8]);
+            setMaxSpiritPower(values[9]);
+            setQiQuality(values[10]);
+            setYangQi(values[11] == 1);
+            setYinQi(values[12] == 1);
+            setDemonQi(values[13] == 1);
+            setHeavenlyQi(values[14] == 1);
         }
     }
 }

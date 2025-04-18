@@ -1,4 +1,4 @@
-// 1.21.1	2025-04-06T01:33:25.4379372	Loot Tables
+// 1.21.1	2025-04-15T22:40:20.2753569	Loot Tables
 b151a4d8b7799101144a8799e39c81a303bfa3b4 data/cultivatormod/loot_table/blocks/alien_dirt.json
 d7f42a2f8b91e920a8085315e278c480ea892c60 data/cultivatormod/loot_table/blocks/black_grass.json
 31271b4caf83c3c0e94896433426ac45b3a05eed data/cultivatormod/loot_table/blocks/black_sand.json
@@ -19,6 +19,7 @@ f7551a0d05abfd0f6dc3dc124cb3e0e7d0b0dd24 data/cultivatormod/loot_table/blocks/lo
 f032a63a558950e96fb347f8529496b0594465a5 data/cultivatormod/loot_table/blocks/low_grade_spirit_flower.json
 2fe3f5f6415f514d7e74f36898d274099dc5c167 data/cultivatormod/loot_table/blocks/low_grade_yang_fruit_bush.json
 bdcd018fce9168230964833c14c4497519c0bb0e data/cultivatormod/loot_table/blocks/magenta_sand.json
+5d974142cd4d9a706cfb056069e80a69af459099 data/cultivatormod/loot_table/blocks/nuke.json
 156cb89608c756521d1b33c3a484e43de737555d data/cultivatormod/loot_table/blocks/orange_grass.json
 5661c183c4f0e600ef4c192dc9deb6055a4a9e12 data/cultivatormod/loot_table/blocks/orange_sand.json
 5185fd934af4c3ca828d457ff4aa2875610a6f29 data/cultivatormod/loot_table/blocks/pink_grass.json

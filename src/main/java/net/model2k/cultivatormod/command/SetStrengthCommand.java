@@ -16,9 +16,10 @@ public class SetStrengthCommand {
                         .executes(qi -> IntegerArgumentType.getInteger(qi, "amount")).executes(this::execute))));
     }
     private int execute(CommandContext<CommandSourceStack> context) {
-        PlayerData data = context.getSource().getEntity().getData(ModAttachments.PLAYER_DATA);
+        PlayerData data = context.getSource().getPlayer().getData(ModAttachments.PLAYER_DATA);
         data.setStrength(IntegerArgumentType.getInteger(context, "amount"));
         context.getSource().sendSuccess(() -> Component.literal("Strength set to " + data.getStrength()), true);
+        data.syncQiToClient(context.getSource().getPlayer());
         return 1;
     }
 }

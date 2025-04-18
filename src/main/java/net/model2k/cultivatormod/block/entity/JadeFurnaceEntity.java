@@ -111,8 +111,6 @@ public class JadeFurnaceEntity extends BlockEntity implements MenuProvider {
         for (RecipeHolder<JadeFurnaceRecipe> recipeHolder : allRecipes) {
             if (recipeHolder.value().matches(input, level)) {
                 return Optional.of(recipeHolder);
-            } else {
-                System.out.println("No match for this recipe.");
             }
         }
         System.out.println("No matching recipe found.");
@@ -141,6 +139,5 @@ public class JadeFurnaceEntity extends BlockEntity implements MenuProvider {
     }
     public static void onPlayerInteracts(Player player) {
         CurrentPlayer = player;
-        System.out.println("Player " + player.getName().getString() + " interacted with the block!");
     }
 }

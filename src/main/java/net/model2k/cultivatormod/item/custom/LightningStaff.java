@@ -47,21 +47,10 @@ public class LightningStaff extends Item {
             level.broadcastEntityEvent(bolt, (byte) 0xA);
             level.broadcastEntityEvent(northBolt, (byte) 0xA);
             level.broadcastEntityEvent(southBolt, (byte) 0xA);
-            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.LIGHTNING_BOLT_THUNDER,SoundSource.WEATHER, 50f, 1f);
+            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.WEATHER, 50f, 1f);
+            level.explode(player, context.getClickLocation().x, context.getClickLocation().y, context.getClickLocation().z, 3, Level.ExplosionInteraction.MOB);
             data.setQi(data.getQi() - 10);
-            int fireReplaceRadius = 3;
-            BlockPos center = context.getClickedPos();
-
-            for (BlockPos pos : BlockPos.betweenClosed(
-                    center.offset(-fireReplaceRadius, -3, -fireReplaceRadius),
-                    center.offset(fireReplaceRadius, 3, fireReplaceRadius))) {
-
-                BlockState state = level.getBlockState(pos);
-                if (state.is(Blocks.FIRE)) {
-                    level.setBlockAndUpdate(pos, ModBlocks.OLD_SCHOOL_FIRE.get().defaultBlockState());
-
-                }
-            }
+            data.syncQiToClient(player);
         }if (!level.isClientSide()) {
             for (int i = 0; i < 15; i++) {
             switch (i) {

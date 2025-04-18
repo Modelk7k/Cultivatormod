@@ -1,11 +1,6 @@
 package net.model2k.cultivatormod.item;
 
-
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.*;
-import net.minecraft.world.item.component.ItemAttributeModifiers;
 import net.model2k.cultivatormod.CultivatorMod;
 import net.model2k.cultivatormod.block.ModBlocks;
 import net.model2k.cultivatormod.entity.ModEntities;
@@ -14,9 +9,6 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.common.DeferredSpawnEggItem;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import org.spongepowered.asm.mixin.injection.At;
-
-import java.util.UUID;
 
 public class ModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(CultivatorMod.MOD_ID);
@@ -67,20 +59,17 @@ public class ModItems {
             () -> new LightningStaff(new Item.Properties().durability(1)));
     public static final DeferredItem<SwordItem> LOW_GRADE_JADE_SWORD = ITEMS.register("low_grade_jade_sword",
             ()-> new SwordItem(ModToolTiers.JADE, new Item.Properties().attributes(SwordItem.createAttributes(ModToolTiers.JADE, 5, 3f ))));
-    //Armour
     //Eggs
     public static final DeferredItem<Item> MINDLESS_SLIME_EGG = ITEMS.register("mindless_slime_egg",
             () -> new DeferredSpawnEggItem(ModEntities.MINDLESS_SLIME, 0x32afaf, 0xffac00, new Item.Properties()));
+    public static final DeferredItem<Item> YANG_BEAR_EGG = ITEMS.register("yang_bear_egg",
+            () -> new DeferredSpawnEggItem(ModEntities.YANG_BEAR, 0x32afaf, 0xffac00, new Item.Properties()));
    //Qi Charge Item
     public static final DeferredItem<Item> BAODING_BALLS = ITEMS.register("baoding_balls",
             () -> new Item( new Item.Properties()));
     //Misc
     public static final DeferredItem<Item> CULT_LOGO  = ITEMS.register("cult_logo" ,
             () -> new Item(new Item.Properties()));
-
-
-
-
 
     //Register
     public static void register(IEventBus eventBus) {

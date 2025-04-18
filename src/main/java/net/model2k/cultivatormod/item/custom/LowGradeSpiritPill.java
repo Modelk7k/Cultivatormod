@@ -22,8 +22,8 @@ public class LowGradeSpiritPill extends Item {
         if (data.getMaxSpiritPower() < 50 && usedTimes == 0 && !level.isClientSide()) {
             data.setMaxSpiritPower(data.getMaxSpiritPower() + 5);
             data.setSpiritPower(data.getMaxSpiritPower());
-            livingEntity.sendSystemMessage(Component.literal("Max spirit power increased by 5"));
             data.realmChecker((Player) livingEntity);
+            data.syncQiToClient((Player)livingEntity);
             usedTimes++;
         }if (usedTimes >= 1 ) {
             usedTimes = 0;

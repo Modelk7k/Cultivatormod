@@ -4,13 +4,9 @@
   "creativetab.cultivatormod.cultivator_ingredient": "Cultivator Ingredients",
   "creativetab.cultivatormod.cultivator_edible": "Cultivator Edibles",
 
-
-
   "block.cultivatormod.low_grade_jade_furnace": "Low Grade Jade Furnace",
 
-
   "block.cultivatormod.low_grade_jade": "Low Grade Jade Ore",
-
 
   "block.cultivatormod.low_grade_herb": "Low Grade Herb",
   "block.cultivatormod.low_grade_yang_fruit_bush": "Low Grade Yang Fruit Bush",
@@ -35,7 +31,6 @@
   "block.cultivatormod.black_grass": "Black Grass",
   "block.cultivatormod.brown_grass": "Brown Grass",
   "block.cultivatormod.rainbow_grass": "Rainbow Grass",
-
 
   "block.cultivatormod.magenta_sand": "Magenta Sand",
   "block.cultivatormod.green_sand": "Bright Green Sand",
@@ -64,15 +59,10 @@
   "block.cultivatormod.quark_wall": "Quark Wall",
   "block.cultivatormod.quark_door": "Quark Door",
 
-
   "block.cultivatormod.quark_leaves": "Quark Leaves",
   "block.cultivatormod.quark_sapling": "Quark Sapling",
 
-
   "block.cultivatormod.chinese_lamp": "Chinese Lamp",
-
-
-
 
   "item.cultivatormod.low_grade_jade_sword": "Low Grade Jade Sword",
   "item.cultivatormod.low_grade_jade_shovel": "Low Grade Jade Shovel",
@@ -80,22 +70,16 @@
   "item.cultivatormod.low_grade_jade_hoe": "Low Grade Jade Hoe",
   "item.cultivatormod.low_grade_jade_axe": "Low Grade Jade Axe",
 
-
-
   "item.cultivatormod.cult_logo": "Cultivator Logo",
-  "effect.cultivatormod.qi": "Qi charge",
-  "effect.cultivatormod.spirit_power": "Spirit Power Charge",
+  "key.cultivatormod.qi_slash": "Qi Slash",
+  "key.categories.cultivatormod": "Cultivator Mod",
+  "item.cultivatormod.yang_bear_egg": "Yang Bear Spawn Egg",
+  "item.cultivatormod.mindless_slime_egg": "Mindless Slime Spawn Egg",
   "effect.cultivatormod.yang_qi": "Yang Qi",
-
-
 
   "item.cultivatormod.lightning_staff": "Lightning Staff",
 
-
-
   "item.cultivatormod.low_grade_jade_stone": "Low Grade Jade",
-
-
 
   "item.cultivatormod.low_grade_foundation_pill": "Low Grade Foundation Building Pill",
   "item.cultivatormod.low_grade_body_and_bone_pill": "Low Grade Body and Bone Pill",
@@ -103,18 +87,15 @@
   "item.cultivatormod.low_grade_blood_bead": "Low Grade Blood Bead",
   "item.cultivatormod.low_grade_spirit_pill": "Low Grade Spirit Pill",
 
-
-
-
   "item.cultivatormod.low_grade_spirit_flower_bundle": "Low Grade Spirit Flower Bundle",
   "item.cultivatormod.low_grade_yang_fruit": "Low Grade Yang Fruit",
   "item.cultivatormod.low_grade_herb_clump": "Low Grade Herb Clump",
   "item.cultivatormod.low_grade_ginseng": "Low Grade Ginseng",
   "item.cultivatormod.blood_from_earth": "Blood from Earth",
 
-
-
   "item.cultivatormod.low_grade_spirit_flower_seeds": "Low Grade Flower Seeds",
 
-  "item.cultivatormod.baoding_balls": "Baoding Balls"
+  "item.cultivatormod.baoding_balls": "Baoding Balls",
+
+  "entity.cultivatormod.yangbear": "Yang bear"
 }

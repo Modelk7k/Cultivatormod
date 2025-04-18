@@ -16,10 +16,11 @@ public class SetSpiritPowerCommand {
                         .executes(qi -> IntegerArgumentType.getInteger(qi, "amount")).executes(this::execute))));
     }
     private int execute(CommandContext<CommandSourceStack> context) {
-        PlayerData data = context.getSource().getEntity().getData(ModAttachments.PLAYER_DATA);
+        PlayerData data = context.getSource().getPlayer().getData(ModAttachments.PLAYER_DATA);
         if (IntegerArgumentType.getInteger(context, "amount") <= data.getMaxSpiritPower()) {
             data.setSpiritPower(IntegerArgumentType.getInteger(context, "amount"));
             context.getSource().sendSuccess(() -> Component.literal("Spirit Power set to " + data.getSpiritPower()), true);
+            data.syncQiToClient(context.getSource().getPlayer());
             return 1;
         }else {
             context.getSource().sendFailure((Component.literal("Cannot set above your max qi")));

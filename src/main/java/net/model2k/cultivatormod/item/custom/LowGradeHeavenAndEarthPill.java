@@ -23,6 +23,7 @@ public class LowGradeHeavenAndEarthPill extends Item {
                data.setQiQuality(data.getQiQuality() + 1);
                livingEntity.sendSystemMessage(Component.literal( "Qi Quality: " + data.getQiQuality()));
                data.realmChecker((Player)livingEntity);
+               data.syncQiToClient((Player)livingEntity);
                usedTimes++;
            }
         }if (usedTimes >= 1 ) {

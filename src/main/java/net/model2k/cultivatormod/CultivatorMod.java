@@ -1,25 +1,21 @@
 package net.model2k.cultivatormod;
 
 import net.minecraft.client.renderer.entity.EntityRenderers;
-import net.minecraft.core.Registry;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.model2k.cultivatormod.block.ModBlocks;
 import net.model2k.cultivatormod.block.entity.ModBlockEntities;
 import net.model2k.cultivatormod.component.ModDataComponents;
 import net.model2k.cultivatormod.datagen.ModAttachments;
-import net.model2k.cultivatormod.datagen.PlayerData;
 import net.model2k.cultivatormod.effect.ModEffects;
 import net.model2k.cultivatormod.entity.ModEntities;
 import net.model2k.cultivatormod.entity.client.MindlessSlimeRenderer;
+import net.model2k.cultivatormod.entity.client.YangBearRenderer;
 import net.model2k.cultivatormod.recipe.ModRecipes;
 import net.model2k.cultivatormod.screen.ModMenuTypes;
 import net.model2k.cultivatormod.screen.custom.LowGradeJadeFurnaceScreen;
 import net.model2k.cultivatormod.item.ModCreativeModeTabs;
 import net.model2k.cultivatormod.item.ModItems;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
 import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
@@ -57,8 +53,6 @@ public class CultivatorMod
         ModMenuTypes.register(modEventBus);
         ModRecipes.register(modEventBus);
         ModAttachments.register(modEventBus);
-
-
         modEventBus.addListener(this::addCreative);
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
@@ -72,11 +66,11 @@ public class CultivatorMod
     public void onServerStarting(ServerStartingEvent event) {
     }
     @EventBusSubscriber(modid = MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-    public static class ClientModEvents
-    {
+    public static class ClientModEvents {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
             EntityRenderers.register(ModEntities.MINDLESS_SLIME.get(), MindlessSlimeRenderer::new);
+            EntityRenderers.register(ModEntities.YANG_BEAR.get(), YangBearRenderer::new);
         }
         @SubscribeEvent
         public static void registerScreens(RegisterMenuScreensEvent event) {
