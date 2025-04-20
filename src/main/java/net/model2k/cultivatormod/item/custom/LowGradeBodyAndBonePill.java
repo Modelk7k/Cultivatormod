@@ -1,6 +1,6 @@
 package net.model2k.cultivatormod.item.custom;
 
-import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
@@ -9,6 +9,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.model2k.cultivatormod.datagen.ModAttachments;
 import net.model2k.cultivatormod.datagen.PlayerData;
+import net.model2k.cultivatormod.network.ModNetwork;
 
 public class LowGradeBodyAndBonePill extends Item {
     static int usedTimes = 0;
@@ -27,7 +28,7 @@ public class LowGradeBodyAndBonePill extends Item {
                 livingEntity.getAttribute(Attributes.MAX_HEALTH).setBaseValue(data.getHealth());
                 livingEntity.heal(20);
                 data.realmChecker((Player) livingEntity);
-                data.syncQiToClient((Player)livingEntity);
+                data.syncStatsToClient((Player)livingEntity);
                 usedTimes++;
             }
             if (usedTimes >= 1) {

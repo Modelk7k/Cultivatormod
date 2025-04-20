@@ -6,8 +6,10 @@ import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
 import net.model2k.cultivatormod.datagen.ModAttachments;
 import net.model2k.cultivatormod.datagen.PlayerData;
+import net.model2k.cultivatormod.network.ModNetwork;
 
 public class SetStrengthCommand {
     public SetStrengthCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -19,7 +21,7 @@ public class SetStrengthCommand {
         PlayerData data = context.getSource().getPlayer().getData(ModAttachments.PLAYER_DATA);
         data.setStrength(IntegerArgumentType.getInteger(context, "amount"));
         context.getSource().sendSuccess(() -> Component.literal("Strength set to " + data.getStrength()), true);
-        data.syncQiToClient(context.getSource().getPlayer());
+        data.syncStatsToClient(context.getSource().getPlayer());
         return 1;
     }
 }

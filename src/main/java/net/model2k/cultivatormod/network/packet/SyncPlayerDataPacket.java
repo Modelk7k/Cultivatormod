@@ -13,29 +13,21 @@ public class SyncPlayerDataPacket implements CustomPacketPayload {
     private final int maxQi;
     private final int spiritPower;
     private final int maxSpiritPower;
-
-    // Constructor
     public SyncPlayerDataPacket(int qi, int maxQi, int spiritPower, int maxSpiritPower) {
         this.qi = qi;
         this.maxQi = maxQi;
         this.spiritPower = spiritPower;
         this.maxSpiritPower = maxSpiritPower;
     }
-
-    // Encode method
     public static void encode(SyncPlayerDataPacket msg, FriendlyByteBuf buf) {
         buf.writeInt(msg.qi);
         buf.writeInt(msg.maxQi);
         buf.writeInt(msg.spiritPower);
         buf.writeInt(msg.maxSpiritPower);
     }
-
-    // Decode method
     public static SyncPlayerDataPacket decode(FriendlyByteBuf buf) {
         return new SyncPlayerDataPacket(buf.readInt(), buf.readInt(),buf.readInt(), buf.readInt());
     }
-
-    // StreamCodec for serialization/deserialization
     public static final StreamCodec<FriendlyByteBuf, SyncPlayerDataPacket> STREAM_CODEC = StreamCodec.of(
             (buf, packet) -> {
                 buf.writeInt(packet.getQi());
@@ -45,19 +37,17 @@ public class SyncPlayerDataPacket implements CustomPacketPayload {
             },
             buf -> new SyncPlayerDataPacket(buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt())
     );
-    // Getter methods
     public int getQi() {
         return qi;
     }
     public int getMaxQi() {
         return maxQi;
     }
-    // Getter methods
     public int getSpiritPower() {
-        return qi;
+        return spiritPower;
     }
     public int getMaxSpiritPower() {
-        return maxQi;
+        return maxSpiritPower;
     }
     @Override
     public Type<SyncPlayerDataPacket> type() {

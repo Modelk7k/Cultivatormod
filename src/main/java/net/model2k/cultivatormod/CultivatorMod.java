@@ -9,12 +9,15 @@ import net.model2k.cultivatormod.datagen.ModAttachments;
 import net.model2k.cultivatormod.effect.ModEffects;
 import net.model2k.cultivatormod.entity.ModEntities;
 import net.model2k.cultivatormod.entity.client.MindlessSlimeRenderer;
+import net.model2k.cultivatormod.entity.client.QiSlashRenderer;
 import net.model2k.cultivatormod.entity.client.YangBearRenderer;
+import net.model2k.cultivatormod.entity.custom.QiSlashEntity;
 import net.model2k.cultivatormod.recipe.ModRecipes;
 import net.model2k.cultivatormod.screen.ModMenuTypes;
 import net.model2k.cultivatormod.screen.custom.LowGradeJadeFurnaceScreen;
 import net.model2k.cultivatormod.item.ModCreativeModeTabs;
 import net.model2k.cultivatormod.item.ModItems;
+import net.model2k.cultivatormod.util.ChatPrefixHandler;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import org.slf4j.Logger;
 
@@ -53,6 +56,7 @@ public class CultivatorMod
         ModMenuTypes.register(modEventBus);
         ModRecipes.register(modEventBus);
         ModAttachments.register(modEventBus);
+        ChatPrefixHandler.register();
         modEventBus.addListener(this::addCreative);
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
@@ -71,6 +75,7 @@ public class CultivatorMod
         public static void onClientSetup(FMLClientSetupEvent event) {
             EntityRenderers.register(ModEntities.MINDLESS_SLIME.get(), MindlessSlimeRenderer::new);
             EntityRenderers.register(ModEntities.YANG_BEAR.get(), YangBearRenderer::new);
+            EntityRenderers.register(ModEntities.QI_SLASH.get(), QiSlashRenderer::new);
         }
         @SubscribeEvent
         public static void registerScreens(RegisterMenuScreensEvent event) {

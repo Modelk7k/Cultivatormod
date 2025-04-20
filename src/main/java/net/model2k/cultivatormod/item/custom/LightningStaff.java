@@ -1,15 +1,15 @@
 package net.model2k.cultivatormod.item.custom;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
-import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.context.UseOnContext;
@@ -20,11 +20,34 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.model2k.cultivatormod.block.ModBlocks;
 import net.model2k.cultivatormod.datagen.ModAttachments;
 import net.model2k.cultivatormod.datagen.PlayerData;
-import net.neoforged.fml.common.Mod;
+import net.model2k.cultivatormod.network.ModNetwork;
 
+import java.util.List;
+import java.util.Map;
 
 public class LightningStaff extends Item {
-
+    private static final Map<Block, Block> SAND_TO_GLASS = Map.ofEntries(
+            Map.entry(ModBlocks.MAGENTA_SAND.get(), Blocks.MAGENTA_STAINED_GLASS),
+            Map.entry(ModBlocks.GREEN_SAND.get(), Blocks.GREEN_STAINED_GLASS),
+            Map.entry(ModBlocks.GREY_SAND.get(), Blocks.GLASS),
+            Map.entry(ModBlocks.ORANGE_SAND.get(), Blocks.ORANGE_STAINED_GLASS),
+            Map.entry(ModBlocks.RED_SAND.get(), Blocks.RED_STAINED_GLASS),
+            Map.entry(ModBlocks.BLACK_SAND.get(), Blocks.BLACK_STAINED_GLASS),
+            Map.entry(ModBlocks.BROWN_SAND.get(), Blocks.BROWN_STAINED_GLASS),
+            Map.entry(ModBlocks.PINK_SAND.get(), Blocks.PINK_STAINED_GLASS),
+            Map.entry(ModBlocks.BLUE_SAND.get(), Blocks.BLUE_STAINED_GLASS),
+            Map.entry(ModBlocks.LIGHT_BLUE_SAND.get(), Blocks.LIGHT_BLUE_STAINED_GLASS),
+            Map.entry(ModBlocks.PURPLE_SAND.get(), Blocks.PURPLE_STAINED_GLASS),
+            Map.entry(ModBlocks.WHITE_SAND.get(), Blocks.WHITE_STAINED_GLASS),
+            Map.entry(ModBlocks.YELLOW_SAND.get(), Blocks.YELLOW_STAINED_GLASS),
+            Map.entry(Blocks.SAND, Blocks.GLASS)
+    );
+    private static final List<Block> RAINBOW_GLASS = List.of(
+            Blocks.RED_STAINED_GLASS, Blocks.GREEN_STAINED_GLASS, Blocks.BLUE_STAINED_GLASS,
+            Blocks.YELLOW_STAINED_GLASS, Blocks.ORANGE_STAINED_GLASS, Blocks.PURPLE_STAINED_GLASS,
+            Blocks.LIGHT_BLUE_STAINED_GLASS, Blocks.PINK_STAINED_GLASS, Blocks.GLASS
+    );
+    private long lastUseTime = 0;
     public LightningStaff(Properties properties) {
         super(properties);
     }
@@ -33,110 +56,82 @@ public class LightningStaff extends Item {
         Level level = context.getLevel();
         Player player = context.getPlayer();
         PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
-        if (!level.isClientSide() && data.getQi() - 10 >= 0) {
-            LightningBolt bolt = EntityType.LIGHTNING_BOLT.create((ServerLevel) level, LightningBolt::tick, context.getClickedPos(), MobSpawnType.NATURAL, true, true);
-            LightningBolt northBolt = EntityType.LIGHTNING_BOLT.create((ServerLevel) level, LightningBolt::tick, context.getClickedPos().north(3), MobSpawnType.NATURAL, true, true);
-            LightningBolt southBolt = EntityType.LIGHTNING_BOLT.create((ServerLevel) level, LightningBolt::tick, context.getClickedPos().south(3), MobSpawnType.NATURAL, true, true);
-            LightningBolt eastBolt = EntityType.LIGHTNING_BOLT.create((ServerLevel) level, LightningBolt::tick, context.getClickedPos().east(3), MobSpawnType.NATURAL, true, true);
-            LightningBolt westBolt = EntityType.LIGHTNING_BOLT.create((ServerLevel) level, LightningBolt::tick, context.getClickedPos().west(3), MobSpawnType.NATURAL, true, true);
-            level.addFreshEntity(bolt);
-            level.addFreshEntity(northBolt);
-            level.addFreshEntity(southBolt);
-            level.addFreshEntity(eastBolt);
-            level.addFreshEntity(westBolt);
-            level.broadcastEntityEvent(bolt, (byte) 0xA);
-            level.broadcastEntityEvent(northBolt, (byte) 0xA);
-            level.broadcastEntityEvent(southBolt, (byte) 0xA);
-            level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.WEATHER, 50f, 1f);
-            level.explode(player, context.getClickLocation().x, context.getClickLocation().y, context.getClickLocation().z, 3, Level.ExplosionInteraction.MOB);
-            data.setQi(data.getQi() - 10);
-            data.syncQiToClient(player);
-        }if (!level.isClientSide()) {
-            for (int i = 0; i < 15; i++) {
-            switch (i) {
-                case 0:
-                    if (level.getBlockState(context.getClickedPos()).is(ModBlocks.MAGENTA_SAND)) {
-                        level.setBlock(context.getClickedPos(), Blocks.MAGENTA_STAINED_GLASS.defaultBlockState(), 3);
+        BlockPos pos = context.getClickedPos();
+        int maxQi = data.getMaxQi();
+        int damage = maxQi / 3;
+        int qiCost = Math.max(damage / 2, 10);
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastUseTime >= 1000 && !level.isClientSide() && data.getQi() - qiCost >= 0 || player.isCreative() && !level.isClientSide()) {
+            lastUseTime = currentTime;
+            if(!player.isCreative()) {
+                data.setQi(data.getQi() - qiCost);
+                data.syncStatsToClient(player);
+            }
+            List<BlockPos> boltPositions = new java.util.ArrayList<>();
+            int radius = 2;
+            for (int dx = -radius; dx <= radius; dx++) {
+                for (int dz = -radius; dz <= radius; dz++) {
+                    if (Math.abs(dx) + Math.abs(dz) <= radius) { // Diamond-shaped
+                        boltPositions.add(pos.offset(dx, 0, dz));
                     }
-                    break;
-                case 1:
-                    if (level.getBlockState(context.getClickedPos()).is(ModBlocks.RAINBOW_SAND)) {
-                        level.setBlock(context.getClickedPos(), Blocks.GLASS.defaultBlockState(), 3);
+                }
+            }
+            for (BlockPos boltPos : boltPositions) {
+                LightningBolt bolt = EntityType.LIGHTNING_BOLT.create((ServerLevel) level);
+                if (bolt != null) {
+                    bolt.moveTo(boltPos.getX(), boltPos.getY(), boltPos.getZ());
+                    bolt.setVisualOnly(false);
+                    level.addFreshEntity(bolt);
+                    level.broadcastEntityEvent(bolt, (byte) 0xA);
+                    List<Entity> nearbyEntities = level.getEntitiesOfClass(Entity.class, bolt.getBoundingBox().inflate(5));
+                    for (Entity entity : nearbyEntities) {
+                        entity.hurt(player.damageSources().magic(), damage);
                     }
-                    break;
-                case 2:
-                    if (level.getBlockState(context.getClickedPos()).is(ModBlocks.GREEN_SAND)) {
-                        level.setBlock(context.getClickedPos(), Blocks.GREEN_STAINED_GLASS.defaultBlockState(), 3);
+                }
+                BlockPos targetPos = boltPos.below();
+                BlockState targetState = level.getBlockState(targetPos);
+                Block targetBlock = targetState.getBlock();
+                if (targetBlock == ModBlocks.RAINBOW_SAND.get()) {
+                    Block randomGlass = RAINBOW_GLASS_COLORS[level.random.nextInt(RAINBOW_GLASS_COLORS.length)];
+                    level.setBlock(targetPos, randomGlass.defaultBlockState(), 3);
+                } else if (SAND_TO_GLASS.containsKey(targetBlock)) {
+                    level.setBlock(targetPos, SAND_TO_GLASS.get(targetBlock).defaultBlockState(), 3);
+                }
+                BlockPos.betweenClosed(boltPos.offset(-1, -1, -1), boltPos.offset(1, 1, 1)).forEach(p -> {
+                    Block block = level.getBlockState(p).getBlock();
+                    if (block == Blocks.BEDROCK) {
+                        return;
                     }
-                    break;
-                case 3:
-                    if (level.getBlockState(context.getClickedPos()).is(ModBlocks.GREY_SAND)) {
-                        level.setBlock(context.getClickedPos(), Blocks.GLASS.defaultBlockState(), 3);
+                    if (!SAND_TO_GLASS.containsKey(block) && block != ModBlocks.RAINBOW_SAND.get() && !RAINBOW_GLASS.contains(block)) {
+                        level.destroyBlock(p, true); // true = drops items
                     }
-                    break;
-                case 4:
-                    if (level.getBlockState(context.getClickedPos()).is(ModBlocks.ORANGE_SAND)) {
-                        level.setBlock(context.getClickedPos(), Blocks.ORANGE_STAINED_GLASS.defaultBlockState(), 3);
-                    }
-                    break;
-                case 5:
-                    if (level.getBlockState(context.getClickedPos()).is(ModBlocks.RED_SAND)) {
-                        level.setBlock(context.getClickedPos(), Blocks.RED_STAINED_GLASS.defaultBlockState(), 3);
-                    }
-                    break;
-                case 6:
-                    if (level.getBlockState(context.getClickedPos()).is(ModBlocks.BLACK_SAND)) {
-                        level.setBlock(context.getClickedPos(), Blocks.BLACK_STAINED_GLASS.defaultBlockState(), 3);
-                    }
-                    break;
-                case 7:
-                    if (level.getBlockState(context.getClickedPos()).is(ModBlocks.BROWN_SAND)) {
-                        level.setBlock(context.getClickedPos(), Blocks.BROWN_STAINED_GLASS.defaultBlockState(), 3);
-                    }
-                    break;
-                case 8:
-                    if (level.getBlockState(context.getClickedPos()).is(ModBlocks.PINK_SAND)) {
-                        level.setBlock(context.getClickedPos(), Blocks.PINK_STAINED_GLASS.defaultBlockState(), 3);
-                    }
-                    break;
-                case 9:
-                    if (level.getBlockState(context.getClickedPos()).is(ModBlocks.BLUE_SAND)) {
-                        level.setBlock(context.getClickedPos(), Blocks.BLUE_STAINED_GLASS.defaultBlockState(), 3);
-                    }
-                    break;
-                case 10:
-                    if (level.getBlockState(context.getClickedPos()).is(ModBlocks.LIGHT_BLUE_SAND)) {
-                        level.setBlock(context.getClickedPos(), Blocks.LIGHT_BLUE_STAINED_GLASS.defaultBlockState(), 3);
-                    }
-                    break;
-                case 11:
-                    if (level.getBlockState(context.getClickedPos()).is(ModBlocks.PURPLE_SAND)) {
-                        level.setBlock(context.getClickedPos(), Blocks.PURPLE_STAINED_GLASS.defaultBlockState(), 3);
-                    }
-                    break;
-                case 12:
-                    if (level.getBlockState(context.getClickedPos()).is(ModBlocks.WHITE_SAND)) {
-                        level.setBlock(context.getClickedPos(), Blocks.WHITE_STAINED_GLASS.defaultBlockState(), 3);
-                    }
-                    break;
-                case 13:
-                    if (level.getBlockState(context.getClickedPos()).is(ModBlocks.YELLOW_SAND)) {
-                        level.setBlock(context.getClickedPos(), Blocks.YELLOW_STAINED_GLASS.defaultBlockState(), 3);
-                    }
-                    break;
-                case 14:
-                    if (level.getBlockState(context.getClickedPos()).is(Blocks.SAND)) {
-                        level.setBlock(context.getClickedPos(), Blocks.GLASS.defaultBlockState(), 3);
-                    }
-                 }
+                });
+                level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.WEATHER, .5f, 1f);
+                ((ServerLevel) level).sendParticles(
+                        ParticleTypes.ELECTRIC_SPARK,
+                        boltPos.getX() + 0.5, boltPos.getY() + 1, boltPos.getZ() + 0.5,
+                        30, 0.5, 1, 0.5, 0.1
+                );
+            }
+            BlockState clicked = level.getBlockState(pos);
+            Block clickedBlock = clicked.getBlock();
+            if (clickedBlock == ModBlocks.RAINBOW_SAND.get()) {
+                Block randomGlass = RAINBOW_GLASS_COLORS[level.random.nextInt(RAINBOW_GLASS_COLORS.length)];
+                level.setBlock(pos, randomGlass.defaultBlockState(), 3);
+            } else if (SAND_TO_GLASS.containsKey(clickedBlock)) {
+                level.setBlock(pos, SAND_TO_GLASS.get(clickedBlock).defaultBlockState(), 3);
             }
         }
         return InteractionResult.SUCCESS;
     }
-
+    private static final Block[] RAINBOW_GLASS_COLORS = {
+            Blocks.RED_STAINED_GLASS, Blocks.GREEN_STAINED_GLASS, Blocks.BLUE_STAINED_GLASS,
+            Blocks.YELLOW_STAINED_GLASS, Blocks.ORANGE_STAINED_GLASS, Blocks.PURPLE_STAINED_GLASS,
+            Blocks.LIGHT_BLUE_STAINED_GLASS, Blocks.PINK_STAINED_GLASS
+    };
     @Override
     public boolean canAttackBlock(BlockState state, Level level, BlockPos pos, Player player) {
-        if(player.position().distanceTo(pos.getCenter()) < 5){
+        if (player.position().distanceTo(pos.getCenter()) < 5) {
             return true;
         }
         return false;

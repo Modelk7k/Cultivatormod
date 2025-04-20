@@ -7,6 +7,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.SimpleContainer;
@@ -19,6 +20,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.model2k.cultivatormod.datagen.ModAttachments;
 import net.model2k.cultivatormod.datagen.PlayerData;
+import net.model2k.cultivatormod.network.ModNetwork;
 import net.model2k.cultivatormod.recipe.JadeFurnaceRecipe;
 import net.model2k.cultivatormod.recipe.JadeFurnaceRecipeInput;
 import net.model2k.cultivatormod.recipe.ModRecipes;
@@ -54,6 +56,7 @@ public class JadeFurnaceEntity extends BlockEntity implements MenuProvider {
                 if (data.getQi() - QiCost >= 0) {
                     if (hasRecipe()) {
                         data.setQi(data.getQi() - QiCost);
+                        data.syncStatsToClient(CurrentPlayer);
                     }
                 }
             }
