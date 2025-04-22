@@ -1,6 +1,5 @@
 package net.model2k.cultivatormod.event;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -21,15 +20,16 @@ import net.model2k.cultivatormod.command.*;
 import net.model2k.cultivatormod.datagen.ModAttachments;
 import net.model2k.cultivatormod.datagen.PlayerData;
 import net.model2k.cultivatormod.item.ModItems;
+import net.model2k.cultivatormod.util.ChatPrefixHandler;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.CommandEvent;
 import net.neoforged.neoforge.event.ItemAttributeModifierEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
-import net.neoforged.neoforge.event.ServerChatEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import java.util.HashSet;
 import java.util.List;
@@ -45,32 +45,37 @@ public class ModServerEvents {
         bannedPlayers.add("Aethiaer");
         bannedPlayers.add("Gedreor");
     }
-
     @SubscribeEvent
     public static void playerJoined(PlayerEvent.PlayerLoggedInEvent event) {
         if (!event.getEntity().level().isClientSide) {
             PlayerData data = event.getEntity().getData(ModAttachments.PLAYER_DATA);
             data.syncStatsToClient((Player) event.getEntity());
+            String prefix = data.getChatPrefix();
+            ChatPrefixHandler.setPrefix(event.getEntity().getUUID(), prefix, (ServerPlayer) event.getEntity());
+            String nickname = data.getNickName();
+            if (nickname != null && !nickname.isEmpty()) {
+                ChatPrefixHandler.setNickname(event.getEntity().getUUID(), nickname, (ServerPlayer)event.getEntity());  // Update custom name
+            }
             if (!data.getFirstQiType()) {
                 data.setFirstQiType(true);
                 Random rand = new Random();
                 int value = rand.nextInt(4);
                 switch (value) {
                     case 0:
-                        data.setDemonQi(true);
-                        event.getEntity().sendSystemMessage(Component.literal("You start with Demon Qi"));
-                        break;
-                    case 1:
-                        data.setHeavenlyQi(true);
-                        event.getEntity().sendSystemMessage(Component.literal("You start with Heavenly Qi"));
-                        break;
-                    case 2:
-                        data.setYangQi(true);
+                        data.setQiType("YangQi",true);
                         event.getEntity().sendSystemMessage(Component.literal("You start with Yang Qi"));
                         break;
-                    case 3:
-                        data.setYinQi(true);
+                    case 1:
+                        data.setQiType("YinQi",true);
                         event.getEntity().sendSystemMessage(Component.literal("You start with Yin Qi"));
+                        break;
+                    case 2:
+                        data.setQiType("DemonQi",true);
+                        event.getEntity().sendSystemMessage(Component.literal("You start with Demon Qi"));
+                        break;
+                    case 3:
+                        data.setQiType("HeavenlyQi",true);
+                        event.getEntity().sendSystemMessage(Component.literal("You start with Heavenly Qi"));
                         break;
                 }
             }
@@ -114,6 +119,12 @@ public class ModServerEvents {
         new SetMaxSpiritPowerCommand(event.getDispatcher());
         new ClearFloorItemsCommand(event.getDispatcher());
         new SetPrefixCommand(event.getDispatcher());
+        new SetNicknameCommand(event.getDispatcher());
+        new TeleportToDimensionCommand(event.getDispatcher());
+        new SetWarpCommand(event.getDispatcher());
+        new SetChatColorCommand(event.getDispatcher());
+        new GetPlayerDataCommand(event.getDispatcher());
+        new SetSubRaceCommand(event.getDispatcher());
         event.getDispatcher().register(
                 Commands.literal("kill")
                         .then(Commands.argument("targets", EntityArgument.players())

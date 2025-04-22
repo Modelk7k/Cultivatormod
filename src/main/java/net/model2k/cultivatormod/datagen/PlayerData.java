@@ -2,20 +2,25 @@ package net.model2k.cultivatormod.datagen;
 
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.IntArrayTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
+import net.model2k.cultivatormod.advancement.ModAdvancements;
+import net.model2k.cultivatormod.advancement.RealmAdvancementTrigger;
 import net.model2k.cultivatormod.item.ModItems;
 import net.model2k.cultivatormod.network.ModNetwork;
-import net.model2k.cultivatormod.network.packet.PlayerStatsClient;
 import net.neoforged.neoforge.common.util.INBTSerializable;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class PlayerData implements INBTSerializable {
     public int tick = 0;
+    private String Home = "";
+    private String NickName = "";
     private String ChatPrefix = "";
-    private String ChatColor = "WHITE";
+    private String ChatColor = "";
     private boolean CanFly = false;
     private int Health = 20;
     private boolean FirstQiType = false;
@@ -27,14 +32,69 @@ public class PlayerData implements INBTSerializable {
     private int SpiritPower;
     private int MaxSpiritPower = 10;
     private int QiQuality = 0;
-    private boolean YangQi = false;
-    private boolean YinQi = false;
-    private boolean HeavenlyQi = false;
-    private boolean DemonQi = false;
-
+    private Map<String, Boolean> QiType = new HashMap<>();
+    private Map<String, Boolean> Race = new HashMap<>();
+    private Map<String, Boolean> SubRace = new HashMap<>();
+    public PlayerData() {
+        QiType.put("YangQi", false);
+        QiType.put("YinQi", false);
+        QiType.put("DemonQi", false);
+        QiType.put("HeavenlyQi", false);
+        Race.put("Human",false);
+        Race.put("Beast",false);
+        Race.put("Elf",false);
+        Race.put("Undead",false);
+        Race.put("LowerImmortal",false);
+        Race.put("HigherImmortal",false);
+        //Human SubRaces
+        SubRace.put("Dwarf",false);
+        //Beast SubRace
+        SubRace.put("Dragon",false);
+        SubRace.put("Phoenix",false);
+        SubRace.put("Werewolves",false);
+        SubRace.put("Orc",false);
+        SubRace.put("Ogre",false);
+        //Undead SubRace
+        SubRace.put("Vampires",false);
+        SubRace.put("Zombie",false);
+        //Elf SubRace
+        SubRace.put("WoodElf",false);
+        SubRace.put("HighElf",false);
+        SubRace.put("DarkElf",false);
+        //LowerImmortal
+        SubRace.put("Angel",false);
+        SubRace.put("Demon",false);
+        SubRace.put("ShapeShifter",false);
+        SubRace.put("BetterZombie",false);
+        SubRace.put("ElderDwarf",false);
+        SubRace.put("ElderOrc",false);
+        SubRace.put("ElderOgre",false);
+        SubRace.put("SpiritElf",false);
+        SubRace.put("LightElf",false);
+        SubRace.put("VoidElf",false);
+        SubRace.put("ElderDragon",false);
+        SubRace.put("ElderPhoenix",false);
+        SubRace.put("ElderVampire",false);
+        //HigherImmortals
+        SubRace.put("SunElf",false);
+        SubRace.put("MoonElf",false);
+        SubRace.put("AscendedElf",false);
+        SubRace.put("DopplGanger",false);
+        SubRace.put("AncientOrc",false);
+        SubRace.put("AncientOgre",false);
+        SubRace.put("Necromancer",false);
+        SubRace.put("AscendedDwarf",false);
+        SubRace.put("AncientVampire",false);
+        SubRace.put("AncientPhoenix",false);
+        SubRace.put("AncientDragon",false);
+        SubRace.put("Archangel",false);
+        SubRace.put("ArchDemon",false);
+    }
     @Override
     public String toString() {
         return "PlayerData{" +
+                "Home=" + getHome() +
+                "NickName=" + getNickName() +
                 "ChatPrefix=" + getChatPrefix() +
                 "ChatColor=" + getChatColor() +
                 "CanFly=" + getCanFly() +
@@ -47,12 +107,59 @@ public class PlayerData implements INBTSerializable {
                 ", MaxQi=" + getMaxQi() +
                 ", SpiritPower=" + getSpiritPower() +
                 ", MaxSpiritPower=" + getMaxSpiritPower() +
-                ", YangQiQuality=" + getQiQuality() +
-                ", YangQi=" + getYangQi() +
-                ", YinQi=" + getYinQi() +
-                ", DemonQi=" + getDemonQi() +
-                ", HeavenlyQi=" + getHeavenlyQi() +
+                ", QiQuality=" + getQiQuality() +
+                ", YangQi=" + getQiType("YangQi") +
+                ", YinQi=" + getQiType("YinQi") +
+                ", DemonQi=" + getQiType("DemonQi") +
+                ", Human=" + getRace("Human") +
+                ", Beast=" + getRace("Beast") +
+                ", Elf=" + getRace("Elf") +
+                ", Undead=" + getRace("Undead") +
+                ", LowerImmortal=" + getRace("LowerImmortal") +
+                ", Dwarf=" + getSubRace("Dwarf") +
+                ", Dragon=" + getSubRace("Dragon") +
+                ", Phoenix=" + getSubRace("Phoenix") +
+                ", Werewolf=" + getSubRace("Werewolf") +
+                ", Vampire=" + getSubRace("Vampire") +
+                ", Zombie=" + getSubRace("Zombie") +
+                ", WoodElf=" + getSubRace("WoodElf") +
+                ", HighElf=" + getSubRace("HighElf") +
+                ", DarkElf=" + getSubRace("DarkElf") +
+                ", Angel=" + getSubRace("Angel") +
+                ", Demon=" + getSubRace("Demon") +
+                ", ShapeShifter=" + getSubRace("ShapeShifter") +
+                ", BetterZombie=" + getSubRace("BetterZombie") +
+                ", ElderDwarf=" + getSubRace("ElderDwarf") +
+                ", SpiritElf=" + getSubRace("SpiritElf") +
+                ", LightElf=" + getSubRace("LightElf") +
+                ", VoidElf=" + getSubRace("VoidElf") +
+                ", ElderDragon=" + getSubRace("ElderDragon") +
+                ", ElderVampire=" + getSubRace("ElderVampire") +
+                ", ElderPhoenix=" + getSubRace("ElderPhoenix") +
+                ", SunElf=" + getSubRace("SunElf") +
+                ", MoonElf=" + getSubRace("MoonElf") +
+                ", AscendedElf=" + getSubRace("AscendedElf") +
+                ", DopplGanger=" + getSubRace("DopplGanger") +
+                ", Necromancer=" + getSubRace("Necromancer") +
+                ", AscendedDwarf=" + getSubRace("AscnededDwarf") +
+                ", AncientVampire=" + getSubRace("AncientVampire") +
+                ", AncientPhoenix=" + getSubRace("AncientPhoenix") +
+                ", AncientDragon=" + getSubRace("AncientDragon") +
+                ", Archangel=" + getSubRace("Archangel") +
+                ", ArchDemon=" + getSubRace("Archdemon") +
                 '}';
+    }
+    public String getHome() {
+        return this.Home;
+    }
+    public void setHome(String home) {
+        this.Home = home;
+    }
+    public String getNickName() {
+        return this.NickName;
+    }
+    public void setNickName(String nickName) {
+        this.NickName = nickName;
     }
     public String getChatPrefix() {
         return this.ChatPrefix;
@@ -132,30 +239,24 @@ public class PlayerData implements INBTSerializable {
     public void setQiQuality(int qiQuality) {
         this.QiQuality = qiQuality;
     }
-    public boolean getYangQi() {
-        return this.YangQi;
-    }
-    public void setYangQi(boolean yangQi) {
-        this.YangQi = yangQi;
-    }
-    public boolean getYinQi() {
-        return this.YinQi;
-    }
-    public void setYinQi(boolean yinQi) {
-        this.YinQi = yinQi;
-    }
-    public boolean getHeavenlyQi() {
-        return this.HeavenlyQi;
-    }
-    public void setHeavenlyQi(boolean heavenlyQi) {
-        this.HeavenlyQi = heavenlyQi;
-    }
-    public boolean getDemonQi() {
-        return this.DemonQi;
-    }
-    public void setDemonQi(boolean demonQi) {
-        this.DemonQi = demonQi;
-    }
+    public boolean getQiType (String type) {
+        return this.QiType.getOrDefault(type, false)
+                ;}
+    public void setQiType(String qiType, boolean value) {
+        this.QiType.put(qiType, value)
+        ;}
+    public boolean getRace (String race) {
+        return this.Race.getOrDefault(race, false)
+                ;}
+    public void setRace(String race, boolean value) {
+        this.Race.put(race, value)
+        ;}
+    public boolean getSubRace (String subRace) {
+        return this.SubRace.getOrDefault(subRace, false)
+                ;}
+    public void setSubRace(String subRace, boolean value) {
+        this.SubRace.put(subRace, value)
+        ;}
     public void charge(Player player) {
         PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
         tick++;
@@ -200,6 +301,8 @@ public class PlayerData implements INBTSerializable {
                         if (getSpiritPower() >= 25 && getQi() >= 50 && getQiQuality() >= 1) {
                             setMinorRealm(1);
                             player.sendSystemMessage(Component.literal("You broke through to minor realm " + (getMinorRealm() + 1)));
+                                RealmAdvancementTrigger trigger = ModAdvancements.REALM_ADVANCEMENT_TRIGGER.get();
+                                trigger.trigger((ServerPlayer) player);
                             break;
                         }
                     case 1:
@@ -480,6 +583,9 @@ public class PlayerData implements INBTSerializable {
                 break;
         }
     }
+    public Map<String, Boolean> getAllSubRaces() {
+        return this.SubRace;
+    }
     public void syncStatsToClient(Player player) {
         if (player instanceof ServerPlayer serverPlayer) {
             ModNetwork.sendSyncPlayerData(serverPlayer); // Sends packet to actual client
@@ -488,8 +594,10 @@ public class PlayerData implements INBTSerializable {
     @Override
     public Tag serializeNBT(HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();
-        tag.putString("ChatPrefix", getChatPrefix());  // Save the prefix as a string
-        tag.putString("ChatColor", getChatColor());    // Save the color as a string
+        tag.putString("Home", getHome());
+        tag.putString("NickName", getNickName());
+        tag.putString("ChatPrefix", getChatPrefix());
+        tag.putString("ChatColor", getChatColor());
         tag.putBoolean("CanFly", getCanFly());
         tag.putInt("Health", getHealth());
         tag.putBoolean("FirstQiType", getFirstQiType());
@@ -501,15 +609,22 @@ public class PlayerData implements INBTSerializable {
         tag.putInt("SpiritPower", getSpiritPower());
         tag.putInt("MaxSpiritPower", getMaxSpiritPower());
         tag.putInt("QiQuality", getQiQuality());
-        tag.putBoolean("YangQi", getYangQi());
-        tag.putBoolean("YinQi", getYinQi());
-        tag.putBoolean("DemonQi", getDemonQi());
-        tag.putBoolean("HeavenlyQi", getHeavenlyQi());
+        for (String key : this.QiType.keySet()) {
+            tag.putBoolean("QiType_" + key, getQiType(key));
+        }
+        for (String key : this.Race.keySet()) {
+            tag.putBoolean("Race_" + key, getRace(key));
+        }
+        for (String key : this.SubRace.keySet()) {
+            tag.putBoolean("SubRace_" + key, getSubRace(key));
+        }
         return tag;
     }
     @Override
     public void deserializeNBT(HolderLookup.Provider provider, Tag tag) {
         if (tag instanceof CompoundTag compoundTag) {
+            setHome(compoundTag.getString("Home"));
+            setNickName(compoundTag.getString("NickName"));
             setChatPrefix(compoundTag.getString("ChatPrefix"));
             setChatColor(compoundTag.getString("ChatColor"));
             setCanFly(compoundTag.getBoolean("CanFly"));
@@ -523,10 +638,15 @@ public class PlayerData implements INBTSerializable {
             setSpiritPower(compoundTag.getInt("SpiritPower"));
             setMaxSpiritPower(compoundTag.getInt("MaxSpiritPower"));
             setQiQuality(compoundTag.getInt("QiQuality"));
-            setYangQi(compoundTag.getBoolean("YangQi"));
-            setYinQi(compoundTag.getBoolean("YinQi"));
-            setDemonQi(compoundTag.getBoolean("DemonQi"));
-            setHeavenlyQi(compoundTag.getBoolean("HeavenlyQi"));
+            for (String key : this.QiType.keySet()) {
+                setQiType(key, compoundTag.getBoolean("QiType_" + key));
+            }
+            for (String key : this.Race.keySet()) {
+                setRace(key, compoundTag.getBoolean("Race_" + key));
+            }
+            for (String key : this.SubRace.keySet()) {
+                setSubRace(key, compoundTag.getBoolean("SubRace_" + key));
+            }
         }
     }
 }

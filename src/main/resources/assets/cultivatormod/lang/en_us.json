@@ -97,5 +97,8 @@
 
   "item.cultivatormod.baoding_balls": "Baoding Balls",
 
-  "entity.cultivatormod.yangbear": "Yang bear"
+  "entity.cultivatormod.yangbear": "Yang bear",
+
+  "advancement.cultivatormod.minor_breakthrough.title": "Minor Breakthrough",
+  "advancement.cultivatormod.minor_breakthrough.desc": "Reach the second Minor Realm"
 }

@@ -1,9 +1,13 @@
 package net.model2k.cultivatormod;
 
 import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.core.Registry;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.model2k.cultivatormod.advancement.ModAdvancements;
+import net.model2k.cultivatormod.advancement.RealmAdvancementTrigger;
 import net.model2k.cultivatormod.block.ModBlocks;
 import net.model2k.cultivatormod.block.entity.ModBlockEntities;
+import net.model2k.cultivatormod.command.TeleportToDimensionCommand;
 import net.model2k.cultivatormod.component.ModDataComponents;
 import net.model2k.cultivatormod.datagen.ModAttachments;
 import net.model2k.cultivatormod.effect.ModEffects;
@@ -56,11 +60,13 @@ public class CultivatorMod
         ModMenuTypes.register(modEventBus);
         ModRecipes.register(modEventBus);
         ModAttachments.register(modEventBus);
+        ModAdvancements.register(modEventBus);
         ChatPrefixHandler.register();
         modEventBus.addListener(this::addCreative);
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
     private void commonSetup(final FMLCommonSetupEvent event) {
+
     }
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if(event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
@@ -68,6 +74,7 @@ public class CultivatorMod
     }
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
+        TeleportToDimensionCommand.loadWarpPoints();
     }
     @EventBusSubscriber(modid = MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents {

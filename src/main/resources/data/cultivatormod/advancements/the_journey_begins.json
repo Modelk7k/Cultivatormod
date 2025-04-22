@@ -1,0 +1,26 @@
+{
+  "display": {
+    "icon": {
+      "item": "cultivatormod:baoding_balls"
+    },
+    "title": {
+      "translate": "advancement.cultivatormod.minor_breakthrough.title"
+    },
+    "description": {
+      "translate": "advancement.cultivatormod.minor_breakthrough.desc"
+    },
+    "background": "minecraft:textures/block/end_stone.png",
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "minor_realm": {
+      "trigger": "cultivatormod:realm_advancement",
+      "conditions": {
+        "minorRealm": 1
+      }
+    }
+  }
+}
