@@ -13,9 +13,15 @@ import net.model2k.cultivatormod.network.ModNetwork;
 
 public class SetSpiritPowerCommand {
     public SetSpiritPowerCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("set").requires(permission -> permission.hasPermission(4))
-                .then(Commands.literal("spiritpower").then(Commands.argument("amount", IntegerArgumentType.integer(0))
-                        .executes(qi -> IntegerArgumentType.getInteger(qi, "amount")).executes(this::execute))));
+        dispatcher.register(Commands.literal("set")
+                .requires(source -> {
+                    ServerPlayer player = source.getPlayer();
+                    return player != null && player.getTags().contains("staff"); // Requires 'staff' tag
+                })
+                .then(Commands.literal("spiritpower")
+                        .then(Commands.argument("amount", IntegerArgumentType.integer(0))
+                                .executes(spirit -> IntegerArgumentType.getInteger(spirit, "amount"))
+                                .executes(this::execute))));
     }
     private int execute(CommandContext<CommandSourceStack> context) {
         PlayerData data = context.getSource().getPlayer().getData(ModAttachments.PLAYER_DATA);
@@ -24,7 +30,7 @@ public class SetSpiritPowerCommand {
             data.syncStatsToClient(context.getSource().getPlayer());
             return 1;
         }else {
-            context.getSource().sendFailure((Component.literal("Cannot set above your max qi")));
+            context.getSource().sendFailure((Component.literal("Cannot set above your max Spirit Power")));
             return 0;
         }
     }

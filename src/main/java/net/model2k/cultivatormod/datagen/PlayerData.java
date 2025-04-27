@@ -5,149 +5,213 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
 import net.model2k.cultivatormod.advancement.ModAdvancements;
 import net.model2k.cultivatormod.advancement.RealmAdvancementTrigger;
 import net.model2k.cultivatormod.item.ModItems;
 import net.model2k.cultivatormod.network.ModNetwork;
 import net.neoforged.neoforge.common.util.INBTSerializable;
-
 import java.util.HashMap;
 import java.util.Map;
 
 public class PlayerData implements INBTSerializable {
     public int tick = 0;
-    private String Home = "";
-    private String NickName = "";
-    private String ChatPrefix = "";
-    private String ChatColor = "";
-    private boolean CanFly = false;
-    private int Health = 20;
-    private boolean FirstQiType = false;
-    private int MinorRealm = 0;
-    private int MajorRealm = 0;
-    private int Strength = 0;
-    private int Qi = 0;
-    private int MaxQi = 10;
-    private int SpiritPower;
-    private int MaxSpiritPower = 10;
-    private int QiQuality = 0;
+    private long lastDashTime = 0;
+    private int SpeedLevel = 1, JumpStrength = 1, Health = 20, Defense = 0, Jump = 0, Dash = 0, Speed = 0;
+    private int MinorRealm = 0, MajorRealm = 0, Strength = 0, Qi = 0, MaxQi = 10;
+    private int SpiritPower, MaxSpiritPower = 10, QiQuality = 0;
+    private String Home = "", NickName = "", ChatPrefix = "", ChatColor = "";
+    private boolean CanFly = false, WalkOnWater = false, CanDash = false, FirstQiType = false;
     private Map<String, Boolean> QiType = new HashMap<>();
+    private Map<String, Boolean> Body = new HashMap<>();
+    private Map<String, Boolean> Principles = new HashMap<>();
     private Map<String, Boolean> Race = new HashMap<>();
-    private Map<String, Boolean> SubRace = new HashMap<>();
     public PlayerData() {
-        QiType.put("YangQi", false);
-        QiType.put("YinQi", false);
-        QiType.put("DemonQi", false);
-        QiType.put("HeavenlyQi", false);
-        Race.put("Human",false);
-        Race.put("Beast",false);
-        Race.put("Elf",false);
-        Race.put("Undead",false);
-        Race.put("LowerImmortal",false);
-        Race.put("HigherImmortal",false);
+        //QiTypes
+        QiType.put("Earth Qi", false);
+        QiType.put("Fire Qi", false);
+        QiType.put("Water Qi", false);
+        QiType.put("Wood Qi", false);
+        QiType.put("Metal Qi", false);
+        //Bodies
+        Body.put("Pill Body", false);
+        Body.put("Artifact Body", false);
+        Body.put("Dragon Body", false);
+        Body.put("Phoenix Body", false);
+        Body.put("Poison Body", false);
+        Body.put("Ghost Body", false);
+        Body.put("Demon Body", false);
+        Body.put("Heaven Body", false);
+        Body.put("Vampiric Body", false);
+        Body.put("Beast Body", false);
+        //Principles
+        Principles.put("Yang Principle", false);
+        Principles.put("Yin Principle", false);
+        Principles.put("Time Principle", false);
+        Principles.put("Space Principle", false);
+        Principles.put("Sword Principle", false);
+        Principles.put("Spear Principle", false);
+        Principles.put("Axe Principle", false);
+        Principles.put("Hammer Principle", false);
+        Principles.put("Scythe Principle", false);
+        Principles.put("Wind Principle", false);
+        Principles.put("Ice Principle", false);
+        Principles.put("Sound Principle", false);
+        Principles.put("Strength Principle", false);
+        Principles.put("Gold Principle", false);
+        Principles.put("Blood Principle", false);
+
         //Human SubRaces
-        SubRace.put("Dwarf",false);
+        Race.put("Human", false);
+        Race.put("Dwarf", false);
         //Beast SubRace
-        SubRace.put("Dragon",false);
-        SubRace.put("Phoenix",false);
-        SubRace.put("Werewolves",false);
-        SubRace.put("Orc",false);
-        SubRace.put("Ogre",false);
+        Race.put("Dragon", false);
+        Race.put("Phoenix", false);
+        Race.put("Werewolves", false);
+        Race.put("Orc", false);
+        Race.put("Ogre", false);
         //Undead SubRace
-        SubRace.put("Vampires",false);
-        SubRace.put("Zombie",false);
+        Race.put("Vampires", false);
+        Race.put("Zombie", false);
         //Elf SubRace
-        SubRace.put("WoodElf",false);
-        SubRace.put("HighElf",false);
-        SubRace.put("DarkElf",false);
+        Race.put("WoodElf", false);
+        Race.put("HighElf", false);
+        Race.put("DarkElf", false);
         //LowerImmortal
-        SubRace.put("Angel",false);
-        SubRace.put("Demon",false);
-        SubRace.put("ShapeShifter",false);
-        SubRace.put("BetterZombie",false);
-        SubRace.put("ElderDwarf",false);
-        SubRace.put("ElderOrc",false);
-        SubRace.put("ElderOgre",false);
-        SubRace.put("SpiritElf",false);
-        SubRace.put("LightElf",false);
-        SubRace.put("VoidElf",false);
-        SubRace.put("ElderDragon",false);
-        SubRace.put("ElderPhoenix",false);
-        SubRace.put("ElderVampire",false);
+        Race.put("Angel", false);
+        Race.put("Demon", false);
+        Race.put("Shape Shifter", false);
+        Race.put("Better Zombie", false);
+        Race.put("Elder Dwarf", false);
+        Race.put("Elder Orc", false);
+        Race.put("Elder Ogre", false);
+        Race.put("Spirit Elf", false);
+        Race.put("Light Elf", false);
+        Race.put("Void Elf", false);
+        Race.put("Elder Dragon", false);
+        Race.put("Elder Phoenix", false);
+        Race.put("Elder Vampire", false);
         //HigherImmortals
-        SubRace.put("SunElf",false);
-        SubRace.put("MoonElf",false);
-        SubRace.put("AscendedElf",false);
-        SubRace.put("DopplGanger",false);
-        SubRace.put("AncientOrc",false);
-        SubRace.put("AncientOgre",false);
-        SubRace.put("Necromancer",false);
-        SubRace.put("AscendedDwarf",false);
-        SubRace.put("AncientVampire",false);
-        SubRace.put("AncientPhoenix",false);
-        SubRace.put("AncientDragon",false);
-        SubRace.put("Archangel",false);
-        SubRace.put("ArchDemon",false);
+        Race.put("Sun Elf", false);
+        Race.put("Moon Elf", false);
+        Race.put("Ascended Elf", false);
+        Race.put("Doppl Ganger", false);
+        Race.put("Ancient Orc", false);
+        Race.put("Ancient Ogre", false);
+        Race.put("Necromancer", false);
+        Race.put("Ascended Dwarf", false);
+        Race.put("Ancient Vampire", false);
+        Race.put("Ancient Phoenix", false);
+        Race.put("Ancient Dragon", false);
+        Race.put("Archangel", false);
+        Race.put("ArchDemon", false);
     }
     @Override
     public String toString() {
         return "PlayerData{" +
-                "Home=" + getHome() +
-                "NickName=" + getNickName() +
-                "ChatPrefix=" + getChatPrefix() +
-                "ChatColor=" + getChatColor() +
-                "CanFly=" + getCanFly() +
-                "Health=" + getHealth() +
-                "FirstQiType=" + getFirstQiType() +
-                "MinorRealm=" + getMinorRealm() +
-                "MajorRealm=" + getMajorRealm() +
-                "Strength=" + getStrength() +
-                "Qi=" + getQi() +
+                "SpeedLevel=" + getSpeedLevel() +
+                ", JumpStrength=" + getJumpStrength() +
+                ", Home='" + getHome() + '\'' +
+                ", NickName='" + getNickName() + '\'' +
+                ", ChatPrefix='" + getChatPrefix() + '\'' +
+                ", ChatColor='" + getChatColor() + '\'' +
+                ", CanFly=" + getCanFly() +
+                ", WalkOnWater=" + getWalkOnWater() +
+                ", CanDash=" + getCanDash() +
+                ", Health=" + getHealth() +
+                ", Defense=" + getDefense() +
+                ", Speed=" + getSpeed() +
+                ", Jump=" + getJump() +
+                ", Dash=" + getDash() +
+                ", FirstQiType=" + getFirstQiType() +
+                ", MinorRealm=" + getMinorRealm() +
+                ", MajorRealm=" + getMajorRealm() +
+                ", Strength=" + getStrength() +
+                ", Qi=" + getQi() +
                 ", MaxQi=" + getMaxQi() +
                 ", SpiritPower=" + getSpiritPower() +
                 ", MaxSpiritPower=" + getMaxSpiritPower() +
                 ", QiQuality=" + getQiQuality() +
-                ", YangQi=" + getQiType("YangQi") +
-                ", YinQi=" + getQiType("YinQi") +
-                ", DemonQi=" + getQiType("DemonQi") +
+                ", EarthQi=" + getQiType("Earth Qi") +
+                ", FireQi=" + getQiType("Fire Qi") +
+                ", WaterQi=" + getQiType("Water Qi") +
+                ", WoodQi=" + getQiType("Wood Qi") +
+                ", MetalQi=" + getQiType("Metal Qi") +
+                ", PillBody=" + getBody("Pill Body") +
+                ", ArtifactBody=" + getBody("Artifact Body") +
+                ", DragonBody=" + getBody("Dragon Body") +
+                ", PhoenixBody=" + getBody("Phoenix Body") +
+                ", PoisonBody=" + getBody("Poison Body") +
+                ", GhostBody=" + getBody("Ghost Body") +
+                ", DemonBody=" + getBody("Demon Body") +
+                ", HeavenBody=" + getBody("Heaven Body") +
+                ", VampiricBody=" + getBody("Vampiric Body") +
+                ", YangPrinciple=" + getPrinciples("Yang Principle") +
+                ", YinPrinciple=" + getPrinciples("Yin Principle") +
+                ", TimePrinciple=" + getPrinciples("Time Principle") +
+                ", SpacePrinciple=" + getPrinciples("Space Principle") +
+                ", SwordPrinciple=" + getPrinciples("Sword Principle") +
+                ", SpearPrinciple=" + getPrinciples("Spear Principle") +
+                ", AxePrinciple=" + getPrinciples("Axe Principle") +
+                ", HammerPrinciple=" + getPrinciples("Hammer Principle") +
+                ", ScythePrinciple=" + getPrinciples("Scythe Principle") +
+                ", WindPrinciple=" + getPrinciples("Wind Principle") +
+                ", IcePrinciple=" + getPrinciples("Ice Principle") +
+                ", SoundPrinciple=" + getPrinciples("Sound Principle") +
+                ", StrengthPrinciple=" + getPrinciples("Strength Principle") +
+                ", GoldPrinciple=" + getPrinciples("Gold Principle") +
+                ", BloodPrinciple=" + getPrinciples("Blood Principle") +
                 ", Human=" + getRace("Human") +
-                ", Beast=" + getRace("Beast") +
-                ", Elf=" + getRace("Elf") +
-                ", Undead=" + getRace("Undead") +
-                ", LowerImmortal=" + getRace("LowerImmortal") +
-                ", Dwarf=" + getSubRace("Dwarf") +
-                ", Dragon=" + getSubRace("Dragon") +
-                ", Phoenix=" + getSubRace("Phoenix") +
-                ", Werewolf=" + getSubRace("Werewolf") +
-                ", Vampire=" + getSubRace("Vampire") +
-                ", Zombie=" + getSubRace("Zombie") +
-                ", WoodElf=" + getSubRace("WoodElf") +
-                ", HighElf=" + getSubRace("HighElf") +
-                ", DarkElf=" + getSubRace("DarkElf") +
-                ", Angel=" + getSubRace("Angel") +
-                ", Demon=" + getSubRace("Demon") +
-                ", ShapeShifter=" + getSubRace("ShapeShifter") +
-                ", BetterZombie=" + getSubRace("BetterZombie") +
-                ", ElderDwarf=" + getSubRace("ElderDwarf") +
-                ", SpiritElf=" + getSubRace("SpiritElf") +
-                ", LightElf=" + getSubRace("LightElf") +
-                ", VoidElf=" + getSubRace("VoidElf") +
-                ", ElderDragon=" + getSubRace("ElderDragon") +
-                ", ElderVampire=" + getSubRace("ElderVampire") +
-                ", ElderPhoenix=" + getSubRace("ElderPhoenix") +
-                ", SunElf=" + getSubRace("SunElf") +
-                ", MoonElf=" + getSubRace("MoonElf") +
-                ", AscendedElf=" + getSubRace("AscendedElf") +
-                ", DopplGanger=" + getSubRace("DopplGanger") +
-                ", Necromancer=" + getSubRace("Necromancer") +
-                ", AscendedDwarf=" + getSubRace("AscnededDwarf") +
-                ", AncientVampire=" + getSubRace("AncientVampire") +
-                ", AncientPhoenix=" + getSubRace("AncientPhoenix") +
-                ", AncientDragon=" + getSubRace("AncientDragon") +
-                ", Archangel=" + getSubRace("Archangel") +
-                ", ArchDemon=" + getSubRace("Archdemon") +
+                ", Dwarf=" + getRace("Dwarf") +
+                ", Dragon=" + getRace("Dragon") +
+                ", Phoenix=" + getRace("Phoenix") +
+                ", Werewolves=" + getRace("Werewolves") +
+                ", Orc=" + getRace("Orc") +
+                ", Ogre=" + getRace("Ogre") +
+                ", Vampires=" + getRace("Vampires") +
+                ", Zombie=" + getRace("Zombie") +
+                ", WoodElf=" + getRace("WoodElf") +
+                ", HighElf=" + getRace("HighElf") +
+                ", DarkElf=" + getRace("DarkElf") +
+                ", Angel=" + getRace("Angel") +
+                ", Demon=" + getRace("Demon") +
+                ", ShapeShifter=" + getRace("Shape Shifter") +
+                ", BetterZombie=" + getRace("Better Zombie") +
+                ", ElderDwarf=" + getRace("Elder Dwarf") +
+                ", ElderOrc=" + getRace("Elder Orc") +
+                ", ElderOgre=" + getRace("Elder Ogre") +
+                ", SpiritElf=" + getRace("Spirit Elf") +
+                ", LightElf=" + getRace("Light Elf") +
+                ", VoidElf=" + getRace("Void Elf") +
+                ", ElderDragon=" + getRace("Elder Dragon") +
+                ", ElderPhoenix=" + getRace("Elder Phoenix") +
+                ", ElderVampire=" + getRace("Elder Vampire") +
+                ", SunElf=" + getRace("Sun Elf") +
+                ", MoonElf=" + getRace("Moon Elf") +
+                ", AscendedElf=" + getRace("Ascended Elf") +
+                ", DopplGanger=" + getRace("Doppl Ganger") +
+                ", Necromancer=" + getRace("Necromancer") +
+                ", AscendedDwarf=" + getRace("Ascended Dwarf") +
+                ", AncientVampire=" + getRace("Ancient Vampire") +
+                ", AncientPhoenix=" + getRace("Ancient Phoenix") +
+                ", AncientDragon=" + getRace("Ancient Dragon") +
+                ", Archangel=" + getRace("Archangel") +
+                ", ArchDemon=" + getRace("ArchDemon") +
                 '}';
+    }
+    public int getSpeedLevel() {
+        return this.SpeedLevel;
+    }
+    public void setSpeedLevel(int speed) {
+        this.SpeedLevel = speed;
+    }
+    public int getJumpStrength() {
+        return this.JumpStrength;
+    }
+    public void setJumpStrength(int jumpStrength) {
+        this.JumpStrength = jumpStrength;
     }
     public String getHome() {
         return this.Home;
@@ -179,11 +243,47 @@ public class PlayerData implements INBTSerializable {
     public void setCanFly(boolean canFly) {
         this.CanFly = canFly;
     }
+    public boolean getWalkOnWater() {
+        return this.WalkOnWater;
+    }
+    public void setWalkOnWater(boolean walkOnWater) {
+        this.WalkOnWater = walkOnWater;
+    }
+    public boolean getCanDash() {
+        return this.CanDash;
+    }
+    public void setCanDash(boolean canDash) {
+        this.CanDash = canDash;
+    }
+    public int getSpeed() {
+        return this.Speed;
+    }
+    public void setSpeed(int speed) {
+        this.Speed = speed;
+    }
+    public int getJump() {
+        return this.Jump;
+    }
+    public void setJump(int jump) {
+        this.Jump = jump;
+    }
+    public int getDash() {
+        return this.Dash;
+    }
+    public void setDash(int dash) {
+        this.Dash = dash;
+    }
     public int getHealth() {
         return this.Health;
     }
     public void setHealth(int health) {
         this.Health = health;
+    }
+    public int getDefense() {
+        return this.Defense;
+    }
+    public void setDefense(int defense) {
+        this.Defense = defense;
     }
     public boolean getFirstQiType() {
         return this.FirstQiType;
@@ -239,59 +339,72 @@ public class PlayerData implements INBTSerializable {
     public void setQiQuality(int qiQuality) {
         this.QiQuality = qiQuality;
     }
-    public boolean getQiType (String type) {
+    public boolean getQiType(String type) {
         return this.QiType.getOrDefault(type, false)
-                ;}
+                ;
+    }
     public void setQiType(String qiType, boolean value) {
         this.QiType.put(qiType, value)
-        ;}
-    public boolean getRace (String race) {
+        ;
+    }
+    public boolean getBody(String body) {
+        return this.Body.getOrDefault(body, false)
+                ;
+    }
+    public void setBody(String body, boolean value) {
+        this.Body.put(body, value)
+        ;
+    }
+    public boolean getPrinciples(String principle) {
+        return this.Principles.getOrDefault(principle, false)
+                ;
+    }
+    public void setPrinciples(String principles, boolean value) {
+        this.Principles.put(principles, value)
+        ;
+    }
+    public boolean getRace(String race) {
         return this.Race.getOrDefault(race, false)
-                ;}
+                ;
+    }
     public void setRace(String race, boolean value) {
         this.Race.put(race, value)
-        ;}
-    public boolean getSubRace (String subRace) {
-        return this.SubRace.getOrDefault(subRace, false)
-                ;}
-    public void setSubRace(String subRace, boolean value) {
-        this.SubRace.put(subRace, value)
-        ;}
+        ;
+    }
     public void charge(Player player) {
-        PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
         tick++;
         if (tick >= 20) {
-            if (player.isHolding(ModItems.BAODING_BALLS.get()) && data.getQi() + qiChargeEfficiency(data) <= data.getMaxQi() && player.isShiftKeyDown()) {
-                data.setQi(data.getQi() + qiChargeEfficiency(data));
+            if (player.isHolding(ModItems.BAODING_BALLS.get()) && getQi() + qiChargeEfficiency() <= getMaxQi() && player.isShiftKeyDown()) {
+                setQi(getQi() + qiChargeEfficiency());
                 realmChecker(player);
                 syncStatsToClient(player);
                 tick = 0;
             }
-            if (player.isHolding(ModItems.BAODING_BALLS.get()) && data.getSpiritPower() + spiritPowerChargeEfficiency(data) <= data.getMaxSpiritPower() && player.isShiftKeyDown()) {
-                data.setSpiritPower(data.getSpiritPower() + data.spiritPowerChargeEfficiency(data));
+            if (player.isHolding(ModItems.BAODING_BALLS.get()) && getSpiritPower() + spiritPowerChargeEfficiency() <= getMaxSpiritPower() && player.isShiftKeyDown()) {
+                setSpiritPower(getSpiritPower() + spiritPowerChargeEfficiency());
                 realmChecker(player);
                 syncStatsToClient(player);
                 tick = 0;
             }
-            if (player.isHolding(ModItems.BAODING_BALLS.get()) && data.getQi() + qiChargeEfficiency(data) > data.getMaxQi() && player.isShiftKeyDown()) {
-                data.setQi(data.getMaxQi());
+            if (player.isHolding(ModItems.BAODING_BALLS.get()) && getQi() + qiChargeEfficiency() > getMaxQi() && player.isShiftKeyDown()) {
+                setQi(getMaxQi());
                 realmChecker(player);
                 syncStatsToClient(player);
                 tick = 0;
             }
-            if (player.isHolding(ModItems.BAODING_BALLS.get()) && data.getSpiritPower() + spiritPowerChargeEfficiency(data) > data.getMaxSpiritPower() && player.isShiftKeyDown()) {
-                data.setSpiritPower(data.getMaxSpiritPower());
+            if (player.isHolding(ModItems.BAODING_BALLS.get()) && getSpiritPower() + spiritPowerChargeEfficiency() > getMaxSpiritPower() && player.isShiftKeyDown()) {
+                setSpiritPower(getMaxSpiritPower());
                 realmChecker(player);
                 syncStatsToClient(player);
                 tick = 0;
             }
         }
     }
-    public int qiChargeEfficiency(PlayerData data) {
-        return data.getMaxQi() / 10;
+    public int qiChargeEfficiency() {
+        return getMaxQi() / 10;
     }
-    public int spiritPowerChargeEfficiency(PlayerData data) {
-        return data.getMaxSpiritPower() / 10;
+    public int spiritPowerChargeEfficiency() {
+        return getMaxSpiritPower() / 10;
     }
     public void realmChecker(Player player) {
         switch (getMajorRealm()) {
@@ -301,8 +414,8 @@ public class PlayerData implements INBTSerializable {
                         if (getSpiritPower() >= 25 && getQi() >= 50 && getQiQuality() >= 1) {
                             setMinorRealm(1);
                             player.sendSystemMessage(Component.literal("You broke through to minor realm " + (getMinorRealm() + 1)));
-                                RealmAdvancementTrigger trigger = ModAdvancements.REALM_ADVANCEMENT_TRIGGER.get();
-                                trigger.trigger((ServerPlayer) player);
+                            RealmAdvancementTrigger trigger = ModAdvancements.REALM_ADVANCEMENT_TRIGGER.get();
+                            trigger.trigger((ServerPlayer) player);
                             break;
                         }
                     case 1:
@@ -361,6 +474,7 @@ public class PlayerData implements INBTSerializable {
                             player.getAbilities().mayfly = true;  // Allow flying
                             player.onUpdateAbilities();           // Sync to client
                             setCanFly(true);
+                            setMinorRealm(0);
                             break;
                         }
                         break;
@@ -583,23 +697,125 @@ public class PlayerData implements INBTSerializable {
                 break;
         }
     }
+    public Map<String, Boolean> getAllQiTypes() {
+        return this.QiType;
+    }
+    public Map<String, Boolean> getAllBodies() {
+        return this.Body;
+    }
+    public Map<String, Boolean> getAllPrinciples() {
+        return this.Principles;
+    }
     public Map<String, Boolean> getAllSubRaces() {
-        return this.SubRace;
+        return this.Race;
+    }
+    public void applySpeedToPlayer(Player player) {
+        float[] speedMultipliers = {1.0f, 5.0f, 7.5f, 10.0f};  // 1.0 = 25%, 5.0 = 50%, 7.5 = 75%, 10.0 = 100%
+        int currentToggle = getSpeedLevel();  // Should be between 0 and 3
+        int newToggle = (currentToggle + 1) % 4;  // Toggle through 0 to 3
+        setSpeedLevel(newToggle);
+        speedPercentMessage(player, newToggle);
+        float speedMultiplier = speedMultipliers[newToggle];
+        double baseWalkSpeed = 0.1;
+        double baseFlySpeed = 0.05;
+        double walkSpeed = baseWalkSpeed * speedMultiplier;
+        double flySpeed = baseFlySpeed * speedMultiplier;
+        if (player.getAttribute(Attributes.MOVEMENT_SPEED) != null) {
+            player.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(walkSpeed);
+            player.onUpdateAbilities();  // Ensure abilities are updated after applying speed
+        }
+        if (getCanFly()) {
+            player.getAbilities().setFlyingSpeed((float) flySpeed);
+            player.onUpdateAbilities();  // Ensure abilities are updated after applying fly speed
+        }
+        ModNetwork.sendSyncPlayerData((ServerPlayer) player);
+        syncStatsToClient(player);
+    }
+    public void applyJumpBoost(Player player) {
+            if (player.getAttribute(Attributes.JUMP_STRENGTH) != null) {
+                player.getAttribute(Attributes.JUMP_STRENGTH).setBaseValue(jumpLogic(player));
+            }
+        }
+    public void dashForward(Player player, int dashStrength) {
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastDashTime < 1000) return; // 1-second cooldown
+        Vec3 lookVec = player.getLookAngle().normalize();
+        Vec3 dashVec = new Vec3(
+                lookVec.x * dashStrength,
+                lookVec.y * dashStrength,
+                lookVec.z * dashStrength
+        );
+        player.setDeltaMovement(dashVec);
+        player.hurtMarked = true;
+        lastDashTime = currentTime;
+    }
+    private void speedPercentMessage(Player player, int speedLevel) {
+        // Send a message to the player based on the new speed level
+        switch (speedLevel) {
+            case 0:
+                player.sendSystemMessage(Component.literal("Speed set to 25%"));
+                break;
+            case 1:
+                player.sendSystemMessage(Component.literal("Speed set to 50%"));
+                break;
+            case 2:
+                player.sendSystemMessage(Component.literal("Speed set to 75%"));
+                break;
+            case 3:
+                player.sendSystemMessage(Component.literal("Speed set to 100%"));
+                break;
+        }
+    }
+    public void jumpPercentMessage(Player player, int jump){
+        switch (jump) {
+            case 0:
+                player.sendSystemMessage(Component.literal("Jump Power set to 25%"));
+                break;
+            case 1:
+                player.sendSystemMessage(Component.literal("Jump Power set to 50%"));
+                break;
+            case 2:
+                player.sendSystemMessage(Component.literal("Jump Power set to 75%"));
+                break;
+            case 3:
+                player.sendSystemMessage(Component.literal("Jump Power set to 100%"));
+                break;
+        }
     }
     public void syncStatsToClient(Player player) {
         if (player instanceof ServerPlayer serverPlayer) {
             ModNetwork.sendSyncPlayerData(serverPlayer); // Sends packet to actual client
         }
     }
+    public double jumpLogic(Player player){
+        float[] jumpMultipliers = {1.0f, 1.5f, 2.0f, 2.5f};
+        int currentToggle = getJumpStrength();
+        int newToggle = (currentToggle + 1) % 4;
+        setJumpStrength(newToggle);
+        float jumpMultiplier = jumpMultipliers[newToggle];
+        double baseJump = 0.42D;
+        double jumpStrength = baseJump * jumpMultiplier;
+        ModNetwork.sendSyncPlayerData((ServerPlayer)player);
+        syncStatsToClient(player);
+        return jumpStrength;
+    }
     @Override
     public Tag serializeNBT(HolderLookup.Provider provider) {
         CompoundTag tag = new CompoundTag();
+        tag.putInt("SpeedLevel", getSpeedLevel());
+        tag.putInt("JumpStrength", getJumpStrength());
         tag.putString("Home", getHome());
         tag.putString("NickName", getNickName());
         tag.putString("ChatPrefix", getChatPrefix());
         tag.putString("ChatColor", getChatColor());
         tag.putBoolean("CanFly", getCanFly());
+        tag.putBoolean("WalkOnWater", getWalkOnWater());
+        tag.putBoolean("CanDash", getCanDash());
         tag.putInt("Health", getHealth());
+        tag.putInt("Defense", getDefense());
+        tag.putInt("Speed", getSpeed());
+        tag.putInt("Jump", getJump());
+        tag.putInt("Dash", getDash());
         tag.putBoolean("FirstQiType", getFirstQiType());
         tag.putInt("MinorRealm", getMinorRealm());
         tag.putInt("MajorRealm", getMajorRealm());
@@ -610,25 +826,36 @@ public class PlayerData implements INBTSerializable {
         tag.putInt("MaxSpiritPower", getMaxSpiritPower());
         tag.putInt("QiQuality", getQiQuality());
         for (String key : this.QiType.keySet()) {
-            tag.putBoolean("QiType_" + key, getQiType(key));
+            tag.putBoolean("QiType" + key, getQiType(key));
+        }
+        for (String key : this.Body.keySet()) {
+            tag.putBoolean("Body" + key, getBody(key));
+        }
+        for (String key : this.Principles.keySet()) {
+            tag.putBoolean("Principles" + key, getPrinciples(key));
         }
         for (String key : this.Race.keySet()) {
-            tag.putBoolean("Race_" + key, getRace(key));
-        }
-        for (String key : this.SubRace.keySet()) {
-            tag.putBoolean("SubRace_" + key, getSubRace(key));
+            tag.putBoolean("Race" + key, getRace(key));
         }
         return tag;
     }
     @Override
     public void deserializeNBT(HolderLookup.Provider provider, Tag tag) {
         if (tag instanceof CompoundTag compoundTag) {
+            setSpeedLevel(compoundTag.getInt("SpeedLevel"));
+            setJumpStrength(compoundTag.getInt("JumpStrength"));
             setHome(compoundTag.getString("Home"));
             setNickName(compoundTag.getString("NickName"));
             setChatPrefix(compoundTag.getString("ChatPrefix"));
             setChatColor(compoundTag.getString("ChatColor"));
             setCanFly(compoundTag.getBoolean("CanFly"));
+            setWalkOnWater(compoundTag.getBoolean("WalkOnWater"));
+            setCanDash(compoundTag.getBoolean("CanDash"));
             setHealth(compoundTag.getInt("Health"));
+            setDefense(compoundTag.getInt("Defense"));
+            setSpeed(compoundTag.getInt("Speed"));
+            setJump(compoundTag.getInt("Jump"));
+            setDash(compoundTag.getInt("Dash"));
             setFirstQiType(compoundTag.getBoolean("FirstQiType"));
             setMinorRealm(compoundTag.getInt("MinorRealm"));
             setMajorRealm(compoundTag.getInt("MajorRealm"));
@@ -639,13 +866,16 @@ public class PlayerData implements INBTSerializable {
             setMaxSpiritPower(compoundTag.getInt("MaxSpiritPower"));
             setQiQuality(compoundTag.getInt("QiQuality"));
             for (String key : this.QiType.keySet()) {
-                setQiType(key, compoundTag.getBoolean("QiType_" + key));
+                setQiType(key, compoundTag.getBoolean("QiType" + key));
+            }
+            for (String key : this.Body.keySet()) {
+                setBody(key, compoundTag.getBoolean("Body" + key));
+            }
+            for (String key : this.Principles.keySet()) {
+                setPrinciples(key, compoundTag.getBoolean("Principles" + key));
             }
             for (String key : this.Race.keySet()) {
-                setRace(key, compoundTag.getBoolean("Race_" + key));
-            }
-            for (String key : this.SubRace.keySet()) {
-                setSubRace(key, compoundTag.getBoolean("SubRace_" + key));
+                setRace(key, compoundTag.getBoolean("Race" + key));
             }
         }
     }

@@ -197,6 +197,7 @@ public static final DeferredBlock<Block> RED_SAND = registerBlock("red_sand",
     public static final DeferredBlock<Block> NUKE = registerBlock("nuke",
             () -> new Nuke(BlockBehaviour.Properties.of()));
 
+
     public static final DeferredBlock<Block> OLD_SCHOOL_FIRE = registerBlock("old_school_fire",
             () -> new OldSchoolFireBlock(BlockBehaviour.Properties.of().speedFactor(5).noLootTable().randomTicks().replaceable().ignitedByLava().noCollission().instabreak().lightLevel(state -> 15)));
 

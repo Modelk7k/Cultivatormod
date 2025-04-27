@@ -1,11 +1,15 @@
 package net.model2k.cultivatormod.network.packet;
 
 public class PlayerStatsClient {
-    private static int qi = 0;
-    private static int maxQi = 10;
-    private static int spiritPower = 0;
-    private static int maxSpiritPower = 10;
+    private static int qi, maxQi, spiritPower, maxSpiritPower,speed, jump, Dash,JumpLevel, SpeedLevel;
+    private static boolean WalkOnWater, canDash;
 
+    public static int getSpeed() { return speed; }
+    public static int getJump() { return jump; }
+    public static boolean getCanDash() { return canDash; }
+    public static void setSpeed(int s) { speed = s; }
+    public static void setJump(int j) { jump = j; }
+    public static void setCanDash(boolean c) { canDash = c; }
     public static int getQi() {return qi;}
     public static int getMaxQi() {return maxQi;}
     public static void setQi(int qiVal) {qi = qiVal;}
@@ -14,4 +18,12 @@ public class PlayerStatsClient {
     public static void setMaxSpiritPower(int spiritVal) {maxSpiritPower = spiritVal;}
     public static int getSpiritPower() {return spiritPower;}
     public static void setSpiritPower(int spiritVal) {spiritPower = spiritVal;}
+    public static boolean getWalkOnWater() {return WalkOnWater;}
+    public static void setWalkOnWater(boolean walkOnWater) {WalkOnWater = walkOnWater;}
+    public static int getDash() {return Dash;}
+    public static void setDash(int dash) {Dash = dash;}
+    public static int getSpeedLevel() {return SpeedLevel;}
+    public static void setSpeedLevel(int speedLevel) {SpeedLevel = speedLevel;}
+    public static int getJumpLevel() {return JumpLevel;}
+    public static void setJumpLevel(int jumpLevel) {JumpLevel = jumpLevel;}
 }

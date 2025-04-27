@@ -8,17 +8,13 @@ import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
 
 public class ModAttachments {
-    // Set up the DeferredRegister
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENTS =
             DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, CultivatorMod.MOD_ID);
-    // A normal field for the actual AttachmentType (not a RegistryObject)
     public static AttachmentType<PlayerData> PLAYER_DATA;
     public static void register(IEventBus modEventBus) {
-        // Register with the event bus
         ATTACHMENTS.register(modEventBus);
-        // Register our type and assign it at runtime
         ATTACHMENTS.register("player_data", () -> {
-            PLAYER_DATA = AttachmentType.serializable(PlayerData::new).build();
+            PLAYER_DATA = AttachmentType.serializable(PlayerData::new).copyOnDeath().build();
             return PLAYER_DATA;
         });
     }

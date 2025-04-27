@@ -13,8 +13,13 @@ import net.model2k.cultivatormod.util.ChatPrefixHandler;
 
 public class SetChatColorCommand {
     public SetChatColorCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("chatcolor").requires(source -> source.hasPermission(2))
-                .then(Commands.argument("color", StringArgumentType.greedyString()).executes(this::execute)));
+        dispatcher.register(Commands.literal("chatcolor")
+                .requires(source -> {
+                    ServerPlayer player = source.getPlayer();
+                    return player != null && player.getTags().contains("chat"); // Requires 'chat' tag
+                })
+                .then(Commands.argument("color", StringArgumentType.greedyString())
+                        .executes(this::execute)));
     }
     private int execute(CommandContext<CommandSourceStack> context) {
         ServerPlayer player = context.getSource().getPlayer();

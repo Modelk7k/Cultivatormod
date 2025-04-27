@@ -12,6 +12,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.core.BlockPos;
+
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,20 +23,37 @@ public class TeleportToDimensionCommand {
 
     public TeleportToDimensionCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
-                Commands.literal("warp") // Command to teleport player to a warp point or dimension
-                        .then(Commands.argument("destination", StringArgumentType.word()) // Argument for destination
+                Commands.literal("warp")
+                        .then(Commands.argument("destination", StringArgumentType.word())
+                                .suggests((context, builder) -> {
+                                    // Add default dimensions to the suggestions
+                                    builder.suggest("overworld");
+                                    builder.suggest("nether");
+                                    builder.suggest("end");
+
+                                    // Add the custom warp points from warpPoints map
+                                    warpPoints.keySet().forEach(warp -> builder.suggest(warp));
+
+                                    return builder.buildFuture();
+                                })
                                 .executes(this::execute))
-                        .executes(this::listWarps) // This handles the case when no argument is passed
+                        .executes(this::listWarps)
         );
         dispatcher.register(
-                Commands.literal("setwarp") // Staff only command to set a warp point
-                        .requires(source -> source.hasPermission(2)) // Permission level 2 (staff)
+                Commands.literal("setwarp")
+                        .requires(source -> {
+                            ServerPlayer player = source.getPlayer();
+                            return player != null && player.getTags().contains("staff");  // Staff tag required
+                        })
                         .then(Commands.argument("name", StringArgumentType.word())
                                 .executes(this::setWarp))
         );
         dispatcher.register(
                 Commands.literal("removewarp")
-                        .requires(source -> source.hasPermission(2)) // Staff only
+                        .requires(source -> {
+                            ServerPlayer player = source.getPlayer();
+                            return player != null && player.getTags().contains("staff");  // Staff tag required
+                        })
                         .then(Commands.argument("name", StringArgumentType.word())
                                 .executes(this::removeWarp))
         );
@@ -97,6 +115,7 @@ public class TeleportToDimensionCommand {
         context.getSource().sendSuccess(() -> Component.literal("Warp set at: " + playerPos.toString()), true);
         return 1;
     }
+
     private void teleportToWarpPoint(ServerPlayer player, BlockPos warpPos) {
         player.teleportTo(player.serverLevel(), warpPos.getX(), warpPos.getY(), warpPos.getZ(), player.getYRot(), player.getXRot());
     }
@@ -125,6 +144,7 @@ public class TeleportToDimensionCommand {
     private void teleportPlayerToDimension(ServerPlayer player, ServerLevel dimensionLevel) {
         player.teleportTo(dimensionLevel, player.getX(), player.getY(), player.getZ(), player.getYRot(), player.getXRot());
     }
+
     public static void setWarpPoint(String warpName, BlockPos pos) {
         warpPoints.put(warpName.toLowerCase(), pos);
         saveWarpPoints();
@@ -152,6 +172,7 @@ public class TeleportToDimensionCommand {
             e.printStackTrace();
         }
     }
+
     public static void loadWarpPoints() {
         if (!warpFile.exists()) {
             return;
@@ -171,6 +192,7 @@ public class TeleportToDimensionCommand {
             e.printStackTrace();
         }
     }
+
     private int removeWarp(CommandContext<CommandSourceStack> context) {
         ServerPlayer player = context.getSource().getPlayer();
         if (player == null) {

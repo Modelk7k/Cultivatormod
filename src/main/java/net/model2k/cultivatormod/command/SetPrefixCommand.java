@@ -15,7 +15,10 @@ public class SetPrefixCommand {
     public SetPrefixCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
                 Commands.literal("prefix")
-                        .requires(source -> source.hasPermission(2))
+                        .requires(source -> {
+                            ServerPlayer player = source.getPlayer();
+                            return player != null && player.getTags().contains("chat"); // Requires 'chat' tag
+                        })
                         .then(Commands.argument("prefix", StringArgumentType.greedyString())
                                 .executes(this::execute))
         );
@@ -23,17 +26,12 @@ public class SetPrefixCommand {
     private int execute(CommandContext<CommandSourceStack> context) {
         ServerPlayer player = context.getSource().getPlayer();
         String rawPrefix = StringArgumentType.getString(context, "prefix");
-        // Ensure that brackets are added and formatted correctly
-        if (!rawPrefix.startsWith("[")) rawPrefix = "&r[" + rawPrefix;  // Add reset style and opening bracket
-        if (!rawPrefix.endsWith("]")) rawPrefix = rawPrefix + "&r]";      // Add reset style and closing bracket
-        // Get the player data
+        if (!rawPrefix.startsWith("[")) rawPrefix = "&r[" + rawPrefix;
+        if (!rawPrefix.endsWith("]")) rawPrefix = rawPrefix + "&r]";
         PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
-        data.setChatPrefix(rawPrefix);  // Set the raw prefix
-        // Sync the player's data with the client
+        data.setChatPrefix(rawPrefix);
         data.syncStatsToClient(player);
-        // Parse the prefix with formatting
-        Component parsedPrefix = ChatPrefixHandler.parseFormattedPrefix(rawPrefix);  // Default to white if no color is specified
-        // Send feedback to the player
+        Component parsedPrefix = ChatPrefixHandler.parseFormattedPrefix(rawPrefix);
         context.getSource().sendSuccess(
                 () -> Component.literal("Set your prefix to: ").append(parsedPrefix),
                 false
@@ -41,4 +39,3 @@ public class SetPrefixCommand {
         return 1;
     }
 }
-

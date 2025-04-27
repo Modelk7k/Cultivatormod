@@ -11,11 +11,12 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.phys.AABB;
 
 public class ClearFloorItemsCommand {
-    private static int tickCounter = 0;
     public ClearFloorItemsCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("clearflooritems")
-                .requires(source -> source.hasPermission(2)) // Only allow OPs
-                .executes(this::execute));
+        dispatcher.register(
+                Commands.literal("clearfloor")
+                        .requires(source -> source.isPlayer() && source.getPlayer().getTags().contains("staff")) // Staff-only
+                        .executes(this::execute)
+        );
     }
     private int execute(CommandContext<CommandSourceStack> context) {
         ServerPlayer player = context.getSource().getPlayer();

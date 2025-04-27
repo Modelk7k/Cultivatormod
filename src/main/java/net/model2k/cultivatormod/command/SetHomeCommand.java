@@ -23,7 +23,6 @@ public class SetHomeCommand {
         data.setHome(homeString);
         player.getPersistentData().putIntArray("cultivator.homepos",
                 new int[] { playerPos.getX(), playerPos.getY(), playerPos.getZ() });
-
         data.setHome(homeString);
         context.getSource().sendSuccess(() -> Component.literal("Set Home at " + homeString), true);
         return 1;

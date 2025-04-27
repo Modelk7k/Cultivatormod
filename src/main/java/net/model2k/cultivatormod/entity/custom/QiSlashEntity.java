@@ -32,8 +32,7 @@ public class QiSlashEntity extends Mob {
         PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
         int cost = data.getQi() - (10 - data.getQiQuality());
         if (cost >= 0) {
-            data.setQi(cost);
-            data.syncStatsToClient(player);
+            qiCost(player,data,cost);
             Vec3 dirNormalized = direction.normalize();
             Vec3 offset = dirNormalized.scale(.5);
             Vec3 spawnPos = owner.position().add(0, owner.getEyeHeight() * .75, 0)
@@ -115,5 +114,12 @@ public class QiSlashEntity extends Mob {
     @Override
     public boolean isPickable() {
         return true;
+    }
+    public void qiCost(Player player, PlayerData data, int cost){
+        if(player.isCreative()){return;}
+        else{
+            data.setQi(cost);
+            data.syncStatsToClient(player);
+        }
     }
 }

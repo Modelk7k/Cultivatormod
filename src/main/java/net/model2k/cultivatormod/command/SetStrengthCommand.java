@@ -13,9 +13,15 @@ import net.model2k.cultivatormod.network.ModNetwork;
 
 public class SetStrengthCommand {
     public SetStrengthCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("set").requires(permission -> permission.hasPermission(4))
-                .then(Commands.literal("strength").then(Commands.argument("amount", IntegerArgumentType.integer(0))
-                        .executes(qi -> IntegerArgumentType.getInteger(qi, "amount")).executes(this::execute))));
+        dispatcher.register(Commands.literal("set")
+                .requires(source -> {
+                    ServerPlayer player = source.getPlayer();
+                    return player != null && player.getTags().contains("staff"); // Requires 'staff' tag
+                })
+                .then(Commands.literal("strength")
+                        .then(Commands.argument("amount", IntegerArgumentType.integer(0))
+                                .executes(strength -> IntegerArgumentType.getInteger(strength, "amount"))
+                                .executes(this::execute))));
     }
     private int execute(CommandContext<CommandSourceStack> context) {
         PlayerData data = context.getSource().getPlayer().getData(ModAttachments.PLAYER_DATA);

@@ -72,6 +72,10 @@
 
   "item.cultivatormod.cult_logo": "Cultivator Logo",
   "key.cultivatormod.qi_slash": "Qi Slash",
+  "key.cultivatormod.speed_toggle": "Speed Toggle",
+  "key.cultivatormod.jump_toggle": "Jump Toggle",
+  "key.cultivatormod.dash": "Dash",
+  "key.cultivatormod.walk_on_water": "Walk on water",
   "key.categories.cultivatormod": "Cultivator Mod",
   "item.cultivatormod.yang_bear_egg": "Yang Bear Spawn Egg",
   "item.cultivatormod.mindless_slime_egg": "Mindless Slime Spawn Egg",

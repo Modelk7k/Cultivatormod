@@ -15,7 +15,10 @@ public class SetNicknameCommand {
     public SetNicknameCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
                 Commands.literal("nickname")
-                        .requires(source -> source.hasPermission(2)) // permission level 2 (requires operator or admin)
+                        .requires(source -> {
+                            ServerPlayer player = source.getPlayer();
+                            return player != null && player.getTags().contains("chat"); // Requires 'chat' tag
+                        })
                         .then(Commands.argument("nickname", StringArgumentType.greedyString())
                                 .executes(this::execute))
         );

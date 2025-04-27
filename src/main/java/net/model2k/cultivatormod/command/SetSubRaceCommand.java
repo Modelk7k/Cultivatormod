@@ -5,21 +5,35 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
+import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.model2k.cultivatormod.datagen.ModAttachments;
 import net.model2k.cultivatormod.datagen.PlayerData;
 
+import java.util.ArrayList;
+
 public class SetSubRaceCommand {
     public SetSubRaceCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
-        dispatcher.register(Commands.literal("subrace")
-                .then(Commands.argument("subrace", StringArgumentType.word())
-                        .executes(this::setSubrace)
-                )
+        dispatcher.register(
+                Commands.literal("set")
+                        .then(Commands.literal("race")
+                                .requires(source -> {
+                                    if (!source.isPlayer()) return false;
+                                    ServerPlayer player = source.getPlayer();
+                                    return player.getTags().contains("staff");
+                                })
+                                .then(Commands.argument("subrace", StringArgumentType.word())
+                                        .suggests((context, builder) -> {
+                                            ServerPlayer player = context.getSource().getPlayer();
+                                            PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
+                                            return SharedSuggestionProvider.suggest(new ArrayList<>(data.getAllSubRaces().keySet()), builder);
+                                        })
+                                        .executes(this::setSubrace)
+                                )
+                        )
         );
-
     }
-
     private int setSubrace(CommandContext<CommandSourceStack> context) {
         ServerPlayer player = context.getSource().getPlayer();
         if (player == null) {
@@ -28,7 +42,6 @@ public class SetSubRaceCommand {
         }
         String input = StringArgumentType.getString(context, "subrace").trim();
         PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
-
         String matchedKey = data.getAllSubRaces().keySet().stream()
                 .filter(key -> key.equalsIgnoreCase(input))
                 .findFirst()
@@ -37,12 +50,10 @@ public class SetSubRaceCommand {
             context.getSource().sendFailure(Component.literal("Invalid subrace: " + input));
             return -1;
         }
-        // Clear all existing subraces
         for (String sub : data.getAllSubRaces().keySet()) {
-            data.setSubRace(sub, false);
+            data.setRace(sub, false);
         }
-        // Set new one
-        data.setSubRace(matchedKey, true);
+        data.setRace(matchedKey, true);
         context.getSource().sendSuccess(() -> Component.literal("Your subrace has been set to: " + matchedKey), false);
         return 1;
     }

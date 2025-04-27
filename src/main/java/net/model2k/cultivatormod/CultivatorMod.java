@@ -1,10 +1,8 @@
 package net.model2k.cultivatormod;
 
 import net.minecraft.client.renderer.entity.EntityRenderers;
-import net.minecraft.core.Registry;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.model2k.cultivatormod.advancement.ModAdvancements;
-import net.model2k.cultivatormod.advancement.RealmAdvancementTrigger;
 import net.model2k.cultivatormod.block.ModBlocks;
 import net.model2k.cultivatormod.block.entity.ModBlockEntities;
 import net.model2k.cultivatormod.command.TeleportToDimensionCommand;
@@ -15,7 +13,6 @@ import net.model2k.cultivatormod.entity.ModEntities;
 import net.model2k.cultivatormod.entity.client.MindlessSlimeRenderer;
 import net.model2k.cultivatormod.entity.client.QiSlashRenderer;
 import net.model2k.cultivatormod.entity.client.YangBearRenderer;
-import net.model2k.cultivatormod.entity.custom.QiSlashEntity;
 import net.model2k.cultivatormod.recipe.ModRecipes;
 import net.model2k.cultivatormod.screen.ModMenuTypes;
 import net.model2k.cultivatormod.screen.custom.LowGradeJadeFurnaceScreen;
@@ -24,9 +21,7 @@ import net.model2k.cultivatormod.item.ModItems;
 import net.model2k.cultivatormod.util.ChatPrefixHandler;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import org.slf4j.Logger;
-
 import com.mojang.logging.LogUtils;
-
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -39,8 +34,6 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
-
-import static net.model2k.cultivatormod.datagen.ModAttachments.PLAYER_DATA;
 
 @Mod(CultivatorMod.MOD_ID)
 public class CultivatorMod
