@@ -32,12 +32,12 @@ public class QiSlashEntity extends Mob {
         PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
         int cost = data.getQi() - (10 - data.getQiQuality());
         if (cost >= 0) {
-            qiCost(player,data,cost);
+            qiCost((ServerPlayer) player,data,cost);
             Vec3 dirNormalized = direction.normalize();
             Vec3 offset = dirNormalized.scale(.5);
             Vec3 spawnPos = owner.position().add(0, owner.getEyeHeight() * .75, 0)
                     .add(offset);
-            spawnPos = spawnPos.add(0, .5, 0);
+            spawnPos = spawnPos.add(0, .4, 0);
             if (owner instanceof Mob) {
                 spawnPos = spawnPos.add(0, 0, 0);
             }
@@ -57,43 +57,45 @@ public class QiSlashEntity extends Mob {
         this.move(MoverType.SELF, this.getDeltaMovement());
         Vec3 start = this.position();
         Vec3 direction = this.getDeltaMovement().normalize();
-        Vec3 frontOffset = direction.scale(1.5);
-        Vec3 rightOffset = new Vec3(1, 0, 0);
-        Vec3 leftOffset = new Vec3(-1, 0, 0);
-        BlockHitResult frontHit = level().clip(new ClipContext(
-                start, start.add(frontOffset),
+        Vec3 forwardEnd = start.add(direction.scale(0.7f));
+        BlockHitResult forwardHit = level().clip(new ClipContext(
+                start, forwardEnd,
                 ClipContext.Block.COLLIDER,
                 ClipContext.Fluid.NONE,
                 this
         ));
-        BlockHitResult rightHit = level().clip(new ClipContext(
-                start, start.add(rightOffset),
-                ClipContext.Block.COLLIDER,
-                ClipContext.Fluid.NONE,
-                this
-        ));
-        BlockHitResult leftHit = level().clip(new ClipContext(
-                start, start.add(leftOffset),
-                ClipContext.Block.COLLIDER,
-                ClipContext.Fluid.NONE,
-                this
-        ));
+        if (forwardHit.getType() == HitResult.Type.BLOCK) {
+            destroyBlockIfValid(forwardHit);
+        } else {
+            Vec3[] fallbackDirections = new Vec3[]{
+                    new Vec3(direction.z, 0, -direction.x),   // right
+                    new Vec3(-direction.z, 0, direction.x),   // left
+                    new Vec3(0, 1, 0),                        // up
+                                         // down
+            };
+            for (Vec3 offset : fallbackDirections) {
+                Vec3 end = start.add(offset.scale(0.5));
+                BlockHitResult hitResult = level().clip(new ClipContext(
+                        start, end,
+                        ClipContext.Block.COLLIDER,
+                        ClipContext.Fluid.NONE,
+                        this
+                ));
+                if (hitResult.getType() == HitResult.Type.BLOCK) {
+                    destroyBlockIfValid(hitResult);
+                    break;
+                }
+            }
+        }
         AABB hitbox = this.getBoundingBox().inflate(0.5);
         List<LivingEntity> entitiesInRange = level().getEntitiesOfClass(LivingEntity.class, hitbox, e ->
                 e != Owner && e.isAlive() && !(e instanceof QiSlashEntity));
         for (LivingEntity entity : entitiesInRange) {
             DamageSource source = Owner != null ? this.damageSources().mobAttack(Owner) : this.damageSources().magic();
-            entity.hurt(source, (float) Owner.getData(ModAttachments.PLAYER_DATA).getMaxQi()/3);
+            entity.hurt(source, (float) Owner.getData(ModAttachments.PLAYER_DATA).getMaxQi() / 3);
             this.kill();
             this.remove(RemovalReason.KILLED);
-            break;
-        }
-        if (frontHit.getType() == HitResult.Type.BLOCK) {
-            destroyBlockIfValid(frontHit);
-        } else if (rightHit.getType() == HitResult.Type.BLOCK) {
-            destroyBlockIfValid(rightHit);
-        } else if (leftHit.getType() == HitResult.Type.BLOCK) {
-            destroyBlockIfValid(leftHit);
+            return;
         }
         if (--lifeTicks <= 0) {
             this.kill();
@@ -115,11 +117,11 @@ public class QiSlashEntity extends Mob {
     public boolean isPickable() {
         return true;
     }
-    public void qiCost(Player player, PlayerData data, int cost){
+    public void qiCost(ServerPlayer player, PlayerData data, int cost){
         if(player.isCreative()){return;}
         else{
             data.setQi(cost);
-            data.syncStatsToClient(player);
+            ModNetwork.sendSyncPlayerData(player);
         }
     }
 }

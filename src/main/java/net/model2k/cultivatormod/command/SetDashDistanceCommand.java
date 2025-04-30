@@ -10,6 +10,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.model2k.cultivatormod.datagen.ModAttachments;
 import net.model2k.cultivatormod.datagen.PlayerData;
+import net.model2k.cultivatormod.network.ModNetwork;
 
 public class SetDashDistanceCommand {
         public SetDashDistanceCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -27,11 +28,11 @@ public class SetDashDistanceCommand {
         }
         private int execute(CommandContext<CommandSourceStack> context) {
             if(context.getSource().getPlayer() != null) {
-                Player player = context.getSource().getPlayer();
+                ServerPlayer player = context.getSource().getPlayer();
                 int distance = IntegerArgumentType.getInteger(context, "distance");
                 PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
                 data.setDash(distance);
-                data.syncStatsToClient(player);
+                ModNetwork.sendSyncPlayerData(player);
                 context.getSource().sendSuccess(() -> Component.literal("Dash set to: " + distance), true);
             } return 1;
         }

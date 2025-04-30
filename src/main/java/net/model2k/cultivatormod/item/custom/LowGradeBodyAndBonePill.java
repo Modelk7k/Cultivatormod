@@ -28,7 +28,7 @@ public class LowGradeBodyAndBonePill extends Item {
                 livingEntity.getAttribute(Attributes.MAX_HEALTH).setBaseValue(data.getHealth());
                 livingEntity.heal(20);
                 data.realmChecker((Player) livingEntity);
-                data.syncStatsToClient((Player)livingEntity);
+                ModNetwork.sendSyncPlayerData((ServerPlayer) livingEntity);
                 usedTimes++;
             }
             if (usedTimes >= 1) {

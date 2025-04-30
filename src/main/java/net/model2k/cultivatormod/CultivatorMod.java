@@ -1,6 +1,8 @@
 package net.model2k.cultivatormod;
 
 import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.model2k.cultivatormod.advancement.ModAdvancements;
 import net.model2k.cultivatormod.block.ModBlocks;
@@ -8,6 +10,7 @@ import net.model2k.cultivatormod.block.entity.ModBlockEntities;
 import net.model2k.cultivatormod.command.TeleportToDimensionCommand;
 import net.model2k.cultivatormod.component.ModDataComponents;
 import net.model2k.cultivatormod.datagen.ModAttachments;
+import net.model2k.cultivatormod.dimension.ModDimensions;
 import net.model2k.cultivatormod.effect.ModEffects;
 import net.model2k.cultivatormod.entity.ModEntities;
 import net.model2k.cultivatormod.entity.client.MindlessSlimeRenderer;
@@ -59,7 +62,6 @@ public class CultivatorMod
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
     private void commonSetup(final FMLCommonSetupEvent event) {
-
     }
     private void addCreative(BuildCreativeModeTabContentsEvent event) {
         if(event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
@@ -67,7 +69,10 @@ public class CultivatorMod
     }
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
-        TeleportToDimensionCommand.loadWarpPoints();
+        MinecraftServer server = event.getServer();
+        for (ServerLevel world : server.getAllLevels()) {
+            TeleportToDimensionCommand.loadWarpPoints(server, world.dimension());
+        }
     }
     @EventBusSubscriber(modid = MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents {

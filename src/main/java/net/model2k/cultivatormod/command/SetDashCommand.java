@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.model2k.cultivatormod.datagen.ModAttachments;
 import net.model2k.cultivatormod.datagen.PlayerData;
+import net.model2k.cultivatormod.network.ModNetwork;
 
 public class SetDashCommand {
     public SetDashCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -31,7 +32,7 @@ public class SetDashCommand {
             int value = IntegerArgumentType.getInteger(context, "enabled");
             boolean enabled = value == 1;
             PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
-            data.syncStatsToClient(player);
+            ModNetwork.sendSyncPlayerData(player);
             data.setCanDash(enabled);
             context.getSource().sendSuccess(() ->
                     Component.literal("Dash has been " + (enabled ? "enabled." : "disabled.")), true);

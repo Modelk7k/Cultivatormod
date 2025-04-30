@@ -11,6 +11,7 @@ import net.minecraft.world.entity.player.Player;
 import net.model2k.cultivatormod.datagen.ModAttachments;
 import net.model2k.cultivatormod.datagen.PlayerData;
 import net.model2k.cultivatormod.event.ModServerEvents;
+import net.model2k.cultivatormod.network.ModNetwork;
 
 public class SetSpeedCommand {
     public SetSpeedCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -32,8 +33,8 @@ public class SetSpeedCommand {
             int speed = IntegerArgumentType.getInteger(context, "speed");
             PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
             data.setSpeed(speed);
-            data.syncStatsToClient(player);
             data.applySpeedToPlayer(player);
+            ModNetwork.sendSyncPlayerData(player);
             context.getSource().sendSuccess(() -> Component.literal("Speed set to: " + speed), true);
         } return 1;
     }

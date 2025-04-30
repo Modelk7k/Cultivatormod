@@ -28,7 +28,7 @@ public class SetQiCommand {
         PlayerData data = context.getSource().getPlayer().getData(ModAttachments.PLAYER_DATA);
         if (IntegerArgumentType.getInteger(context, "amount") <= data.getMaxQi()) {
             data.setQi(IntegerArgumentType.getInteger(context, "amount"));
-            data.syncStatsToClient(context.getSource().getPlayer());
+            ModNetwork.sendSyncPlayerData(context.getSource().getPlayer());
             return 1;
         }else {
             context.getSource().sendFailure((Component.literal("Cannot set above your max qi")));

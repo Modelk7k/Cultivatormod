@@ -54,7 +54,9 @@ public class LightningStaff extends Item {
     @Override
     public InteractionResult useOn(UseOnContext context) {
         Level level = context.getLevel();
-        Player player = context.getPlayer();
+        if (!(context.getPlayer() instanceof ServerPlayer player)) {
+            return InteractionResult.PASS;
+        }
         PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
         BlockPos pos = context.getClickedPos();
         int maxQi = data.getMaxQi();
@@ -65,13 +67,13 @@ public class LightningStaff extends Item {
             lastUseTime = currentTime;
             if(!player.isCreative()) {
                 data.setQi(data.getQi() - qiCost);
-                data.syncStatsToClient(player);
+                ModNetwork.sendSyncPlayerData(player);
             }
             List<BlockPos> boltPositions = new java.util.ArrayList<>();
             int radius = 2;
             for (int dx = -radius; dx <= radius; dx++) {
                 for (int dz = -radius; dz <= radius; dz++) {
-                    if (Math.abs(dx) + Math.abs(dz) <= radius) { // Diamond-shaped
+                    if (Math.abs(dx) + Math.abs(dz) <= radius) {
                         boltPositions.add(pos.offset(dx, 0, dz));
                     }
                 }

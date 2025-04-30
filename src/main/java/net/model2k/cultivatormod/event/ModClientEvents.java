@@ -1,17 +1,37 @@
 package net.model2k.cultivatormod.event;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextColor;
 import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.Fluids;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.model2k.cultivatormod.CultivatorMod;
 import net.model2k.cultivatormod.datagen.ModAttachments;
@@ -23,16 +43,19 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.*;
-import net.neoforged.neoforge.event.entity.player.PlayerXpEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import org.joml.Matrix4f;
+import org.joml.Vector4f;
 
+import java.util.List;
 
 @EventBusSubscriber(modid = CultivatorMod.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
 public class ModClientEvents {
-    private static int lastExperienceLevel = 0;
     @SubscribeEvent
     public static void onRenderGui(RenderGuiEvent.Post event) {
+        if (!PlayerStatsClient.isHasSynced()) return;
         Minecraft mc = Minecraft.getInstance();
+        GuiGraphics gui = event.getGuiGraphics();
         int screenHeight = mc.getWindow().getGuiScaledHeight();
         int screenWidth = mc.getWindow().getGuiScaledWidth();
         int barWidth = 180;
@@ -41,18 +64,18 @@ public class ModClientEvents {
         // Hotbar metrics
         int hotbarHeight = 22;
         int hotbarOffset = 4;
-        // Positioning base: stack above hotbar
         int bottomOfHotbarY = screenHeight - hotbarOffset;
         int topOfHotbarY = bottomOfHotbarY - hotbarHeight;
-        // Stack bars in correct order: Spirit on top, Qi in middle, Health at the bottom
-        int healthBarY = topOfHotbarY - barHeight - spacing; // Health at the bottom
-        int qiBarY = healthBarY - barHeight - spacing;       // Qi in the middle
-        int spiritBarY = qiBarY - barHeight - spacing;       // Spirit at the top
+        int healthBarY = topOfHotbarY - barHeight - spacing;
+        int qiBarY = healthBarY - barHeight - spacing;
+        int spiritBarY = qiBarY - barHeight - spacing;
         int barX = (screenWidth - barWidth) / 2;
+        displayLookedAtInfo(mc, event.getGuiGraphics().pose(), screenWidth, screenHeight);
+        if(mc.player.isCreative()){return;}
         // === Health Bar (Bottom) ===
-        float health = mc.player.getHealth();
-        float maxHealth = mc.player.getMaxHealth();
-        float healthRatio = Math.min(health / maxHealth, 1.0f);
+        float health = PlayerStatsClient.getHealth() < 1 ? 20 : PlayerStatsClient.getHealth();
+        float maxHealth = PlayerStatsClient.getMaxHealth() < 1 ? 20 : PlayerStatsClient.getMaxHealth();
+        float healthRatio = maxHealth > 0 ? Math.min(health / maxHealth, 1.0f) : 0.0f;
         int healthFillWidth = (int) (barWidth * healthRatio);
         event.getGuiGraphics().fill(barX, healthBarY, barX + barWidth, healthBarY + barHeight, 0xFF333333);
         event.getGuiGraphics().fill(barX, healthBarY, barX + healthFillWidth, healthBarY + barHeight, 0xFFFF0000);
@@ -71,25 +94,34 @@ public class ModClientEvents {
         event.getGuiGraphics().fill(barX, spiritBarY, barX + barWidth, spiritBarY + barHeight, 0xFF333333);
         event.getGuiGraphics().fill(barX, spiritBarY, barX + spiritFillWidth, spiritBarY + barHeight, 0xFF00FFFF);
         // === Experience Level (Left of Health Bar) ===
-        int experienceLevel = lastExperienceLevel;
-        if(lastExperienceLevel == 0) {
-            experienceLevel = mc.player.experienceLevel;
-        }
-        int experienceLevelX = barX - 15;
+        int experienceLevel = mc.player.experienceLevel;
+        int experienceLevelX = barX - 20;
         int experienceLevelY = healthBarY + (barHeight / 2) - 4;
-        Component text = Component.literal("" + experienceLevel)
-                .setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0x00FF00)));
+        Component text = Component.literal("" + experienceLevel).setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0x00FF00)));
         Font font = Minecraft.getInstance().font;
         event.getGuiGraphics().drawString(font, text, experienceLevelX, experienceLevelY, 0x00FF00);
+        // === Breathe Bar ===
+        float breathe = mc.player.getAirSupply();
+        if(mc.player.isUnderWater() || breathe != 300) {
+            float maxBreathe = 300.0f;
+            float breatheRatio = Math.min(breathe / maxBreathe, 1.0f);
+            int breatheBarWidth = 8;
+            int breatheBarHeight = 20;
+            int breatheFillHeight = (int) (breatheRatio * breatheBarHeight);
+            int customXPTextY = healthBarY + barHeight / 2;
+            int breatheBarX = (screenWidth / 2 - breatheBarWidth / 2) + 99;
+            int breatheBarY = customXPTextY + 10;
+            breatheBarY = Math.min(breatheBarY, screenHeight - breatheBarHeight);
+            breatheBarX = Math.min(breatheBarX, screenWidth - breatheBarWidth);
+            breatheBarY = Math.max(breatheBarY, 0);
+            breatheBarX = Math.max(breatheBarX, 0);
+            event.getGuiGraphics().fill(breatheBarX, breatheBarY, breatheBarX + breatheBarWidth, breatheBarY + breatheBarHeight, 0xFF333333);
+            event.getGuiGraphics().fill(breatheBarX, breatheBarY + breatheBarHeight - breatheFillHeight, breatheBarX + breatheBarWidth, breatheBarY + breatheBarHeight, 0xFF00008B); // Dark blue
+        }
+
     }
     @SubscribeEvent
-    public static void onXpChange(PlayerXpEvent.XpChange event) {
-        event.getEntity();
-        Player player = event.getEntity();
-        lastExperienceLevel = player.experienceLevel;
-    }
-    @SubscribeEvent
-    public static void onRenderHealthBar(RenderGuiLayerEvent.Pre event) {
+    public static void onRenderVanillaGui(RenderGuiLayerEvent.Pre event) {
         if (event.getName().toString().equals("minecraft:player_health")) {
             event.setCanceled(true);
         }
@@ -104,6 +136,23 @@ public class ModClientEvents {
         }
         if(event.getName().toString().equals("minecraft:air_level")){
             event.setCanceled(true);
+        }
+        if(event.getName().toString().equals("minecraft:crosshair")){
+            event.setCanceled(false);
+        }
+        if(event.getName().toString().equals("minecraft:selected_item_name")){
+            event.setCanceled(true);
+        }
+        if(event.getName().toString().equals("minecraft:air_level")){
+            event.setCanceled(true);
+        }
+        if(event.getName().toString().equals("minecraft:hotbar")){
+            ResourceLocation HOTBAR_TEXTURE = ResourceLocation.parse("cultivatormod:textures/gui/hud/hotbar.png");
+            Minecraft mc = Minecraft.getInstance();
+            GuiGraphics guiGraphics = event.getGuiGraphics();
+            int x = (mc.getWindow().getGuiScaledWidth() - 182) / 2; // center like vanilla
+            int y = mc.getWindow().getGuiScaledHeight() - 22;       // adjust Y if needed
+            guiGraphics.blit(HOTBAR_TEXTURE, x, y, 0, 0, 184, 24, 184, 24);
         }
     }
     @SubscribeEvent
@@ -168,9 +217,57 @@ public class ModClientEvents {
             }
         }
         if (ModKeyBinds.DASH_KEY.consumeClick() && PlayerStatsClient.getCanDash()) {
-            ClientPacketListener connection = Minecraft.getInstance().getConnection();
-            if (connection != null) {
-                connection.send(new ServerboundCustomPayloadPacket(DashPacket.INSTANCE));            }
+            BlockPos below = player.blockPosition().below();
+            Block blockBelow = player.level().getBlockState(below).getBlock();
+            if (player.onGround() || blockBelow == Blocks.WATER || blockBelow == Blocks.LAVA) {
+                ClientPacketListener connection = Minecraft.getInstance().getConnection();
+                if (connection != null) {
+                    connection.send(new ServerboundCustomPayloadPacket(DashPacket.INSTANCE));            }
+            }else if(PlayerStatsClient.isCanFly() || player.isCreative()) {
+                ClientPacketListener connection = Minecraft.getInstance().getConnection();
+                if (connection != null) {
+                    connection.send(new ServerboundCustomPayloadPacket(DashPacket.INSTANCE));
+                }
+            }
+        }
+
+    }
+    private static void displayLookedAtInfo(Minecraft mc, PoseStack poseStack, int screenWidth, int screenHeight) {
+        if (mc.player != null && mc.level != null) {
+            Vec3 eyePos = mc.player.getEyePosition(1.0F);
+            Vec3 lookVec = mc.player.getViewVector(1.0F);
+            Vec3 reachVec = eyePos.add(lookVec.scale(2.5D));
+            HitResult hit = mc.level.clip(new ClipContext(eyePos, reachVec, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, mc.player));
+            Component text = null;
+            if (hit != null && hit.getType() == HitResult.Type.BLOCK) {
+                BlockHitResult blockHit = (BlockHitResult) hit;
+                BlockState state = mc.level.getBlockState(blockHit.getBlockPos());
+                String modId = state.getBlock().getDescriptionId().toString();
+                text = Component.literal(modId.toUpperCase());
+            }
+            if (hit == null || hit.getType() != HitResult.Type.BLOCK) {
+                List<Entity> entities = mc.level.getEntities(mc.player, mc.player.getBoundingBox().expandTowards(lookVec.scale(5.0D)), e -> e instanceof LivingEntity); // Filter for living entities
+                for (Entity entity : entities) {
+                    Vec3 entityPos = entity.getPosition(1.0F);
+                    double distance = eyePos.distanceTo(entityPos);
+                    if (distance < 2.5D && entity.getBoundingBox().intersects(eyePos, reachVec)) {
+                        String entityName = entity.getEncodeId().toString();
+                        text = Component.literal(entityName.toUpperCase());
+                        break;
+                    }
+                }
+            }
+            if (text != null) {
+                Font font = mc.font;
+                int x = (screenWidth / 2) - (font.width(text) / 2);
+                int y = 10;
+                Matrix4f matrix4f = poseStack.last().pose();
+                MultiBufferSource.BufferSource bufferSource = mc.renderBuffers().bufferSource();
+                font.drawInBatch(
+                        text, x, y, 0xFFFFFF, false, matrix4f, bufferSource, Font.DisplayMode.NORMAL, 0, 15728880
+                );
+                bufferSource.endBatch();
+            }
         }
     }
     private static void handleWaterWalking(Player player) {
@@ -178,7 +275,7 @@ public class ModClientEvents {
         if (player.isShiftKeyDown() && !player.isHolding(ModItems.BAODING_BALLS.get())) return;
         Vec3 feet = player.position();
         double velocityY = player.getDeltaMovement().y;
-        double checkDistance = Math.max(1.5, -velocityY * 2); // Increase depth based on falling speed
+        double checkDistance = Math.max(0.5, -velocityY * 1.2); // Increase depth based on falling speed
         Vec3 down = feet.add(0, -checkDistance, 0);
         var result = player.level().clip(new net.minecraft.world.level.ClipContext(
                 feet,

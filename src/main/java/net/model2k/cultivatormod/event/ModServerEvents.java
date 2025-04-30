@@ -51,7 +51,6 @@ public class ModServerEvents {
         if (!player.level().isClientSide) {
             PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
             ModNetwork.sendSyncPlayerData(player);
-            data.syncStatsToClient(player);
             String prefix = data.getChatPrefix();
             ChatPrefixHandler.setPrefix(player.getUUID(), prefix, player);
             String nickname = data.getNickName();
@@ -80,34 +79,71 @@ public class ModServerEvents {
             if (data.getQiType("Fire Qi")) {
                 player.getAttribute(Attributes.BURNING_TIME).setBaseValue(0);
             }
-            if (!player.level().isClientSide() && data.getCanFly()) {
+            if (!player.level().isClientSide && data.getCanFly()) {
                 player.getAbilities().mayfly = true;  // Allow flying
                 player.onUpdateAbilities();
             }
             if (data.getSpeed() > 0) {
                 data.applySpeedToPlayer(player);
             }
+            ModNetwork.sendSyncPlayerData(player);
         }
     }
     @SubscribeEvent
     private static void livingDamage(LivingDamageEvent.Pre event) {
-        Entity sheep = null;
         DamageSource source = event.getSource();
-        if (event.getEntity() instanceof Sheep && event.getSource().getDirectEntity() instanceof Player player && player.isHolding(ModItems.BAODING_BALLS.get())) {
-            sheep = event.getEntity();
+        int damage = (int) event.getOriginalDamage();
+         if(event.getSource().getDirectEntity() instanceof ServerPlayer player && !player.level().isClientSide){
+            long day = player.level().getGameTime() / 24000L;
+            PlayerData data = event.getSource().getDirectEntity().getData(ModAttachments.PLAYER_DATA);
+            if (data.getRace("Werewolf")) {
+                if(day % 8 == 0) {
+                    event.setNewDamage(event.getOriginalDamage() + data.getMaxQi());
+                }
+            }
+            if(data.getRace("Vampire")){
+                long timeOfDay = player.level().getDayTime() % 24000L;
+                boolean isNight = timeOfDay >= 13000L && timeOfDay <= 23000L;
+                boolean isDay = timeOfDay >= 0 && timeOfDay <= 12000;
+                if(isNight){
+                    event.setNewDamage(event.getOriginalDamage() + data.getMaxQi());
+                }else if(isDay){
+                    event.setNewDamage((event.getOriginalDamage() + data.getMaxQi())/2);
+                }
+            }
+        }
+        if (event.getEntity() instanceof Sheep && event.getEntity()  instanceof Player player && player.isHolding(ModItems.BAODING_BALLS.get())) {
+            LivingEntity sheep = event.getEntity();
             sheep.kill();
             sheep.level().explode(sheep, sheep.getX(), sheep.getY(), sheep.getZ(), 30, true, Level.ExplosionInteraction.TNT);
         }
-        if (event.getEntity() instanceof Player player) {
-            event.setNewDamage(event.getOriginalDamage() - event.getEntity().getData(ModAttachments.PLAYER_DATA).getDefense());
-        }
-        if (event.getEntity() instanceof Player player && source.is(DamageTypeTags.IS_FIRE) && player.getData(ModAttachments.PLAYER_DATA).getQiType("Fire Qi")) {
-            if (player.getData(ModAttachments.PLAYER_DATA).getMajorRealm() > 0) {
+        if (event.getEntity() instanceof ServerPlayer player && source.is(DamageTypeTags.IS_FIRE) && player.getData(ModAttachments.PLAYER_DATA).getQiType("Fire Qi")) {
+            PlayerData data = event.getEntity().getData(ModAttachments.PLAYER_DATA);
+            if (data.getMajorRealm() > 0) {
                 event.setNewDamage(0);
                 player.getAttribute(Attributes.BURNING_TIME).setBaseValue(0);
             } else {
-                event.setNewDamage(event.getOriginalDamage() / 3);
+                event.setNewDamage(0);
+                data.setHealth(data.getHealth() - damage);
+                ModNetwork.sendSyncPlayerData((ServerPlayer) player);
             }
+        }
+        if (event.getEntity() instanceof ServerPlayer player) {
+            PlayerData data = event.getEntity().getData(ModAttachments.PLAYER_DATA);
+            event.setNewDamage(0);
+            int originalDamage = (int) event.getOriginalDamage();
+            int defense = data.getDefense();
+            int qi = data.getQi();
+            int potentialBlock = Math.min(defense, originalDamage);
+            int actualBlock = Math.min(qi, potentialBlock);
+            data.setQi(qi - actualBlock);
+            int damageAfterBlock = originalDamage - actualBlock;
+            int newHealth = data.getHealth() - damageAfterBlock;
+            data.setHealth(Math.max(newHealth, 0));
+            if (data.getHealth() <= 0) {
+                event.getEntity().setHealth(0);
+            }
+            ModNetwork.sendSyncPlayerData(player);
         }
     }
     @SubscribeEvent
@@ -140,6 +176,8 @@ public class ModServerEvents {
         new SetDashDistanceCommand(event.getDispatcher());
         new HealCommand(event.getDispatcher());
         new SetHealthCommand(event.getDispatcher());
+        new SetMajorRealmCommand(event.getDispatcher());
+        new SetMinorRealmCommand(event.getDispatcher());
         event.getDispatcher().register(
                 Commands.literal("kill")
                         .then(Commands.argument("targets", EntityArgument.players())
@@ -174,7 +212,7 @@ public class ModServerEvents {
     }
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event) {
-        if (event.getEntity() != null && !event.getEntity().level().isClientSide()) {
+        if (event.getEntity() != null && !event.getEntity().level().isClientSide) {
             ServerPlayer player = (ServerPlayer) event.getEntity();
             PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
             data.charge(player);
@@ -255,10 +293,11 @@ public class ModServerEvents {
         ServerPlayer player = (ServerPlayer) event.getEntity();
         if (!player.level().isClientSide) {
             PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
-            data.syncStatsToClient(player);
+            ModNetwork.sendSyncPlayerData(player);
             String prefix = data.getChatPrefix();
             ChatPrefixHandler.setPrefix(player.getUUID(), prefix, player);
             String nickname = data.getNickName();
+            data.setHealth(data.getMaxHealth());
             if (nickname != null && !nickname.isEmpty()) {
                 ChatPrefixHandler.setNickname(player.getUUID(), nickname, (ServerPlayer) player);
             }
@@ -284,7 +323,7 @@ public class ModServerEvents {
             if (data.getQiType("Fire Qi")) {
                 player.getAttribute(Attributes.BURNING_TIME).setBaseValue(0);
             }
-            if (!player.level().isClientSide() && data.getCanFly()) {
+            if (!player.level().isClientSide && data.getCanFly()) {
                 player.getAbilities().mayfly = true;  // Allow flying
                 player.onUpdateAbilities();
             }

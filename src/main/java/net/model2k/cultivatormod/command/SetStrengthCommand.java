@@ -24,10 +24,11 @@ public class SetStrengthCommand {
                                 .executes(this::execute))));
     }
     private int execute(CommandContext<CommandSourceStack> context) {
-        PlayerData data = context.getSource().getPlayer().getData(ModAttachments.PLAYER_DATA);
+        ServerPlayer player = context.getSource().getPlayer();
+        PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
         data.setStrength(IntegerArgumentType.getInteger(context, "amount"));
         context.getSource().sendSuccess(() -> Component.literal("Strength set to " + data.getStrength()), true);
-        data.syncStatsToClient(context.getSource().getPlayer());
+        ModNetwork.sendSyncPlayerData(player);
         return 1;
     }
 }

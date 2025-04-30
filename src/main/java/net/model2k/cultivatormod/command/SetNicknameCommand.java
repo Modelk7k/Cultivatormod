@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.model2k.cultivatormod.datagen.ModAttachments;
 import net.model2k.cultivatormod.datagen.PlayerData;
+import net.model2k.cultivatormod.network.ModNetwork;
 import net.model2k.cultivatormod.util.ChatPrefixHandler;
 
 public class SetNicknameCommand {
@@ -28,7 +29,7 @@ public class SetNicknameCommand {
         String rawNickname = StringArgumentType.getString(context, "nickname");
         PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
         data.setNickName(rawNickname);  // Save the nickname to player data
-        data.syncStatsToClient(player);  // Sync data with client
+        ModNetwork.sendSyncPlayerData(player);
         Component parsedNickname = ChatPrefixHandler.parseFormattedPrefix(rawNickname);
         ChatPrefixHandler.setNickname(player.getUUID(), rawNickname, player);
         context.getSource().sendSuccess(

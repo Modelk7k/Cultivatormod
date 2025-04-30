@@ -56,7 +56,7 @@ public class JadeFurnaceEntity extends BlockEntity implements MenuProvider {
                 if (data.getQi() - QiCost >= 0) {
                     if (hasRecipe()) {
                         data.setQi(data.getQi() - QiCost);
-                        data.syncStatsToClient(CurrentPlayer);
+                        ModNetwork.sendSyncPlayerData((ServerPlayer)CurrentPlayer);
                     }
                 }
             }

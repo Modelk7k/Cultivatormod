@@ -1,8 +1,8 @@
 package net.model2k.cultivatormod.network.packet;
 
 public class PlayerStatsClient {
-    private static int qi, maxQi, spiritPower, maxSpiritPower,speed, jump, Dash,JumpLevel, SpeedLevel;
-    private static boolean WalkOnWater, canDash;
+    private static int MaxHealth, Health, qi, maxQi, spiritPower, maxSpiritPower,speed, jump, Dash,JumpLevel, SpeedLevel;
+    private static boolean WalkOnWater, canDash, HasSynced, CanFly;
 
     public static int getSpeed() { return speed; }
     public static int getJump() { return jump; }
@@ -26,4 +26,24 @@ public class PlayerStatsClient {
     public static void setSpeedLevel(int speedLevel) {SpeedLevel = speedLevel;}
     public static int getJumpLevel() {return JumpLevel;}
     public static void setJumpLevel(int jumpLevel) {JumpLevel = jumpLevel;}
+    public static int getMaxHealth() {return MaxHealth;}
+    public static void setMaxHealth(int maxHealth) {MaxHealth = maxHealth;}
+    public static int getHealth() {
+        return Health;
+    }
+    public static void setHealth(int health) {
+        Health = health;
+    }
+    public static boolean isHasSynced() {
+        return HasSynced;
+    }
+    public static void setHasSynced(boolean hasSynced) {
+        HasSynced = hasSynced;
+    }
+    public static boolean isCanFly() {
+        return CanFly;
+    }
+    public static void setCanFly(boolean fly) {
+        CanFly = fly;
+    }
 }

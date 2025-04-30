@@ -22,9 +22,10 @@ public class SetMaxSpiritPowerCommand {
                                 .executes(this::execute))));
     }
     private int execute(CommandContext<CommandSourceStack> context) {
-        PlayerData data = context.getSource().getPlayer().getData(ModAttachments.PLAYER_DATA);
+        ServerPlayer player = context.getSource().getPlayer();
+        PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
         data.setMaxSpiritPower(IntegerArgumentType.getInteger(context, "amount"));
-        data.syncStatsToClient(context.getSource().getPlayer());
+        ModNetwork.sendSyncPlayerData(player);
         return 1;
     }
 }

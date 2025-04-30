@@ -24,6 +24,8 @@ public class ModNetwork {
                 SyncPlayerDataPacket.STREAM_CODEC,
                 (packet, context) -> {
                     context.enqueueWork(() -> {
+                        int maxHealth = packet.getMaxHealth();
+                        int health = packet.getHealth();
                         int qi = packet.getQi();
                         int maxQi = packet.getMaxQi();
                         int maxSpiritPower = packet.getMaxSpiritPower();
@@ -35,6 +37,9 @@ public class ModNetwork {
                         int speedLevel = packet.getSpeedLevel();
                         boolean canDash = packet.getCanDash();
                         boolean walkOnWater = packet.getWalkOnWater();
+                        boolean canFly = packet.getCanFly();
+                        PlayerStatsClient.setMaxHealth(maxHealth);
+                        PlayerStatsClient.setHealth(health);
                         PlayerStatsClient.setQi(qi);
                         PlayerStatsClient.setMaxQi(maxQi);
                         PlayerStatsClient.setSpiritPower(spiritPower);
@@ -46,6 +51,9 @@ public class ModNetwork {
                         PlayerStatsClient.setSpeedLevel(speedLevel);
                         PlayerStatsClient.setCanDash(canDash);
                         PlayerStatsClient.setWalkOnWater(walkOnWater);
+                        PlayerStatsClient.setCanFly(canFly);
+                        PlayerStatsClient.setHasSynced(true);
+
                     });
                 }
         );
@@ -92,6 +100,7 @@ public class ModNetwork {
                         ServerPlayer player = (ServerPlayer) context.player();
                         if (player != null && player.isAlive() && !player.level().isClientSide()) {
                             PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
+                            data.toggleSpeedLevel(player);
                             data.applySpeedToPlayer(player);
                         }
                     });
@@ -105,8 +114,7 @@ public class ModNetwork {
                         ServerPlayer player = (ServerPlayer) context.player();
                         if (player != null && player.isAlive() && !player.level().isClientSide()) {
                             PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
-                            data.jumpLogic(player);
-                            data.jumpPercentMessage(player, data.getJumpStrength());
+                            data.toggleJumpLevel(player);
                         }
                     });
                 }
@@ -115,6 +123,8 @@ public class ModNetwork {
     public static void sendSyncPlayerData(ServerPlayer player) {
         var data = player.getData(ModAttachments.PLAYER_DATA);
         var packet = new SyncPlayerDataPacket(
+                data.getMaxHealth(),
+                data.getHealth(),
                 data.getQi(),
                 data.getMaxQi(),
                 data.getSpiritPower(),
@@ -125,7 +135,8 @@ public class ModNetwork {
                 data.getJumpStrength(),
                 data.getSpeedLevel(),
                 data.getCanDash(),
-                data.getWalkOnWater()
+                data.getWalkOnWater(),
+                data.getCanFly()
         );
         player.connection.send(new ClientboundCustomPayloadPacket(packet));
     }

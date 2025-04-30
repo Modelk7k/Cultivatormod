@@ -13,21 +13,18 @@ import net.model2k.cultivatormod.advancement.RealmAdvancementTrigger;
 import net.model2k.cultivatormod.item.ModItems;
 import net.model2k.cultivatormod.network.ModNetwork;
 import net.neoforged.neoforge.common.util.INBTSerializable;
+import org.jetbrains.annotations.NotNull;
+
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class PlayerData implements INBTSerializable {
-    public int tick = 0;
-    private long lastDashTime = 0;
-    private int SpeedLevel = 1, JumpStrength = 1, Health = 20, Defense = 0, Jump = 0, Dash = 0, Speed = 0;
-    private int MinorRealm = 0, MajorRealm = 0, Strength = 0, Qi = 0, MaxQi = 10;
-    private int SpiritPower, MaxSpiritPower = 10, QiQuality = 0;
+    private int SpeedLevel = 1, JumpStrength = 1,MaxHealth = 20, Health = 20, Defense = 0, Jump = 0, Dash = 0, Speed = 0,  SpiritPower,
+            MaxSpiritPower = 10, QiQuality = 0, MinorRealm = 0, MajorRealm = 0, Strength = 0, Qi = 0, MaxQi = 10,tick = 0;
     private String Home = "", NickName = "", ChatPrefix = "", ChatColor = "";
     private boolean CanFly = false, WalkOnWater = false, CanDash = false, FirstQiType = false;
-    private Map<String, Boolean> QiType = new HashMap<>();
-    private Map<String, Boolean> Body = new HashMap<>();
-    private Map<String, Boolean> Principles = new HashMap<>();
-    private Map<String, Boolean> Race = new HashMap<>();
+    private final Map<String, Boolean> QiType = new HashMap<>(), Body = new HashMap<>(), Principles = new HashMap<>(), Race = new HashMap<>();
     public PlayerData() {
         //QiTypes
         QiType.put("Earth Qi", false);
@@ -69,11 +66,11 @@ public class PlayerData implements INBTSerializable {
         //Beast SubRace
         Race.put("Dragon", false);
         Race.put("Phoenix", false);
-        Race.put("Werewolves", false);
+        Race.put("Werewolf", false);
         Race.put("Orc", false);
         Race.put("Ogre", false);
         //Undead SubRace
-        Race.put("Vampires", false);
+        Race.put("Vampire", false);
         Race.put("Zombie", false);
         //Elf SubRace
         Race.put("WoodElf", false);
@@ -120,6 +117,7 @@ public class PlayerData implements INBTSerializable {
                 ", CanFly=" + getCanFly() +
                 ", WalkOnWater=" + getWalkOnWater() +
                 ", CanDash=" + getCanDash() +
+                ", MaxHealth=" + getMaxHealth() +
                 ", Health=" + getHealth() +
                 ", Defense=" + getDefense() +
                 ", Speed=" + getSpeed() +
@@ -167,10 +165,10 @@ public class PlayerData implements INBTSerializable {
                 ", Dwarf=" + getRace("Dwarf") +
                 ", Dragon=" + getRace("Dragon") +
                 ", Phoenix=" + getRace("Phoenix") +
-                ", Werewolves=" + getRace("Werewolves") +
+                ", Werewolf=" + getRace("Werewolf") +
                 ", Orc=" + getRace("Orc") +
                 ", Ogre=" + getRace("Ogre") +
-                ", Vampires=" + getRace("Vampires") +
+                ", Vampire=" + getRace("Vampire") +
                 ", Zombie=" + getRace("Zombie") +
                 ", WoodElf=" + getRace("WoodElf") +
                 ", HighElf=" + getRace("HighElf") +
@@ -273,6 +271,12 @@ public class PlayerData implements INBTSerializable {
     public void setDash(int dash) {
         this.Dash = dash;
     }
+    public int getMaxHealth() {
+        return this.MaxHealth;
+    }
+    public void setMaxHealth(int health) {
+        this.MaxHealth = health;
+    }
     public int getHealth() {
         return this.Health;
     }
@@ -371,31 +375,32 @@ public class PlayerData implements INBTSerializable {
         this.Race.put(race, value)
         ;
     }
+    public Map<String, Boolean> getAllQiTypes() {
+        return this.QiType;
+    }
+    public Map<String, Boolean> getAllBodies() {
+        return this.Body;
+    }
+    public Map<String, Boolean> getAllPrinciples() {
+        return this.Principles;
+    }
+    public Map<String, Boolean> getAllSubRaces() {
+        return this.Race;
+    }
     public void charge(Player player) {
         tick++;
         if (tick >= 20) {
-            if (player.isHolding(ModItems.BAODING_BALLS.get()) && getQi() + qiChargeEfficiency() <= getMaxQi() && player.isShiftKeyDown()) {
-                setQi(getQi() + qiChargeEfficiency());
+            if (player.isHolding(ModItems.BAODING_BALLS.get()) && player.isShiftKeyDown()) {
+                int newQi = getQi() + qiChargeEfficiency();
+                setQi(Math.min(newQi, getMaxQi()));
+                int newSpiritPower = getSpiritPower() + spiritPowerChargeEfficiency();
+                setSpiritPower(Math.min(newSpiritPower, getMaxSpiritPower()));
+                int healingAmount = healEfficiency(player);
+                int currentHealth = getHealth();
+                int newHealth = currentHealth + healingAmount;
+                setHealth(Math.min(newHealth, getMaxHealth()));
                 realmChecker(player);
-                syncStatsToClient(player);
-                tick = 0;
-            }
-            if (player.isHolding(ModItems.BAODING_BALLS.get()) && getSpiritPower() + spiritPowerChargeEfficiency() <= getMaxSpiritPower() && player.isShiftKeyDown()) {
-                setSpiritPower(getSpiritPower() + spiritPowerChargeEfficiency());
-                realmChecker(player);
-                syncStatsToClient(player);
-                tick = 0;
-            }
-            if (player.isHolding(ModItems.BAODING_BALLS.get()) && getQi() + qiChargeEfficiency() > getMaxQi() && player.isShiftKeyDown()) {
-                setQi(getMaxQi());
-                realmChecker(player);
-                syncStatsToClient(player);
-                tick = 0;
-            }
-            if (player.isHolding(ModItems.BAODING_BALLS.get()) && getSpiritPower() + spiritPowerChargeEfficiency() > getMaxSpiritPower() && player.isShiftKeyDown()) {
-                setSpiritPower(getMaxSpiritPower());
-                realmChecker(player);
-                syncStatsToClient(player);
+                ModNetwork.sendSyncPlayerData((ServerPlayer) player);
                 tick = 0;
             }
         }
@@ -405,6 +410,9 @@ public class PlayerData implements INBTSerializable {
     }
     public int spiritPowerChargeEfficiency() {
         return getMaxSpiritPower() / 10;
+    }
+    public int healEfficiency(Player player) {
+        return (int) player.getMaxHealth() / 10;
     }
     public void realmChecker(Player player) {
         switch (getMajorRealm()) {
@@ -697,57 +705,55 @@ public class PlayerData implements INBTSerializable {
                 break;
         }
     }
-    public Map<String, Boolean> getAllQiTypes() {
-        return this.QiType;
-    }
-    public Map<String, Boolean> getAllBodies() {
-        return this.Body;
-    }
-    public Map<String, Boolean> getAllPrinciples() {
-        return this.Principles;
-    }
-    public Map<String, Boolean> getAllSubRaces() {
-        return this.Race;
-    }
     public void applySpeedToPlayer(Player player) {
-        float[] speedMultipliers = {1.0f, 5.0f, 7.5f, 10.0f};  // 1.0 = 25%, 5.0 = 50%, 7.5 = 75%, 10.0 = 100%
-        int currentToggle = getSpeedLevel();  // Should be between 0 and 3
-        int newToggle = (currentToggle + 1) % 4;  // Toggle through 0 to 3
-        setSpeedLevel(newToggle);
-        speedPercentMessage(player, newToggle);
-        float speedMultiplier = speedMultipliers[newToggle];
+        float[] speedMultipliers = {1.0f, 5.0f, 7.5f, 10.0f};
+        int currentToggle = getSpeedLevel();  // Just read, don't increment
+        float speedMultiplier = speedMultipliers[currentToggle];
+
         double baseWalkSpeed = 0.1;
         double baseFlySpeed = 0.05;
+
         double walkSpeed = baseWalkSpeed * speedMultiplier;
         double flySpeed = baseFlySpeed * speedMultiplier;
-        if (player.getAttribute(Attributes.MOVEMENT_SPEED) != null) {
-            player.getAttribute(Attributes.MOVEMENT_SPEED).setBaseValue(walkSpeed);
-            player.onUpdateAbilities();  // Ensure abilities are updated after applying speed
-        }
+
+        Objects.requireNonNull(player.getAttribute(Attributes.MOVEMENT_SPEED)).setBaseValue(walkSpeed);
+        player.onUpdateAbilities();
+
         if (getCanFly()) {
             player.getAbilities().setFlyingSpeed((float) flySpeed);
-            player.onUpdateAbilities();  // Ensure abilities are updated after applying fly speed
+            player.onUpdateAbilities();
         }
+
         ModNetwork.sendSyncPlayerData((ServerPlayer) player);
-        syncStatsToClient(player);
+    }
+    public void toggleSpeedLevel(Player player) {
+        int newToggle = (getSpeedLevel() + 1) % 4;
+        setSpeedLevel(newToggle);
+        speedPercentMessage(player, newToggle);
     }
     public void applyJumpBoost(Player player) {
-            if (player.getAttribute(Attributes.JUMP_STRENGTH) != null) {
-                player.getAttribute(Attributes.JUMP_STRENGTH).setBaseValue(jumpLogic(player));
-            }
+        float[] jumpMultipliers = {1.0f, 1.5f, 2.0f, 2.5f};
+        int currentToggle = getJumpStrength();
+        float jumpMultiplier = jumpMultipliers[currentToggle];
+        double baseJump = 0.42D;
+        double jumpStrength = baseJump * jumpMultiplier;
+        if (player.getAttribute(Attributes.JUMP_STRENGTH) != null) {
+            Objects.requireNonNull(player.getAttribute(Attributes.JUMP_STRENGTH)).setBaseValue(jumpStrength);
         }
+        ModNetwork.sendSyncPlayerData((ServerPlayer) player);
+    }
+    public void toggleJumpLevel(Player player) {
+        int currentToggle = getJumpStrength();
+        int newToggle = (currentToggle + 1) % 4;
+        setJumpStrength(newToggle);
+        jumpPercentMessage(player, newToggle);
+        applyJumpBoost(player);
+    }
     public void dashForward(Player player, int dashStrength) {
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - lastDashTime < 1000) return; // 1-second cooldown
         Vec3 lookVec = player.getLookAngle().normalize();
-        Vec3 dashVec = new Vec3(
-                lookVec.x * dashStrength,
-                lookVec.y * dashStrength,
-                lookVec.z * dashStrength
-        );
+        Vec3 dashVec = lookVec.scale(dashStrength);
         player.setDeltaMovement(dashVec);
         player.hurtMarked = true;
-        lastDashTime = currentTime;
     }
     private void speedPercentMessage(Player player, int speedLevel) {
         // Send a message to the player based on the new speed level
@@ -782,25 +788,8 @@ public class PlayerData implements INBTSerializable {
                 break;
         }
     }
-    public void syncStatsToClient(Player player) {
-        if (player instanceof ServerPlayer serverPlayer) {
-            ModNetwork.sendSyncPlayerData(serverPlayer); // Sends packet to actual client
-        }
-    }
-    public double jumpLogic(Player player){
-        float[] jumpMultipliers = {1.0f, 1.5f, 2.0f, 2.5f};
-        int currentToggle = getJumpStrength();
-        int newToggle = (currentToggle + 1) % 4;
-        setJumpStrength(newToggle);
-        float jumpMultiplier = jumpMultipliers[newToggle];
-        double baseJump = 0.42D;
-        double jumpStrength = baseJump * jumpMultiplier;
-        ModNetwork.sendSyncPlayerData((ServerPlayer)player);
-        syncStatsToClient(player);
-        return jumpStrength;
-    }
     @Override
-    public Tag serializeNBT(HolderLookup.Provider provider) {
+    public Tag serializeNBT(HolderLookup.@NotNull Provider provider) {
         CompoundTag tag = new CompoundTag();
         tag.putInt("SpeedLevel", getSpeedLevel());
         tag.putInt("JumpStrength", getJumpStrength());
@@ -811,6 +800,7 @@ public class PlayerData implements INBTSerializable {
         tag.putBoolean("CanFly", getCanFly());
         tag.putBoolean("WalkOnWater", getWalkOnWater());
         tag.putBoolean("CanDash", getCanDash());
+        tag.putInt("MaxHealth", getMaxHealth());
         tag.putInt("Health", getHealth());
         tag.putInt("Defense", getDefense());
         tag.putInt("Speed", getSpeed());
@@ -840,7 +830,7 @@ public class PlayerData implements INBTSerializable {
         return tag;
     }
     @Override
-    public void deserializeNBT(HolderLookup.Provider provider, Tag tag) {
+    public void deserializeNBT(HolderLookup.@NotNull Provider provider, @NotNull Tag tag) {
         if (tag instanceof CompoundTag compoundTag) {
             setSpeedLevel(compoundTag.getInt("SpeedLevel"));
             setJumpStrength(compoundTag.getInt("JumpStrength"));
@@ -851,6 +841,7 @@ public class PlayerData implements INBTSerializable {
             setCanFly(compoundTag.getBoolean("CanFly"));
             setWalkOnWater(compoundTag.getBoolean("WalkOnWater"));
             setCanDash(compoundTag.getBoolean("CanDash"));
+            setMaxHealth(compoundTag.getInt("MaxHealth"));
             setHealth(compoundTag.getInt("Health"));
             setDefense(compoundTag.getInt("Defense"));
             setSpeed(compoundTag.getInt("Speed"));

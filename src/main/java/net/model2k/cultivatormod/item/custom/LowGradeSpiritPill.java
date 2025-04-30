@@ -22,7 +22,7 @@ public class LowGradeSpiritPill extends Item {
             data.setMaxSpiritPower(data.getMaxSpiritPower() + 5);
             data.setSpiritPower(data.getMaxSpiritPower());
             data.realmChecker((Player) livingEntity);
-            data.syncStatsToClient((Player)livingEntity);
+            ModNetwork.sendSyncPlayerData((ServerPlayer) livingEntity);
             usedTimes++;
         }if (usedTimes >= 1 ) {
             usedTimes = 0;

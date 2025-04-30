@@ -10,29 +10,34 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.model2k.cultivatormod.datagen.ModAttachments;
 import net.model2k.cultivatormod.datagen.PlayerData;
+import net.model2k.cultivatormod.network.ModNetwork;
+
+import java.util.Objects;
 
 public class SetHealthCommand {
+
     public SetHealthCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
         register(dispatcher);
     }
     public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(
                 Commands.literal("set")
-                        .requires(source -> source.isPlayer() && source.getPlayer().getTags().contains("staff"))
-                        .then(Commands.literal("health")
-                                .then(Commands.argument("health", IntegerArgumentType.integer()) // Accepts spaces
-                                        .executes(context -> execute(context))
+                        .requires(source -> source.isPlayer() && Objects.requireNonNull(source.getPlayer()).getTags().contains("staff"))
+                        .then(Commands.literal("maxhealth")
+                                .then(Commands.argument("health", IntegerArgumentType.integer())
+                                        .executes(this::execute)
                                 )
                         )
         );
     }
     private int execute(CommandContext<CommandSourceStack> context) {
         ServerPlayer player = context.getSource().getPlayer();
+        assert player != null;
         PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
-        int health = IntegerArgumentType.getInteger(context, "health");
-        data.setHealth(health);
-        player.getAttribute(Attributes.MAX_HEALTH).setBaseValue(data.getHealth());
-        context.getSource().sendSuccess(() -> Component.literal("Health set to " + data.getHealth()),true);
+        int maxHealth = IntegerArgumentType.getInteger(context, "health");
+        data.setMaxHealth(maxHealth);
+        ModNetwork.sendSyncPlayerData(player);
+        context.getSource().sendSuccess(() -> Component.literal("Health set to " + data.getMaxHealth()),true);
         return 1;
     }
 }

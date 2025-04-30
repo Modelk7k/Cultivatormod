@@ -10,6 +10,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.model2k.cultivatormod.datagen.ModAttachments;
 import net.model2k.cultivatormod.datagen.PlayerData;
 import java.util.Map;
+import java.util.Objects;
 
 public class GetStatsCommand {
     public GetStatsCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -21,9 +22,10 @@ public class GetStatsCommand {
                         .requires(source -> {
                             if (!source.isPlayer()) return false;
                             ServerPlayer player = source.getPlayer();
+                            assert player != null;
                             return player.getTags().contains("staff");
                         })
-                        .executes(context -> execute(context, context.getSource().getPlayer()))
+                        .executes(context -> execute(context, Objects.requireNonNull(context.getSource().getPlayer())))
                         .then(Commands.argument("player", EntityArgument.player())
                                 .executes(context -> execute(context, EntityArgument.getPlayer(context, "player"))))
         );
@@ -54,18 +56,18 @@ public class GetStatsCommand {
                 source.sendSuccess(() -> Component.literal("• Qi Type: " + entry.getKey()), false);
             }
         }
-        source.sendSuccess(() -> Component.literal("• MinorRealm: " + data.getMinorRealm()), false);
-        source.sendSuccess(() -> Component.literal("• MajorRealm: " + data.getMajorRealm()), false);
+        source.sendSuccess(() -> Component.literal("• Minor Realm: " + data.getMinorRealm()), false);
+        source.sendSuccess(() -> Component.literal("• Major Realm: " + data.getMajorRealm()), false);
         source.sendSuccess(() -> Component.literal("• Qi Quality: " + data.getQiQuality()), false);
-        source.sendSuccess(() -> Component.literal("• CanFly: " + data.getCanFly()), false);
-        source.sendSuccess(() -> Component.literal("• WalkOnWater: " + data.getWalkOnWater()), false);
-        source.sendSuccess(() -> Component.literal("• Health: " + data.getHealth()), false);
+        source.sendSuccess(() -> Component.literal("• Health: " + data.getHealth() + " / " + data.getMaxHealth()), false);
         source.sendSuccess(() -> Component.literal("• Strength: " + data.getStrength()), false);
         source.sendSuccess(() -> Component.literal("• Defense: " + data.getDefense()), false);
         source.sendSuccess(() -> Component.literal("• Speed: " + data.getSpeed()), false);
         source.sendSuccess(() -> Component.literal("• Jump: " + data.getJump()), false);
+        source.sendSuccess(() -> Component.literal("• Dash: " + data.getDash()), false);
         source.sendSuccess(() -> Component.literal("• Qi: " + data.getQi() + " / " + data.getMaxQi()), false);
         source.sendSuccess(() -> Component.literal("• Spirit Power: " + data.getSpiritPower() + " / " + data.getMaxSpiritPower()), false);
+        source.sendSuccess(() -> Component.literal("• Walk On Water: " + data.getWalkOnWater() + "• Can Dash: " + data.getCanDash() + "• Can Fly: " + data.getCanFly()), false);
         return 1;
     }
 }

@@ -3,9 +3,7 @@ package net.model2k.cultivatormod.block.entity;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.model2k.cultivatormod.CultivatorMod;
-import net.model2k.cultivatormod.block.ModBlocks;
-import net.model2k.cultivatormod.block.custom.JadeFurnace;
-import net.neoforged.bus.api.IEventBus;
+import net.model2k.cultivatormod.block.ModBlocks;import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;

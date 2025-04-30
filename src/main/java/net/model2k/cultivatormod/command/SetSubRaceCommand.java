@@ -54,7 +54,7 @@ public class SetSubRaceCommand {
             data.setRace(sub, false);
         }
         data.setRace(matchedKey, true);
-        context.getSource().sendSuccess(() -> Component.literal("Your subrace has been set to: " + matchedKey), false);
+        context.getSource().sendSuccess(() -> Component.literal("Your subrace has been set to: " + matchedKey), true);
         return 1;
     }
 }

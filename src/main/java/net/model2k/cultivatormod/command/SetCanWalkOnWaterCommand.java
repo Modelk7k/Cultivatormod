@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.model2k.cultivatormod.datagen.ModAttachments;
 import net.model2k.cultivatormod.datagen.PlayerData;
+import net.model2k.cultivatormod.network.ModNetwork;
 
 public class SetCanWalkOnWaterCommand {
     public SetCanWalkOnWaterCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -30,7 +31,7 @@ public class SetCanWalkOnWaterCommand {
         int enabled = IntegerArgumentType.getInteger(context, "enabled");
         PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
         data.setWalkOnWater(enabled == 1);
-        data.syncStatsToClient(player);
+        ModNetwork.sendSyncPlayerData(player);
         context.getSource().sendSuccess(() ->
                 Component.literal("Water walk ability has been " + (enabled == 1 ? "enabled" : "disabled") + "."), false);
         return 1;

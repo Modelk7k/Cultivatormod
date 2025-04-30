@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.model2k.cultivatormod.datagen.ModAttachments;
 import net.model2k.cultivatormod.datagen.PlayerData;
+import net.model2k.cultivatormod.network.ModNetwork;
 import net.model2k.cultivatormod.util.ChatPrefixHandler;
 
 public class SetPrefixCommand {
@@ -30,7 +31,7 @@ public class SetPrefixCommand {
         if (!rawPrefix.endsWith("]")) rawPrefix = rawPrefix + "&r]";
         PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
         data.setChatPrefix(rawPrefix);
-        data.syncStatsToClient(player);
+        ModNetwork.sendSyncPlayerData(player);
         Component parsedPrefix = ChatPrefixHandler.parseFormattedPrefix(rawPrefix);
         context.getSource().sendSuccess(
                 () -> Component.literal("Set your prefix to: ").append(parsedPrefix),

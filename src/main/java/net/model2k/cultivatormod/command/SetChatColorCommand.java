@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.model2k.cultivatormod.datagen.ModAttachments;
 import net.model2k.cultivatormod.datagen.PlayerData;
+import net.model2k.cultivatormod.network.ModNetwork;
 import net.model2k.cultivatormod.util.ChatPrefixHandler;
 
 public class SetChatColorCommand {
@@ -26,7 +27,7 @@ public class SetChatColorCommand {
         String rawColor = StringArgumentType.getString(context, "color");
         PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
         data.setChatColor(rawColor);
-        data.syncStatsToClient(player);
+        ModNetwork.sendSyncPlayerData(player);
         ChatPrefixHandler.setChatColor(player.getUUID(), rawColor);
         Component parsedColor = ChatPrefixHandler.parseFormattedPrefix(rawColor + "Sample");
         Component feedbackMessage = Component.literal("Your chat color has been set to: ").append(parsedColor);
