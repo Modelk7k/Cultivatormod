@@ -23,10 +23,9 @@ public class LowGradeBodyAndBonePill extends Item {
             if (data.getMaxQi() < 100) {
                 data.setMaxQi(data.getMaxQi() + 5);
                 data.setStrength(data.getStrength() + 5);
-                data.setQi(data.getMaxQi());
-                data.setHealth(data.getHealth() + 5);
-                livingEntity.getAttribute(Attributes.MAX_HEALTH).setBaseValue(data.getHealth());
-                livingEntity.heal(20);
+                data.maxQi();
+                data.setHealth(data.getHealth() + 10);
+                data.setMaxHealth(data.getMaxHealth() + 5);
                 data.realmChecker((Player) livingEntity);
                 ModNetwork.sendSyncPlayerData((ServerPlayer) livingEntity);
                 usedTimes++;

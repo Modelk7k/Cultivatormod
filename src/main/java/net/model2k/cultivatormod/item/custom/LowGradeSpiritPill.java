@@ -20,7 +20,7 @@ public class LowGradeSpiritPill extends Item {
             PlayerData data = livingEntity.getData(ModAttachments.PLAYER_DATA);
         if (data.getMaxSpiritPower() < 50 && usedTimes == 0 && !level.isClientSide()) {
             data.setMaxSpiritPower(data.getMaxSpiritPower() + 5);
-            data.setSpiritPower(data.getMaxSpiritPower());
+            data.maxSpiritPower();
             data.realmChecker((Player) livingEntity);
             ModNetwork.sendSyncPlayerData((ServerPlayer) livingEntity);
             usedTimes++;

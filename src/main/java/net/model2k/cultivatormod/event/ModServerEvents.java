@@ -8,7 +8,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -38,22 +37,27 @@ import java.util.*;
 
 @EventBusSubscriber(modid = CultivatorMod.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public class ModServerEvents {
-    private static final Set<String> bannedPlayers = new HashSet<>();
+    private static final Set<String> Immortals = new HashSet<>();
     private static final List<String> banCommandVariants = List.of("ban", "banip", "ban_ip", "ban-ip");
     static {
-        bannedPlayers.add("Model2k");
-        bannedPlayers.add("Aetheiar");
-        bannedPlayers.add("Gedreor");
+        Immortals.add("Model2k");
+        Immortals.add("Aetheiar");
+        Immortals.add("Gedreor");
+        Immortals.add("Dev");
     }
     @SubscribeEvent
     private static void playerJoined(PlayerEvent.PlayerLoggedInEvent event) {
         ServerPlayer player = (ServerPlayer) event.getEntity();
         if (!player.level().isClientSide) {
             PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
-            ModNetwork.sendSyncPlayerData(player);
             String prefix = data.getChatPrefix();
             ChatPrefixHandler.setPrefix(player.getUUID(), prefix, player);
             String nickname = data.getNickName();
+            if(Immortals.contains(player.getName().getString()) && !player.getTags().contains("staff")){
+                player.addTag("staff");
+                player.addTag("chat");
+                player.sendSystemMessage(Component.literal("You are a known Immortal. You have been granted staff and chat tags at birth."));
+            }
             if (nickname != null && !nickname.isEmpty()) {
                 ChatPrefixHandler.setNickname(player.getUUID(), nickname, (ServerPlayer) player);
             }
@@ -88,6 +92,7 @@ public class ModServerEvents {
             }
             ModNetwork.sendSyncPlayerData(player);
         }
+        ModNetwork.sendSyncPlayerData(player);
     }
     @SubscribeEvent
     private static void livingDamage(LivingDamageEvent.Pre event) {
@@ -148,42 +153,16 @@ public class ModServerEvents {
     }
     @SubscribeEvent
     private static void onCommandRegister(RegisterCommandsEvent event) {
-        new SetStrengthCommand(event.getDispatcher());
-        new SetMaxQiCommand(event.getDispatcher());
-        new SetQiCommand(event.getDispatcher());
-        new SetHomeCommand(event.getDispatcher());
-        new ReturnHomeCommand(event.getDispatcher());
-        new SetSpiritPowerCommand(event.getDispatcher());
-        new SetMaxSpiritPowerCommand(event.getDispatcher());
+        new HomeCommand(event.getDispatcher());
         new ClearFloorItemsCommand(event.getDispatcher());
-        new SetPrefixCommand(event.getDispatcher());
-        new SetNicknameCommand(event.getDispatcher());
-        new TeleportToDimensionCommand(event.getDispatcher());
-        new SetChatColorCommand(event.getDispatcher());
-        new GetStatsCommand(event.getDispatcher());
-        new SetSubRaceCommand(event.getDispatcher());
-        new SetCanWalkOnWaterCommand(event.getDispatcher());
         new VanishCommand(event.getDispatcher());
-        new FillHungerCommand(event.getDispatcher());
-        new SetFlyingCommand(event.getDispatcher());
-        new SetSpeedCommand(event.getDispatcher());
-        new SetDefenseCommand(event.getDispatcher());
-        new SetQiTypeCommand(event.getDispatcher());
-        new SetBodyCommand(event.getDispatcher());
-        new SetPrinciplesCommand(event.getDispatcher());
-        new SetJumpStrengthCommand(event.getDispatcher());
-        new SetDashCommand(event.getDispatcher());
-        new SetDashDistanceCommand(event.getDispatcher());
-        new HealCommand(event.getDispatcher());
-        new SetHealthCommand(event.getDispatcher());
-        new SetMajorRealmCommand(event.getDispatcher());
-        new SetMinorRealmCommand(event.getDispatcher());
+        new StatsCommand(event.getDispatcher());
         event.getDispatcher().register(
                 Commands.literal("kill")
                         .then(Commands.argument("targets", EntityArgument.players())
                                 .executes(ctx -> {
                                     String target = EntityArgument.getPlayers(ctx, "targets").iterator().next().getName().getString();
-                                    if (bannedPlayers.contains(target)) {
+                                    if (Immortals.contains(target)) {
                                         CommandSourceStack source = ctx.getSource();
                                         source.sendFailure(Component.literal("🛡️ You can't kill " + target + "!"));
                                         return 0;
@@ -199,7 +178,7 @@ public class ModServerEvents {
                                 .executes(ctx -> {
                                     // Get the target player name
                                     String target = EntityArgument.getPlayers(ctx, "targets").iterator().next().getName().getString();
-                                    if (bannedPlayers.contains(target)) {
+                                    if (Immortals.contains(target)) {
                                         CommandSourceStack source = ctx.getSource();
                                         source.sendFailure(Component.literal("🛡️ You can't kick " + target + "!"));
                                         return 0;
@@ -278,7 +257,7 @@ public class ModServerEvents {
                 String[] parts = input.split(" ");
                 if (parts.length > 1) {
                     String target = parts[1];
-                    if (bannedPlayers.contains(target)) {
+                    if (Immortals.contains(target)) {
                         event.setCanceled(true);
                         source.sendFailure(Component.literal("🛡️ You can't ban " + target + "!"));
                     }
@@ -293,10 +272,12 @@ public class ModServerEvents {
         ServerPlayer player = (ServerPlayer) event.getEntity();
         if (!player.level().isClientSide) {
             PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
-            ModNetwork.sendSyncPlayerData(player);
             String prefix = data.getChatPrefix();
             ChatPrefixHandler.setPrefix(player.getUUID(), prefix, player);
             String nickname = data.getNickName();
+            data.maxHealth();
+            data.maxQi();
+            data.maxSpiritPower();
             data.setHealth(data.getMaxHealth());
             if (nickname != null && !nickname.isEmpty()) {
                 ChatPrefixHandler.setNickname(player.getUUID(), nickname, (ServerPlayer) player);
@@ -331,6 +312,7 @@ public class ModServerEvents {
                 data.applySpeedToPlayer(player);
             }
         }
+        ModNetwork.sendSyncPlayerData(player);
     }
     @SubscribeEvent
     private static void onPlayerJump(LivingEvent.LivingJumpEvent event) {

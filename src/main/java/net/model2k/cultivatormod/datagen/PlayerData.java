@@ -25,6 +25,7 @@ public class PlayerData implements INBTSerializable {
     private String Home = "", NickName = "", ChatPrefix = "", ChatColor = "";
     private boolean CanFly = false, WalkOnWater = false, CanDash = false, FirstQiType = false;
     private final Map<String, Boolean> QiType = new HashMap<>(), Body = new HashMap<>(), Principles = new HashMap<>(), Race = new HashMap<>();
+    private final Map<String, String> Homes = new HashMap<>();
     public PlayerData() {
         //QiTypes
         QiType.put("Earth Qi", false);
@@ -375,6 +376,12 @@ public class PlayerData implements INBTSerializable {
         this.Race.put(race, value)
         ;
     }
+    public String getHomes(String home){return this.Homes.get(home);}
+    public void setHomes(String name, String home){this.Homes.put(name, home);}
+    public void removeHome(String name) {
+        getAllHomes().remove(name);
+    }
+    public Map<String, String> getAllHomes(){return this.Homes;}
     public Map<String, Boolean> getAllQiTypes() {
         return this.QiType;
     }
@@ -413,6 +420,15 @@ public class PlayerData implements INBTSerializable {
     }
     public int healEfficiency(Player player) {
         return (int) player.getMaxHealth() / 10;
+    }
+    public void maxHealth(){
+        setHealth(getMaxHealth());
+    }
+    public void maxQi(){
+        setQi(getMaxQi());
+    }
+    public void maxSpiritPower(){
+        setSpiritPower(getMaxSpiritPower());
     }
     public void realmChecker(Player player) {
         switch (getMajorRealm()) {
@@ -827,6 +843,9 @@ public class PlayerData implements INBTSerializable {
         for (String key : this.Race.keySet()) {
             tag.putBoolean("Race" + key, getRace(key));
         }
+        for (String key : this.Homes.keySet()) {
+            tag.putString("Homes" + key, getHomes(key));
+        }
         return tag;
     }
     @Override
@@ -867,6 +886,9 @@ public class PlayerData implements INBTSerializable {
             }
             for (String key : this.Race.keySet()) {
                 setRace(key, compoundTag.getBoolean("Race" + key));
+            }
+            for (String key : this.Homes.keySet()) {
+                setHomes(key, compoundTag.getString("Homes" + key));
             }
         }
     }
