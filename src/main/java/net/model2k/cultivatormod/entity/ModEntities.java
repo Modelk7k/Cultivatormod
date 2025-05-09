@@ -17,7 +17,6 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 import java.util.function.Supplier;
 
 public class ModEntities  {
-
     public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(BuiltInRegistries.ENTITY_TYPE, CultivatorMod.MOD_ID);
 
     public static final Supplier<EntityType<SlimeEntity>> MINDLESS_SLIME =
