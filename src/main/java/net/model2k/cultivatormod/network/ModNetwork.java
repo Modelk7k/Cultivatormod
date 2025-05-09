@@ -110,6 +110,19 @@ public class ModNetwork {
                     });
                 }
         );
+        registrar.playToServer(
+                JumpPacket.TYPE,
+                JumpPacket.STREAM_CODEC,
+                (packet, context) -> {
+                    context.enqueueWork(() -> {
+                        ServerPlayer player = (ServerPlayer) context.player();
+                        if (player != null && player.isAlive() && !player.level().isClientSide()) {
+                            PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
+                            data.toggleJumpLevel(player);
+                        }
+                    });
+                }
+        );
         registrar.playToClient(
                 ZombieBeheadPacket.TYPE,
                 ZombieBeheadPacket.STREAM_CODEC,
@@ -117,7 +130,6 @@ public class ModNetwork {
                     context.enqueueWork(() -> {
                         Minecraft mc = Minecraft.getInstance();
                         if (mc.level != null) {
-                            // Loop through all entities in the client world
                             Entity entity = Minecraft.getInstance().level.getEntity(packet.getEntityId());
                             if (entity instanceof Zombie zombie) {
                                 zombie.getPersistentData().putBoolean("Beheaded", true);
