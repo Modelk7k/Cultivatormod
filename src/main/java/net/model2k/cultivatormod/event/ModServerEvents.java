@@ -191,6 +191,10 @@ public class ModServerEvents {
             ServerPlayer player = (ServerPlayer) event.getEntity();
             PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
             data.charge(player);
+            if(player.getFoodData().needsFood()){
+                player.getFoodData().setFoodLevel(20);
+                player.getFoodData().setSaturation(5);
+            }
         }
     }
     @SubscribeEvent

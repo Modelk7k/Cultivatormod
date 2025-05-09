@@ -1,18 +1,12 @@
 package net.model2k.cultivatormod.event;
 
-import com.mojang.blaze3d.platform.GlStateManager;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
@@ -21,11 +15,8 @@ import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ClipContext;
-import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -45,8 +36,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.*;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import org.joml.Matrix4f;
-import org.joml.Vector4f;
-
 import java.util.List;
 
 @EventBusSubscriber(modid = CultivatorMod.MOD_ID, bus = EventBusSubscriber.Bus.GAME, value = Dist.CLIENT)
@@ -138,7 +127,16 @@ public class ModClientEvents {
             event.setCanceled(true);
         }
         if(event.getName().toString().equals("minecraft:crosshair")){
-            event.setCanceled(false);
+            ResourceLocation CROSSHAIR_TEXTURE = ResourceLocation.fromNamespaceAndPath("cultivatormod", "textures/gui/hud/crosshair.png");
+            event.setCanceled(true);
+            Minecraft mc = Minecraft.getInstance();
+            GuiGraphics guiGraphics = event.getGuiGraphics();
+            int screenWidth = mc.getWindow().getGuiScaledWidth();
+            int screenHeight = mc.getWindow().getGuiScaledHeight();
+            int size = 16;
+            int x = (screenWidth - size) / 2;
+            int y = (screenHeight - size) / 2;
+            guiGraphics.blit(CROSSHAIR_TEXTURE, x, y, 0, 0, size, size, size, size);
         }
         if(event.getName().toString().equals("minecraft:selected_item_name")){
             event.setCanceled(true);
