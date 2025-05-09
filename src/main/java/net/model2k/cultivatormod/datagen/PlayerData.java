@@ -887,9 +887,13 @@ public class PlayerData implements INBTSerializable {
             for (String key : this.Race.keySet()) {
                 setRace(key, compoundTag.getBoolean("Race" + key));
             }
-            for (String key : this.Homes.keySet()) {
-                setHomes(key, compoundTag.getString("Homes" + key));
+            for (String key : compoundTag.getAllKeys()) {
+                if (key.startsWith("Homes")) {
+                    String homeName = key.substring("Homes".length());
+                    setHomes(homeName, compoundTag.getString(key));
+                }
             }
+
         }
     }
 }

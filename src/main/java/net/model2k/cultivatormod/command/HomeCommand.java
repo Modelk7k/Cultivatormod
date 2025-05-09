@@ -14,7 +14,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.model2k.cultivatormod.datagen.ModAttachments;
 import net.model2k.cultivatormod.datagen.PlayerData;
-
 import java.util.*;
 
 public class HomeCommand {
@@ -63,7 +62,6 @@ public class HomeCommand {
                 )
         );
     }
-
     private int listHomes(CommandContext<CommandSourceStack> context) {
         ServerPlayer player = context.getSource().getPlayer();
         PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
@@ -82,7 +80,6 @@ public class HomeCommand {
         ServerPlayer player = context.getSource().getPlayer();
         return teleportToHome(context, player, player, StringArgumentType.getString(context, "name"));
     }
-
     private int staffHome(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer staff = context.getSource().getPlayer();
         GameProfile targetProfile = GameProfileArgument.getGameProfiles(context, "player").iterator().next();
@@ -94,7 +91,6 @@ public class HomeCommand {
         String name = StringArgumentType.getString(context, "name");
         return teleportToHome(context, staff, targetPlayer, name);
     }
-
     private int teleportToHome(CommandContext<CommandSourceStack> context, ServerPlayer teleporter, ServerPlayer dataOwner, String name) {
         PlayerData data = dataOwner.getData(ModAttachments.PLAYER_DATA);
         String home = data.getHomes(name);
@@ -109,7 +105,6 @@ public class HomeCommand {
             context.getSource().sendFailure(Component.literal("Invalid coordinates for home '" + name + "'."));
             return -1;
         }
-
         try {
             double x = Double.parseDouble(coords[0]);
             double y = Double.parseDouble(coords[1]);
@@ -126,19 +121,15 @@ public class HomeCommand {
             return -1;
         }
     }
-
     private int setHome(CommandContext<CommandSourceStack> context) {
         ServerPlayer player = context.getSource().getPlayer();
         PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
         String name = StringArgumentType.getString(context, "name");
-        Map<String, String> homes = data.getAllHomes();
-
         boolean isStaff = player.getTags().contains("staff");
-        if (!isStaff && homes.size() >= 10 && !homes.containsKey(name)) {
+        if (!isStaff && data.getAllHomes().size() >= 10 && !data.getAllHomes().containsKey(name)) {
             context.getSource().sendFailure(Component.literal("You already have 10 homes. Delete one or get the 'staff' tag."));
             return -1;
         }
-
         BlockPos pos = player.blockPosition();
         String coords = pos.getX() + "," + pos.getY() + "," + pos.getZ();
         data.setHomes(name, coords);
