@@ -61,6 +61,17 @@ public class HomeCommand {
                                 .executes(this::setHome))
                 )
         );
+        dispatcher.register(Commands.literal("delhome")
+                .then(Commands.argument("name", StringArgumentType.string())
+                        .suggests((context, builder) -> {
+                            ServerPlayer player = context.getSource().getPlayer();
+                            PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
+                            return SharedSuggestionProvider.suggest(data.getAllHomes().keySet(), builder);
+                        })
+                        .executes(this::deleteHome)
+                )
+        );
+
     }
     private int listHomes(CommandContext<CommandSourceStack> context) {
         ServerPlayer player = context.getSource().getPlayer();
@@ -75,7 +86,6 @@ public class HomeCommand {
         }
         return 1;
     }
-
     private int home(CommandContext<CommandSourceStack> context) {
         ServerPlayer player = context.getSource().getPlayer();
         return teleportToHome(context, player, player, StringArgumentType.getString(context, "name"));
@@ -134,6 +144,20 @@ public class HomeCommand {
         String coords = pos.getX() + "," + pos.getY() + "," + pos.getZ();
         data.setHomes(name, coords);
         context.getSource().sendSuccess(() -> Component.literal("Set home '" + name + "' at " + coords), true);
+        return 1;
+    }
+    private int deleteHome(CommandContext<CommandSourceStack> context) {
+        ServerPlayer player = context.getSource().getPlayer();
+        PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
+        String name = StringArgumentType.getString(context, "name");
+
+        if (!data.getAllHomes().containsKey(name)) {
+            context.getSource().sendFailure(Component.literal("No home named '" + name + "' found."));
+            return -1;
+        }
+
+        data.removeHome(name);
+        context.getSource().sendSuccess(() -> Component.literal("Deleted home '" + name + "'."), true);
         return 1;
     }
 }
