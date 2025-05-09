@@ -1,5 +1,7 @@
 package net.model2k.cultivatormod.command;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -11,13 +13,17 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.level.storage.LevelResource;
 import net.model2k.cultivatormod.datagen.ModAttachments;
 import net.model2k.cultivatormod.datagen.PlayerData;
 import net.model2k.cultivatormod.network.ModNetwork;
 
+import java.io.FileReader;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 
 public class StatsCommand {
     public StatsCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -291,7 +297,7 @@ public class StatsCommand {
         PlayerData data = target.getData(ModAttachments.PLAYER_DATA);
         CommandSourceStack source = context.getSource();
         source.sendSuccess(() -> Component.literal("Stats for " + target.getName().getString() + ":"), false);
-        source.sendSuccess(() -> Component.literal("• Nickname: " + data.getNickName()), false);
+        source.sendSuccess(() -> Component.literal("• Nickname: " + getNickname(context.getSource().getPlayer())), false);
         source.sendSuccess(() -> Component.literal("• Home: " + data.getHome()), false);
         for (Map.Entry<String, Boolean> entry : data.getAllSubRaces().entrySet()) {
             if (entry.getValue()) {
@@ -355,17 +361,22 @@ public class StatsCommand {
         ServerPlayer player = context.getSource().getPlayer();
         PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
         String body = StringArgumentType.getString(context, "body");
-        if (data.getAllBodies().containsKey(body)) {
+        if (!data.getAllBodies().containsKey(body)) {
+            context.getSource().sendFailure(Component.literal("Invalid Body: " + body));
+            return -1;
+        }
+        boolean isCurrentlyActive = data.getBody(body);
+        if (isCurrentlyActive) {
+            data.setBody(body, false);
+            context.getSource().sendSuccess(() ->
+                    Component.literal("Body '" + body + "' has been removed."), false);
+        } else {
             for (String otherBody : data.getAllBodies().keySet()) {
-                if (!otherBody.equals(body)) {
-                    data.setBody(otherBody, false);
-                }
+                data.setBody(otherBody, false);
             }
             data.setBody(body, true);
-            String status = data.getPrinciples(body) ? "set" : "removed";
-            context.getSource().sendSuccess(() -> Component.literal("Body " + body + " has been " + status + "."), false);
-        } else {
-            context.getSource().sendFailure(Component.literal("Invalid Body: " + body));
+            context.getSource().sendSuccess(() ->
+                    Component.literal("Body '" + body + "' has been set."), false);
         }
         return 1;
     }
@@ -595,5 +606,22 @@ public class StatsCommand {
         data.setRace(matchedKey, true);
         context.getSource().sendSuccess(() -> Component.literal("Your subrace has been set to: " + matchedKey), true);
         return 1;
+    }
+    private String getNickname(ServerPlayer player) {
+        try {
+            Path worldDir = player.level().getServer().getWorldPath(LevelResource.ROOT);
+            Path chatFile = worldDir.resolve("usefulchat/chat_data.json");
+            JsonObject root = JsonParser.parseReader(new FileReader(chatFile.toFile())).getAsJsonObject();
+            UUID uuid = player.getUUID();
+            if (root.has(uuid.toString())) {
+                JsonObject playerData = root.getAsJsonObject(uuid.toString());
+                if (playerData.has("nickname")) {
+                    return playerData.get("nickname").getAsString();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "Unknown";
     }
 }

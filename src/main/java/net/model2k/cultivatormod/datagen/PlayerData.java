@@ -22,7 +22,7 @@ import java.util.Objects;
 public class PlayerData implements INBTSerializable {
     private int SpeedLevel = 1, JumpStrength = 1,MaxHealth = 20, Health = 20, Defense = 0, Jump = 0, Dash = 0, Speed = 0,  SpiritPower,
             MaxSpiritPower = 10, QiQuality = 0, MinorRealm = 0, MajorRealm = 0, Strength = 0, Qi = 0, MaxQi = 10,tick = 0;
-    private String Home = "", NickName = "", ChatPrefix = "", ChatColor = "";
+    private String Home = "", ChatPrefix = "", ChatColor = "";
     private boolean CanFly = false, WalkOnWater = false, CanDash = false, FirstQiType = false;
     private final Map<String, Boolean> QiType = new HashMap<>(), Body = new HashMap<>(), Principles = new HashMap<>(), Race = new HashMap<>();
     private final Map<String, String> Homes = new HashMap<>();
@@ -112,7 +112,6 @@ public class PlayerData implements INBTSerializable {
                 "SpeedLevel=" + getSpeedLevel() +
                 ", JumpStrength=" + getJumpStrength() +
                 ", Home='" + getHome() + '\'' +
-                ", NickName='" + getNickName() + '\'' +
                 ", ChatPrefix='" + getChatPrefix() + '\'' +
                 ", ChatColor='" + getChatColor() + '\'' +
                 ", CanFly=" + getCanFly() +
@@ -217,12 +216,6 @@ public class PlayerData implements INBTSerializable {
     }
     public void setHome(String home) {
         this.Home = home;
-    }
-    public String getNickName() {
-        return this.NickName;
-    }
-    public void setNickName(String nickName) {
-        this.NickName = nickName;
     }
     public String getChatPrefix() {
         return this.ChatPrefix;
@@ -361,8 +354,7 @@ public class PlayerData implements INBTSerializable {
         ;
     }
     public boolean getPrinciples(String principle) {
-        return this.Principles.getOrDefault(principle, false)
-                ;
+        return this.Principles.getOrDefault(principle, false);
     }
     public void setPrinciples(String principles, boolean value) {
         this.Principles.put(principles, value)
@@ -810,7 +802,6 @@ public class PlayerData implements INBTSerializable {
         tag.putInt("SpeedLevel", getSpeedLevel());
         tag.putInt("JumpStrength", getJumpStrength());
         tag.putString("Home", getHome());
-        tag.putString("NickName", getNickName());
         tag.putString("ChatPrefix", getChatPrefix());
         tag.putString("ChatColor", getChatColor());
         tag.putBoolean("CanFly", getCanFly());
@@ -854,7 +845,6 @@ public class PlayerData implements INBTSerializable {
             setSpeedLevel(compoundTag.getInt("SpeedLevel"));
             setJumpStrength(compoundTag.getInt("JumpStrength"));
             setHome(compoundTag.getString("Home"));
-            setNickName(compoundTag.getString("NickName"));
             setChatPrefix(compoundTag.getString("ChatPrefix"));
             setChatColor(compoundTag.getString("ChatColor"));
             setCanFly(compoundTag.getBoolean("CanFly"));

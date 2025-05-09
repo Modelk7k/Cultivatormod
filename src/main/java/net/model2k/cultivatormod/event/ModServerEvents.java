@@ -52,14 +52,10 @@ public class ModServerEvents {
             PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
             String prefix = data.getChatPrefix();
             ChatPrefixHandler.setPrefix(player.getUUID(), prefix, player);
-            String nickname = data.getNickName();
             if(Immortals.contains(player.getName().getString()) && !player.getTags().contains("staff")){
                 player.addTag("staff");
                 player.addTag("chat");
                 player.sendSystemMessage(Component.literal("You are a known Immortal. You have been granted staff and chat tags at birth."));
-            }
-            if (nickname != null && !nickname.isEmpty()) {
-                ChatPrefixHandler.setNickname(player.getUUID(), nickname, (ServerPlayer) player);
             }
             if (!data.getFirstQiType()) {
                 data.setFirstQiType(true);
@@ -274,14 +270,10 @@ public class ModServerEvents {
             PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
             String prefix = data.getChatPrefix();
             ChatPrefixHandler.setPrefix(player.getUUID(), prefix, player);
-            String nickname = data.getNickName();
             data.maxHealth();
             data.maxQi();
             data.maxSpiritPower();
             data.setHealth(data.getMaxHealth());
-            if (nickname != null && !nickname.isEmpty()) {
-                ChatPrefixHandler.setNickname(player.getUUID(), nickname, (ServerPlayer) player);
-            }
             if (!data.getFirstQiType()) {
                 data.setFirstQiType(true);
                 Map<String, Boolean> qiTypes = data.getAllQiTypes();
