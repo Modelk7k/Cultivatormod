@@ -329,7 +329,7 @@ public class StatsCommand {
         source.sendSuccess(() -> Component.literal("• Dash: " + data.getDash()), false);
         source.sendSuccess(() -> Component.literal("• Qi: " + data.getQi() + " / " + data.getMaxQi()), false);
         source.sendSuccess(() -> Component.literal("• Spirit Power: " + data.getSpiritPower() + " / " + data.getMaxSpiritPower()), false);
-        source.sendSuccess(() -> Component.literal("• Walk On Water: " + data.getWalkOnWater() + "• Can Dash: " + data.getCanDash() + "• Can Fly: " + data.getCanFly()), false);
+        source.sendSuccess(() -> Component.literal("• Walk On Water: " + data.getWalkOnWater() + " Can Dash: " + data.getCanDash() + " Can Fly: " + data.getCanFly()), false);
         return 1;
     }
     private int maxSpirit(CommandContext<CommandSourceStack> context) {
