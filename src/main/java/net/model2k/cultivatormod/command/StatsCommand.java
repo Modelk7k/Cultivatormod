@@ -297,7 +297,7 @@ public class StatsCommand {
         CommandSourceStack source = context.getSource();
         source.sendSuccess(() -> Component.literal("Stats for " + target.getName().getString() + ":"), false);
         source.sendSuccess(() -> Component.literal("• Nickname: " + getNickname(context.getSource().getPlayer())), false);
-        source.sendSuccess(() -> Component.literal("• Home: " + data.getHome()), false);
+        source.sendSuccess(() -> Component.literal("• Home: " + data.getAllHomes()), false);
         for (Map.Entry<String, Boolean> entry : data.getAllSubRaces().entrySet()) {
             if (entry.getValue()) {
                 source.sendSuccess(() -> Component.literal("• Race: " + entry.getKey()), false);

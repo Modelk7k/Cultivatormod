@@ -1,9 +1,12 @@
 package net.model2k.cultivatormod.event;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.entity.ZombieRenderer;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
@@ -13,14 +16,26 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.animal.Sheep;
+import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.ProjectileUtil;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.model2k.cultivatormod.CultivatorMod;
 import net.model2k.cultivatormod.command.*;
 import net.model2k.cultivatormod.datagen.ModAttachments;
 import net.model2k.cultivatormod.datagen.PlayerData;
+import net.model2k.cultivatormod.entity.ModEntities;
+import net.model2k.cultivatormod.entity.client.CustomZombieModel;
+import net.model2k.cultivatormod.entity.client.CustomZombieRenderer;
+import net.model2k.cultivatormod.entity.custom.SeveredZombieHeadEntity;
 import net.model2k.cultivatormod.item.ModItems;
 import net.model2k.cultivatormod.network.ModNetwork;
+import net.model2k.cultivatormod.network.packet.ZombieBeheadPacket;
 import net.model2k.cultivatormod.util.ChatPrefixHandler;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -113,7 +128,7 @@ public class ModServerEvents {
                 }
             }
         }
-        if (event.getEntity() instanceof Sheep && event.getEntity()  instanceof Player player && player.isHolding(ModItems.BAODING_BALLS.get())) {
+        if (event.getEntity() instanceof Sheep && event.getSource().getDirectEntity() instanceof Player player && player.isHolding(ModItems.BAODING_BALLS.get())) {
             LivingEntity sheep = event.getEntity();
             sheep.kill();
             sheep.level().explode(sheep, sheep.getX(), sheep.getY(), sheep.getZ(), 30, true, Level.ExplosionInteraction.TNT);
@@ -145,6 +160,42 @@ public class ModServerEvents {
                 event.getEntity().setHealth(0);
             }
             ModNetwork.sendSyncPlayerData(player);
+        }
+    }
+    @SubscribeEvent
+    public static void onZombieHit(LivingDamageEvent.Pre event) {
+        if (!(event.getEntity() instanceof Zombie zombie)) return;
+        if (!(event.getSource().getEntity() instanceof Player player)) return;
+        if (!(player instanceof ServerPlayer serverPlayer)) return;
+        if (zombie.getLastHurtByMob() != player) return;
+        if (player.level().isClientSide()) return;
+        Vec3 eye = player.getEyePosition();
+        Vec3 look = player.getLookAngle();
+        Vec3 reachEnd = eye.add(look.scale(3.0));
+        EntityHitResult result = ProjectileUtil.getEntityHitResult(
+                player,
+                eye,
+                reachEnd,
+                zombie.getBoundingBox().inflate(0.25),
+                entity -> entity == zombie,
+                0
+        );
+        if (result != null && result.getEntity() == zombie) {
+            Vec3 hitPos = result.getLocation();
+            double headYStart = zombie.getY() + zombie.getBbHeight() * 0.85;
+            double headYEnd = zombie.getY() + zombie.getBbHeight();
+            if (hitPos.y >= headYStart && hitPos.y <= headYEnd) {
+                if (Math.random() < 0.5) {
+                    SeveredZombieHeadEntity severedHead = new SeveredZombieHeadEntity(zombie, zombie.level());
+                    severedHead.setPos(zombie.getX(), zombie.getY() + zombie.getBbHeight() - 0.25, zombie.getZ());
+                    zombie.level().addFreshEntity(severedHead);
+                    severedHead.setPos(zombie.getX(), zombie.getY() + zombie.getBbHeight() + 0.2, zombie.getZ());
+                    zombie.getPersistentData().putBoolean("Beheaded", true);
+                    ZombieBeheadPacket packet = new ZombieBeheadPacket(zombie.getId());
+                    serverPlayer.connection.send(new ClientboundCustomPayloadPacket(packet));
+                    zombie.kill();
+                }
+            }
         }
     }
     @SubscribeEvent

@@ -4,8 +4,10 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
+import net.minecraft.world.entity.monster.Zombie;
 import net.model2k.cultivatormod.CultivatorMod;
 import net.model2k.cultivatormod.entity.custom.QiSlashEntity;
+import net.model2k.cultivatormod.entity.custom.SeveredZombieHeadEntity;
 import net.model2k.cultivatormod.entity.custom.SlimeEntity;
 import net.model2k.cultivatormod.entity.custom.YangBearEntity;
 import net.neoforged.bus.api.IEventBus;
@@ -29,6 +31,14 @@ public class ModEntities  {
                     .of(QiSlashEntity::new, MobCategory.MISC)
                     .sized(.5f, .5f)
                     .build("qislash"));
+    public static final Supplier<EntityType<SeveredZombieHeadEntity>> SEVERED_ZOMBIE_HEAD =
+            ENTITY_TYPES.register("severed_zombie_head", () -> EntityType.Builder
+                    .<SeveredZombieHeadEntity>of(SeveredZombieHeadEntity::new, MobCategory.MISC)
+                    .sized(0.5f, 0.5f) // Size of a dropped item
+                    .clientTrackingRange(8)
+                    .updateInterval(10)
+                    .build("severed_zombie_head"));
+
     public static void register(IEventBus eventBus){
         ENTITY_TYPES.register(eventBus);
     }

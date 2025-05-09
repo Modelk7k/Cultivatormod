@@ -1,12 +1,10 @@
 package net.model2k.cultivatormod.event;
 
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.model2k.cultivatormod.CultivatorMod;
 import net.model2k.cultivatormod.entity.ModEntities;
-import net.model2k.cultivatormod.entity.client.MindlessSlimeModel;
-import net.model2k.cultivatormod.entity.client.QiSlashModel;
-import net.model2k.cultivatormod.entity.client.QiSlashRenderer;
-import net.model2k.cultivatormod.entity.client.YangBearModel;
+import net.model2k.cultivatormod.entity.client.*;
 import net.model2k.cultivatormod.entity.custom.SlimeEntity;
 import net.model2k.cultivatormod.entity.custom.YangBearEntity;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -21,6 +19,11 @@ public class ModEventBusEvents {
         event.registerLayerDefinition((MindlessSlimeModel.LAYER_LOCATION), MindlessSlimeModel:: createBodyLayer);
         event.registerLayerDefinition((YangBearModel.LAYER_LOCATION), YangBearModel:: createBodyLayer);
         event.registerLayerDefinition((QiSlashModel.LAYER_LOCATION), QiSlashModel:: createBodyLayer);
+    }
+    @SubscribeEvent
+    public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
+        // Register the custom renderer for the vanilla zombie entity
+        event.registerEntityRenderer(EntityType.ZOMBIE, CustomZombieRenderer::new);
     }
 @SubscribeEvent
     public static void registerAttributes(EntityAttributeCreationEvent event) {

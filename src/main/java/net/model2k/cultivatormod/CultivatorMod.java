@@ -13,6 +13,7 @@ import net.model2k.cultivatormod.effect.ModEffects;
 import net.model2k.cultivatormod.entity.ModEntities;
 import net.model2k.cultivatormod.entity.client.MindlessSlimeRenderer;
 import net.model2k.cultivatormod.entity.client.QiSlashRenderer;
+import net.model2k.cultivatormod.entity.client.SeveredZombieHeadRenderer;
 import net.model2k.cultivatormod.entity.client.YangBearRenderer;
 import net.model2k.cultivatormod.recipe.ModRecipes;
 import net.model2k.cultivatormod.screen.ModMenuTypes;
@@ -75,6 +76,7 @@ public class CultivatorMod
             EntityRenderers.register(ModEntities.MINDLESS_SLIME.get(), MindlessSlimeRenderer::new);
             EntityRenderers.register(ModEntities.YANG_BEAR.get(), YangBearRenderer::new);
             EntityRenderers.register(ModEntities.QI_SLASH.get(), QiSlashRenderer::new);
+            EntityRenderers.register(ModEntities.SEVERED_ZOMBIE_HEAD.get(), SeveredZombieHeadRenderer::new);
         }
         @SubscribeEvent
         public static void registerScreens(RegisterMenuScreensEvent event) {

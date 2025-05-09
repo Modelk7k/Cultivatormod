@@ -1,7 +1,11 @@
 package net.model2k.cultivatormod.network;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.model2k.cultivatormod.CultivatorMod;
@@ -106,15 +110,20 @@ public class ModNetwork {
                     });
                 }
         );
-        registrar.playToServer(
-                JumpPacket.TYPE,
-                JumpPacket.STREAM_CODEC,
+        registrar.playToClient(
+                ZombieBeheadPacket.TYPE,
+                ZombieBeheadPacket.STREAM_CODEC,
                 (packet, context) -> {
                     context.enqueueWork(() -> {
-                        ServerPlayer player = (ServerPlayer) context.player();
-                        if (player != null && player.isAlive() && !player.level().isClientSide()) {
-                            PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
-                            data.toggleJumpLevel(player);
+                        Minecraft mc = Minecraft.getInstance();
+                        if (mc.level != null) {
+                            // Loop through all entities in the client world
+                            Entity entity = Minecraft.getInstance().level.getEntity(packet.getEntityId());
+                            if (entity instanceof Zombie zombie) {
+                                zombie.getPersistentData().putBoolean("Beheaded", true);
+                            }
+
+
                         }
                     });
                 }
