@@ -17,7 +17,6 @@ import net.minecraft.world.level.storage.LevelResource;
 import net.model2k.cultivatormod.datagen.ModAttachments;
 import net.model2k.cultivatormod.datagen.PlayerData;
 import net.model2k.cultivatormod.network.ModNetwork;
-
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -55,7 +54,7 @@ public class StatsCommand {
                 Commands.literal("set")
                         .requires(source -> source.isPlayer() && source.getPlayer().getTags().contains("staff"))
                         .then(Commands.literal("body")
-                                .then(Commands.argument("body", StringArgumentType.greedyString()) // Accepts spaces
+                                .then(Commands.argument("body", StringArgumentType.greedyString())
                                         .suggests((context, builder) -> {
                                             ServerPlayer player = context.getSource().getPlayer();
                                             PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
@@ -77,14 +76,14 @@ public class StatsCommand {
                 )
         );
         dispatcher.register(
-                Commands.literal("set")  // Main 'set' command
-                        .then(Commands.literal("dash")  // Sub-command for setting fly
+                Commands.literal("set")
+                        .then(Commands.literal("dash")
                                 .requires(source -> {
                                     ServerPlayer player = source.getPlayer();
-                                    return player != null && player.getTags().contains("staff");  // Check if the player has "staff" tag
+                                    return player != null && player.getTags().contains("staff");
                                 })
-                                .then(Commands.argument("enabled", IntegerArgumentType.integer(0, 1))  // Argument for 0 or 1
-                                        .executes(this::dash)  // Execution method
+                                .then(Commands.argument("enabled", IntegerArgumentType.integer(0, 1))
+                                        .executes(this::dash)
                                 )
                         )
         );
@@ -92,33 +91,33 @@ public class StatsCommand {
                 Commands.literal("set")
                         .requires(source -> {
                             ServerPlayer player = source.getPlayer();
-                            return player != null && player.getTags().contains("staff");  // Only staff can use this
+                            return player != null && player.getTags().contains("staff");
                         })
-                        .then(Commands.literal("dashdistance")  // This is the second argument, "speed"
-                                .then(Commands.argument("distance", IntegerArgumentType.integer(1, 10))  // Accepts integer values between 1 and 6
-                                        .executes(this::dashDistance))  // Executes the method when the command is run
+                        .then(Commands.literal("dashdistance")
+                                .then(Commands.argument("distance", IntegerArgumentType.integer(1, 10))
+                                        .executes(this::dashDistance))
                         )
         );
         dispatcher.register(
                 Commands.literal("set")
                         .requires(source -> {
                             ServerPlayer player = source.getPlayer();
-                            return player != null && player.getTags().contains("staff");  // Only staff can use this
+                            return player != null && player.getTags().contains("staff");
                         })
-                        .then(Commands.literal("defense")  // This is the second argument, "defense"
-                                .then(Commands.argument("defense", IntegerArgumentType.integer(0))  // Accepts integer values between 1 and 100
-                                        .executes(this::defense))  // Executes the method when the command is run
+                        .then(Commands.literal("defense")
+                                .then(Commands.argument("defense", IntegerArgumentType.integer(0))
+                                        .executes(this::defense))
                         )
         );
         dispatcher.register(
-                Commands.literal("set")  // Main 'set' command
-                        .then(Commands.literal("fly")  // Sub-command for setting fly
+                Commands.literal("set")
+                        .then(Commands.literal("fly")
                                 .requires(source -> {
                                     ServerPlayer player = source.getPlayer();
-                                    return player != null && player.getTags().contains("staff");  // Check if the player has "staff" tag
+                                    return player != null && player.getTags().contains("staff");
                                 })
-                                .then(Commands.argument("enabled", IntegerArgumentType.integer(0, 1))  // Argument for 0 or 1
-                                        .executes(this::fly)  // Execution method
+                                .then(Commands.argument("enabled", IntegerArgumentType.integer(0, 1))
+                                        .executes(this::fly)
                                 )
                         )
         );
@@ -135,11 +134,11 @@ public class StatsCommand {
                 Commands.literal("set")
                         .requires(source -> {
                             ServerPlayer player = source.getPlayer();
-                            return player != null && player.getTags().contains("staff");  // Only staff can use this
+                            return player != null && player.getTags().contains("staff");
                         })
-                        .then(Commands.literal("jump")  // This is the second argument, "speed"
-                                .then(Commands.argument("strength", IntegerArgumentType.integer(1, 10))  // Accepts integer values between 1 and 6
-                                        .executes(this::jump))  // Executes the method when the command is run
+                        .then(Commands.literal("jump")
+                                .then(Commands.argument("strength", IntegerArgumentType.integer(1, 10))
+                                        .executes(this::jump))
                         )
         );
         dispatcher.register(
@@ -156,7 +155,7 @@ public class StatsCommand {
         dispatcher.register(Commands.literal("set")
                 .requires(source -> {
                     ServerPlayer player = source.getPlayer();
-                    return player != null && player.getTags().contains("staff"); // Requires 'staff' tag
+                    return player != null && player.getTags().contains("staff");
                 })
                 .then(Commands.literal("maxqi")
                         .then(Commands.argument("amount", IntegerArgumentType.integer(0))
@@ -167,7 +166,7 @@ public class StatsCommand {
         dispatcher.register(Commands.literal("set")
                 .requires(source -> {
                     ServerPlayer player = source.getPlayer();
-                    return player != null && player.getTags().contains("staff"); // Requires 'staff' tag
+                    return player != null && player.getTags().contains("staff");
                 })
                 .then(Commands.literal("maxspiritpower")
                         .then(Commands.argument("amount", IntegerArgumentType.integer(0))
@@ -190,7 +189,7 @@ public class StatsCommand {
                 Commands.literal("set")
                         .requires(source -> source.isPlayer() && source.getPlayer().getTags().contains("staff"))
                         .then(Commands.literal("principle")
-                                .then(Commands.argument("principle", StringArgumentType.greedyString()) // Accepts spaces
+                                .then(Commands.argument("principle", StringArgumentType.greedyString())
                                         .suggests((context, builder) -> {
                                             ServerPlayer player = context.getSource().getPlayer();
                                             PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
@@ -204,7 +203,7 @@ public class StatsCommand {
                 .requires(source -> {
                     ServerPlayer player = source.getPlayer();
 
-                    return player != null && player.getTags().contains("staff"); // Requires 'staff' tag
+                    return player != null && player.getTags().contains("staff");
                 })
                 .then(Commands.literal("qi")
                         .then(Commands.argument("amount", IntegerArgumentType.integer(0))
@@ -217,7 +216,7 @@ public class StatsCommand {
                 Commands.literal("set")
                         .requires(source -> source.isPlayer() && source.getPlayer().getTags().contains("staff"))
                         .then(Commands.literal("qitype")
-                                .then(Commands.argument("qiType", StringArgumentType.greedyString()) // Accepts spaces
+                                .then(Commands.argument("qiType", StringArgumentType.greedyString())
                                         .suggests((context, builder) -> {
                                             ServerPlayer player = context.getSource().getPlayer();
                                             PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
@@ -231,17 +230,17 @@ public class StatsCommand {
                 Commands.literal("set")
                         .requires(source -> {
                             ServerPlayer player = source.getPlayer();
-                            return player != null && player.getTags().contains("staff");  // Only staff can use this
+                            return player != null && player.getTags().contains("staff");
                         })
-                        .then(Commands.literal("speed")  // This is the second argument, "speed"
-                                .then(Commands.argument("speed", IntegerArgumentType.integer(1, 6))  // Accepts integer values between 1 and 6
-                                        .executes(this::speed))  // Executes the method when the command is run
+                        .then(Commands.literal("speed")
+                                .then(Commands.argument("speed", IntegerArgumentType.integer(1, 6))
+                                        .executes(this::speed))
                         )
         );
         dispatcher.register(Commands.literal("set")
                 .requires(source -> {
                     ServerPlayer player = source.getPlayer();
-                    return player != null && player.getTags().contains("staff"); // Requires 'staff' tag
+                    return player != null && player.getTags().contains("staff");
                 })
                 .then(Commands.literal("spiritpower")
                         .then(Commands.argument("amount", IntegerArgumentType.integer(0))
@@ -253,7 +252,7 @@ public class StatsCommand {
         dispatcher.register(Commands.literal("set")
                 .requires(source -> {
                     ServerPlayer player = source.getPlayer();
-                    return player != null && player.getTags().contains("staff"); // Requires 'staff' tag
+                    return player != null && player.getTags().contains("staff");
                 })
                 .then(Commands.literal("strength")
                         .then(Commands.argument("amount", IntegerArgumentType.integer(0))
@@ -425,7 +424,7 @@ public class StatsCommand {
         PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
         data.setDefense(defense);
         ModNetwork.sendSyncPlayerData(player);
-        context.getSource().sendSuccess(() -> Component.literal("Defense set to: " + defense), true);  // Send confirmation message
+        context.getSource().sendSuccess(() -> Component.literal("Defense set to: " + defense), true);
         return 1;
     }
     private int fly(CommandContext<CommandSourceStack> context) {
@@ -474,7 +473,7 @@ public class StatsCommand {
         PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
         data.setMajorRealm(realm);
         ModNetwork.sendSyncPlayerData(player);
-        context.getSource().sendSuccess(() -> Component.literal("Major Realm set to: " + realm), true);  // Send confirmation message
+        context.getSource().sendSuccess(() -> Component.literal("Major Realm set to: " + realm), true);
         return 1;
     }
     private int setMaxQi(CommandContext<CommandSourceStack> context) {
@@ -498,7 +497,7 @@ public class StatsCommand {
         PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
         data.setMinorRealm(realm);
         ModNetwork.sendSyncPlayerData(player);
-        context.getSource().sendSuccess(() -> Component.literal("Minor Realm set to: " + realm), true);  // Send confirmation message
+        context.getSource().sendSuccess(() -> Component.literal("Minor Realm set to: " + realm), true);
         return 1;
     }
     private int principle(CommandContext<CommandSourceStack> context) {
