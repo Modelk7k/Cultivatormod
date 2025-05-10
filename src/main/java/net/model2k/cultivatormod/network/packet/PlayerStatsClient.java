@@ -3,7 +3,6 @@ package net.model2k.cultivatormod.network.packet;
 public class PlayerStatsClient {
     private static int MaxHealth, Health, qi, maxQi, spiritPower, maxSpiritPower,speed, jump, Dash,JumpLevel, SpeedLevel;
     private static boolean WalkOnWater, canDash, HasSynced, CanFly;
-
     public static int getSpeed() { return speed; }
     public static int getJump() { return jump; }
     public static boolean getCanDash() { return canDash; }

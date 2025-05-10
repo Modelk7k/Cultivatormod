@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.model2k.cultivatormod.CultivatorMod;
 import net.model2k.cultivatormod.entity.custom.QiSlashEntity;
+import org.jetbrains.annotations.NotNull;
 
 public class QiSlashRenderer extends MobRenderer<QiSlashEntity, QiSlashModel<QiSlashEntity>> {
     private static final ResourceLocation TEXTURE =  ResourceLocation.fromNamespaceAndPath(CultivatorMod.MOD_ID, "textures/entity/qislash/qislash.png");
@@ -15,7 +16,7 @@ public class QiSlashRenderer extends MobRenderer<QiSlashEntity, QiSlashModel<QiS
         super(context, new QiSlashModel<>(context.bakeLayer(QiSlashModel.LAYER_LOCATION)), 0.25f);
     }
     @Override
-    public void render(QiSlashEntity entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
+    public void render(@NotNull QiSlashEntity entity, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
         poseStack.pushPose();
         poseStack.translate(0, -1.5, 0); // Offset if needed
         poseStack.mulPose(this.entityRenderDispatcher.cameraOrientation());
@@ -25,7 +26,7 @@ public class QiSlashRenderer extends MobRenderer<QiSlashEntity, QiSlashModel<QiS
         poseStack.popPose();
     }
     @Override
-    public ResourceLocation getTextureLocation(QiSlashEntity entity) {
+    public @NotNull ResourceLocation getTextureLocation(@NotNull QiSlashEntity entity) {
         return TEXTURE;
     }
 }

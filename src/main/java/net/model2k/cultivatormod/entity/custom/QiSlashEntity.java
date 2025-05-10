@@ -1,7 +1,6 @@
 package net.model2k.cultivatormod.entity.custom;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
@@ -18,8 +17,6 @@ import net.model2k.cultivatormod.datagen.ModAttachments;
 import net.model2k.cultivatormod.datagen.PlayerData;
 import net.model2k.cultivatormod.entity.ModEntities;
 import net.model2k.cultivatormod.network.ModNetwork;
-import net.neoforged.bus.api.BusBuilder;
-
 import java.util.List;
 
 public class QiSlashEntity extends Mob {
@@ -38,9 +35,6 @@ public class QiSlashEntity extends Mob {
             Vec3 spawnPos = owner.position().add(0, owner.getEyeHeight() * .75, 0)
                     .add(offset);
             spawnPos = spawnPos.add(0, .4, 0);
-            if (owner instanceof Mob) {
-                spawnPos = spawnPos.add(0, 0, 0);
-            }
             this.setPos(spawnPos.x, spawnPos.y, spawnPos.z);
             this.setDeltaMovement(dirNormalized.scale(1.5));
             this.setYRot((float) (Math.toDegrees(Math.atan2(-dirNormalized.x, dirNormalized.z))));
@@ -49,7 +43,6 @@ public class QiSlashEntity extends Mob {
         }
     }
     public QiSlashEntity(EntityType entityEntityType, Level level) {super(entityEntityType, level);}
-    public static BusBuilder createAttributes() {return null;}
     @Override
     public void tick() {
         super.tick();
@@ -68,10 +61,9 @@ public class QiSlashEntity extends Mob {
             destroyBlockIfValid(forwardHit);
         } else {
             Vec3[] fallbackDirections = new Vec3[]{
-                    new Vec3(direction.z, 0, -direction.x),   // right
-                    new Vec3(-direction.z, 0, direction.x),   // left
-                    new Vec3(0, 1, 0),                        // up
-                                         // down
+                    new Vec3(direction.z, 0, -direction.x),
+                    new Vec3(-direction.z, 0, direction.x),
+                    new Vec3(0, 1, 0),
             };
             for (Vec3 offset : fallbackDirections) {
                 Vec3 end = start.add(offset.scale(0.5));

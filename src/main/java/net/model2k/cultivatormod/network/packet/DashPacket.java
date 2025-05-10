@@ -5,7 +5,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.model2k.cultivatormod.CultivatorMod;
-
+import org.jetbrains.annotations.NotNull;
 
 public class DashPacket implements CustomPacketPayload {
     public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(CultivatorMod.MOD_ID, "dash_request");
@@ -15,7 +15,7 @@ public class DashPacket implements CustomPacketPayload {
     public static final StreamCodec<FriendlyByteBuf, DashPacket> STREAM_CODEC =
             StreamCodec.unit(INSTANCE);
     @Override
-    public Type<? extends CustomPacketPayload> type() {
+    public @NotNull Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
 }

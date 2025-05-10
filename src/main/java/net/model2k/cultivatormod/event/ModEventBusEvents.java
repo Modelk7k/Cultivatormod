@@ -22,7 +22,6 @@ public class ModEventBusEvents {
     }
     @SubscribeEvent
     public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
-        // Register the custom renderer for the vanilla zombie entity
         event.registerEntityRenderer(EntityType.ZOMBIE, CustomZombieRenderer::new);
     }
 @SubscribeEvent

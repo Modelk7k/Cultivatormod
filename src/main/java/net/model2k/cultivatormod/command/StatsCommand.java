@@ -60,7 +60,7 @@ public class StatsCommand {
                                             PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
                                             return SharedSuggestionProvider.suggest(new ArrayList<>(data.getAllBodies().keySet()), builder);
                                         })
-                                        .executes(context -> setBody(context))
+                                        .executes(this::setBody)
                                 )
                         )
         );
@@ -195,7 +195,7 @@ public class StatsCommand {
                                             PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
                                             return SharedSuggestionProvider.suggest(new ArrayList<>(data.getAllPrinciples().keySet()), builder);
                                         })
-                                        .executes(context -> principle(context))
+                                        .executes(this::principle)
                                 )
                         )
         );
@@ -222,7 +222,7 @@ public class StatsCommand {
                                             PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
                                             return SharedSuggestionProvider.suggest(new ArrayList<>(data.getAllQiTypes().keySet()), builder);
                                         })
-                                        .executes(context -> qiType(context))
+                                        .executes(this::qiType)
                                 )
                         )
         );

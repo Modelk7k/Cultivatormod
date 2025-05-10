@@ -5,25 +5,22 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.ZombieModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.world.entity.monster.Zombie;
+import org.jetbrains.annotations.NotNull;
 
 public class CustomZombieModel<T extends Zombie> extends ZombieModel<T> {
-    private boolean isBeheaded = false;
-
     public CustomZombieModel(ModelPart root) {
         super(root);
     }
-
     @Override
-    public void setupAnim(T zombie, float limbSwing, float limbSwingAmount, float ageInTicks,
-                          float netHeadYaw, float headPitch) {
+    public void setupAnim(@NotNull T zombie, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
         super.setupAnim(zombie, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
         boolean beheaded = zombie.getPersistentData().getBoolean("Beheaded");
         this.head.visible = !beheaded;
         this.hat.visible = !beheaded;
     }
     @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay,
-                              int color) {
+    public void renderToBuffer(@NotNull PoseStack poseStack, @NotNull VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
+        boolean isBeheaded = false;
         if (!isBeheaded) {
             this.head.render(poseStack, buffer, packedLight, packedOverlay, color);
             this.hat.render(poseStack, buffer, packedLight, packedOverlay,color);
@@ -34,5 +31,4 @@ public class CustomZombieModel<T extends Zombie> extends ZombieModel<T> {
         this.leftLeg.render(poseStack, buffer, packedLight, packedOverlay,color);
         this.rightLeg.render(poseStack, buffer, packedLight, packedOverlay,color);
     }
-
 }

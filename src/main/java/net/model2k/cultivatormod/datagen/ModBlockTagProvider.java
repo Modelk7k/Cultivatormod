@@ -3,12 +3,12 @@ package net.model2k.cultivatormod.datagen;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.PackOutput;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.ItemTags;
 import net.model2k.cultivatormod.CultivatorMod;
 import net.model2k.cultivatormod.block.ModBlocks;
 import net.model2k.cultivatormod.util.ModTags;
 import net.neoforged.neoforge.common.data.BlockTagsProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.CompletableFuture;
@@ -17,10 +17,8 @@ public class ModBlockTagProvider extends BlockTagsProvider {
     public ModBlockTagProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider, @Nullable ExistingFileHelper existingFileHelper) {
         super(output, lookupProvider, CultivatorMod.MOD_ID, existingFileHelper);
     }
-
     @Override
-    protected void addTags(HolderLookup.Provider provider) {
-        //Tools
+    protected void addTags(HolderLookup.@NotNull Provider provider) {
         tag(BlockTags.MINEABLE_WITH_PICKAXE)
                 .add(ModBlocks.LOW_GRADE_JADE.get());
         tag(BlockTags.MINEABLE_WITH_AXE)
@@ -62,10 +60,8 @@ public class ModBlockTagProvider extends BlockTagsProvider {
                 .add(ModBlocks.ORANGE_SAND.get())
                 .add(ModBlocks.YELLOW_SAND.get())
                 .add(ModBlocks.MAGENTA_SAND.get());
-        //Blocks
         tag(BlockTags.DIRT)
                 .add(ModBlocks.ALIEN_DIRT.get());
-        //SpecialBlocks
         tag(BlockTags.FENCES)
                 .add(ModBlocks.QUARK_FENCE.get());
         tag(BlockTags.FENCE_GATES)

@@ -6,7 +6,6 @@ import net.minecraft.world.level.block.Block;
 import net.model2k.cultivatormod.CultivatorMod;
 import net.model2k.cultivatormod.block.ModBlocks;
 import net.model2k.cultivatormod.item.ModItems;
-import net.neoforged.neoforge.client.model.generators.ItemModelBuilder;
 import net.neoforged.neoforge.client.model.generators.ItemModelProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.registries.DeferredBlock;
@@ -43,14 +42,14 @@ public class ModItemModelProvider extends ItemModelProvider {
         handheldItem(ModItems.LOW_GRADE_JADE_AXE);
         handheldItem(ModItems.LOW_GRADE_JADE_HOE);
         handheldItem(ModItems.LOW_GRADE_JADE_SHOVEL);
-        saplingItem(ModBlocks.QUARK_SAPLING);
+        saplingItem();
         withExistingParent(ModItems.MINDLESS_SLIME_EGG.getId().getPath(), mcLoc("item/template_spawn_egg"));
         withExistingParent(ModItems.YANG_BEAR_EGG.getId().getPath(), mcLoc("item/template_spawn_egg"));
     }
-    private ItemModelBuilder saplingItem(DeferredBlock<Block> item) {
-        return withExistingParent(item.getId().getPath(),
+    private void saplingItem() {
+        withExistingParent(ModBlocks.QUARK_SAPLING.getId().getPath(),
                 ResourceLocation.parse("item/generated")).texture("layer0",
-                ResourceLocation.fromNamespaceAndPath(CultivatorMod.MOD_ID,"block/" + item.getId().getPath()));
+                ResourceLocation.fromNamespaceAndPath(CultivatorMod.MOD_ID, "block/" + ModBlocks.QUARK_SAPLING.getId().getPath()));
     }
     public void buttonItem(DeferredBlock<?> block, DeferredBlock<Block> baseBlock) {
         this.withExistingParent(block.getId().getPath(), mcLoc("block/button_inventory"))
@@ -67,9 +66,9 @@ public class ModItemModelProvider extends ItemModelProvider {
                 .texture("wall", ResourceLocation.fromNamespaceAndPath(CultivatorMod.MOD_ID,
                         "block/" + baseBlock.getId().getPath()));
     }
-    private ItemModelBuilder handheldItem(DeferredItem<?> item) {
-        return withExistingParent(item.getId().getPath(),
+    private void handheldItem(DeferredItem<?> item) {
+        withExistingParent(item.getId().getPath(),
                 ResourceLocation.parse("item/handheld")).texture("layer0",
-                ResourceLocation.fromNamespaceAndPath(CultivatorMod.MOD_ID,"item/" + item.getId().getPath()));
+                ResourceLocation.fromNamespaceAndPath(CultivatorMod.MOD_ID, "item/" + item.getId().getPath()));
     }
 }

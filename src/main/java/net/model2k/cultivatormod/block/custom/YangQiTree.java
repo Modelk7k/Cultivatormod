@@ -13,21 +13,18 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 import net.model2k.cultivatormod.item.ModItems;
+import org.jetbrains.annotations.NotNull;
 
 public class YangQiTree extends SweetBerryBushBlock {
-
-
     public YangQiTree(Properties properties) {
         super(properties);
     }
-
     @Override
-    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
+    public @NotNull ItemStack getCloneItemStack(@NotNull LevelReader level, @NotNull BlockPos pos, @NotNull BlockState state) {
         return new ItemStack(ModItems.LOW_GRADE_YANG_FRUIT.get());
     }
-
     @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
+    protected @NotNull InteractionResult useWithoutItem(BlockState state, @NotNull Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull BlockHitResult hitResult) {
         int i = state.getValue(AGE);
         boolean flag = i == 3;
         if (i > 1) {
@@ -36,7 +33,7 @@ public class YangQiTree extends SweetBerryBushBlock {
             level.playSound(
                     null, pos, SoundEvents.SWEET_BERRY_BUSH_PICK_BERRIES, SoundSource.BLOCKS, 1.0F, 0.8F + level.random.nextFloat() * 0.4F
             );
-            BlockState blockstate = state.setValue(AGE, Integer.valueOf(1));
+            BlockState blockstate = state.setValue(AGE, 1);
             level.setBlock(pos, blockstate, 2);
             level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(player, blockstate));
             return InteractionResult.sidedSuccess(level.isClientSide);
@@ -44,6 +41,4 @@ public class YangQiTree extends SweetBerryBushBlock {
             return super.useWithoutItem(state, level, pos, player, hitResult);
         }
     }
-
-
 }

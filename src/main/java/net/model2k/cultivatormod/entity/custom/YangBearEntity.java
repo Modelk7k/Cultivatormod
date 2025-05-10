@@ -12,6 +12,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.model2k.cultivatormod.entity.ModEntities;
 import net.model2k.cultivatormod.item.ModItems;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class YangBearEntity extends Animal {
@@ -41,7 +42,7 @@ public class YangBearEntity extends Animal {
         return stack.is(ModItems.LOW_GRADE_YANG_FRUIT);
     }
     @Override
-    public @Nullable AgeableMob getBreedOffspring(ServerLevel level, AgeableMob otherParent) {
+    public @Nullable AgeableMob getBreedOffspring(@NotNull ServerLevel level, @NotNull AgeableMob otherParent) {
         return ModEntities.YANG_BEAR.get().create(level);
     }
     private void setupAnimationStates() {
@@ -60,10 +61,10 @@ public class YangBearEntity extends Animal {
         }
     }
     @Override
-    public boolean doHurtTarget(Entity target) {
+    public boolean doHurtTarget(@NotNull Entity target) {
         if (target instanceof LivingEntity living) {
-            // Deal custom damage
-            living.hurt(this.damageSources().mobAttack(this), 6.0F); //             return true;
+            living.hurt(this.damageSources().mobAttack(this), 6.0F);
+             return true;
         }
         return false;
     }

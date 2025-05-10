@@ -7,6 +7,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.ZombieRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.monster.Zombie;
+import org.jetbrains.annotations.NotNull;
 
 public class CustomZombieRenderer extends ZombieRenderer {
     public CustomZombieRenderer(EntityRendererProvider.Context context) {
@@ -14,15 +15,15 @@ public class CustomZombieRenderer extends ZombieRenderer {
         model = new CustomZombieModel<>(context.bakeLayer(ModelLayers.ZOMBIE));
     }
     @Override
-    public void render(Zombie zombie, float entityYaw, float partialTicks, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
+    public void render(@NotNull Zombie zombie, float entityYaw, float partialTicks, @NotNull PoseStack poseStack, @NotNull MultiBufferSource bufferSource, int packedLight) {
         super.render(zombie, entityYaw, partialTicks, poseStack, bufferSource, packedLight);
     }
     @Override
-    public ResourceLocation getTextureLocation(Zombie entity) {
+    public @NotNull ResourceLocation getTextureLocation(@NotNull Zombie entity) {
         return  ResourceLocation.fromNamespaceAndPath("minecraft", "textures/entity/zombie/zombie.png");
     }
     @Override
-    protected void scale(Zombie zombie, PoseStack poseStack, float partialTickTime) {
+    protected void scale(Zombie zombie, @NotNull PoseStack poseStack, float partialTickTime) {
         if (zombie.isBaby()) {
             float scale = 0.5F;
             poseStack.scale(scale, scale, scale);

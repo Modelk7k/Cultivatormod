@@ -9,12 +9,10 @@ import net.model2k.cultivatormod.CultivatorMod;
 import net.model2k.cultivatormod.block.ModBlocks;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
-
 import java.util.function.Supplier;
 
 public class ModCreativeModeTabs {
     public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TAB = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, CultivatorMod.MOD_ID);
-
     public static final Supplier<CreativeModeTab> CULTIVATOR_ITEM_TAB = CREATIVE_MODE_TAB.register("cultivator_item_tab",
             () -> CreativeModeTab.builder().icon(() -> new ItemStack(ModItems.CULT_LOGO.get()))
                     .title(Component.translatable("creativetab.cultivatormod.cultivator_item"))
@@ -35,7 +33,6 @@ public class ModCreativeModeTabs {
                     .withTabsBefore(ResourceLocation.fromNamespaceAndPath(CultivatorMod.MOD_ID, "cultivator_item_tab"))
                     .title(Component.translatable("creativetab.cultivatormod.cultivator_block"))
                     .displayItems((itemDisplayParameters, output) -> {
-
                         output.accept(ModBlocks.ALIEN_DIRT);
                         output.accept(ModBlocks.GREEN_GRASS);
                         output.accept(ModBlocks.RED_GRASS);
@@ -92,7 +89,6 @@ public class ModCreativeModeTabs {
                     .withTabsBefore(ResourceLocation.fromNamespaceAndPath(CultivatorMod.MOD_ID, "cultivator_block_tab"))
                     .title(Component.translatable("creativetab.cultivatormod.cultivator_ingredient"))
                     .displayItems((itemDisplayParameters, output) -> {
-
                         output.accept(ModItems.LOW_GRADE_JADE_STONE);
                         output.accept(ModItems.LOW_GRADE_HERB_CLUMP);
                         output.accept(ModItems.BLOOD_FROM_EARTH);
@@ -102,13 +98,11 @@ public class ModCreativeModeTabs {
                     })
                     .build()
     );
-
     public static final Supplier<CreativeModeTab> CULTIVATOR_EDIBLE_TAB = CREATIVE_MODE_TAB.register("cultivator_edible_tab",
             () -> CreativeModeTab.builder().icon(() -> new ItemStack(ModItems.CULT_LOGO.get()))
                     .withTabsBefore(ResourceLocation.fromNamespaceAndPath(CultivatorMod.MOD_ID, "cultivator_ingredient_tab"))
                     .title(Component.translatable("creativetab.cultivatormod.cultivator_edible"))
                     .displayItems((itemDisplayParameters, output) -> {
-
                         output.accept(ModItems.LOW_GRADE_FOUNDATION_PILL);
                         output.accept(ModItems.LOW_GRADE_BLOOD_BEAD);
                         output.accept(ModItems.LOW_GRADE_BODY_AND_BONE_PILL);
@@ -118,9 +112,7 @@ public class ModCreativeModeTabs {
                     })
                     .build()
     );
-
     public static void register(IEventBus eventBus){
         CREATIVE_MODE_TAB.register(eventBus);
     }
-
 }

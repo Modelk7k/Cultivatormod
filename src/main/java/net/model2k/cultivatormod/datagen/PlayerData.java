@@ -14,12 +14,10 @@ import net.model2k.cultivatormod.item.ModItems;
 import net.model2k.cultivatormod.network.ModNetwork;
 import net.neoforged.neoforge.common.util.INBTSerializable;
 import org.jetbrains.annotations.NotNull;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-@SuppressWarnings("ALL")
 public class PlayerData implements INBTSerializable {
     private int SpeedLevel = 1, JumpStrength = 1,MaxHealth = 20, Health = 20, Defense = 0, Jump = 1, Dash = 0, Speed = 1,  SpiritPower,
             MaxSpiritPower = 10, QiQuality = 0, MinorRealm = 0, MajorRealm = 0, Strength = 0, Qi = 0, MaxQi = 10,tick = 0;

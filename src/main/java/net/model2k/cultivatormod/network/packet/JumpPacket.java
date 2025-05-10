@@ -5,6 +5,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.model2k.cultivatormod.CultivatorMod;
+import org.jetbrains.annotations.NotNull;
 
 public class JumpPacket implements CustomPacketPayload {
     public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(CultivatorMod.MOD_ID, "jump_request");
@@ -14,7 +15,7 @@ public class JumpPacket implements CustomPacketPayload {
     public static final StreamCodec<FriendlyByteBuf, JumpPacket> STREAM_CODEC =
             StreamCodec.unit(INSTANCE);
     @Override
-    public CustomPacketPayload.Type<? extends CustomPacketPayload> type() {
+    public CustomPacketPayload.@NotNull Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
 }

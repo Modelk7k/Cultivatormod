@@ -13,37 +13,36 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public record JadeFurnaceRecipe(List<Ingredient> inputItems, ItemStack output) implements Recipe<JadeFurnaceRecipeInput> {
     @Override
-    public NonNullList<Ingredient> getIngredients() {
+    public @NotNull NonNullList<Ingredient> getIngredients() {
         return NonNullList.copyOf(inputItems);
     }
     @Override
-    public boolean matches(JadeFurnaceRecipeInput jadeFurnaceRecipeInput, Level level) {
+    public boolean matches(@NotNull JadeFurnaceRecipeInput jadeFurnaceRecipeInput, Level level) {
         if (level.isClientSide()) return false;
         List<ItemStack> inputStacks = jadeFurnaceRecipeInput.input();
         List<Ingredient> ingredientsCopy = new ArrayList<>(inputItems);
-
-        // Check each item stack in input against ingredients
         for (ItemStack stack : inputStacks) {
             boolean matched = false;
             for (Ingredient ingredient : ingredientsCopy) {
                 if (ingredient.test(stack)) {
                     matched = true;
-                    ingredientsCopy.remove(ingredient); // Remove matched ingredient
-                    break;  // No need to check further once a match is found
+                    ingredientsCopy.remove(ingredient);
+                    break;
                 }
             }
-            if (!matched) return false; // If any item doesn't match, return false
+            if (!matched) return false;
         }
-        return ingredientsCopy.isEmpty(); // If all ingredients are matched, return true
+        return ingredientsCopy.isEmpty();
     }
     @Override
-    public ItemStack assemble(JadeFurnaceRecipeInput input, HolderLookup.Provider registries) {
+    public @NotNull ItemStack assemble(@NotNull JadeFurnaceRecipeInput input, HolderLookup.@NotNull Provider registries) {
         return output.copy();
     }
     @Override
@@ -51,15 +50,15 @@ public record JadeFurnaceRecipe(List<Ingredient> inputItems, ItemStack output) i
         return true;
     }
     @Override
-    public ItemStack getResultItem(HolderLookup.Provider registries) {
+    public @NotNull ItemStack getResultItem(HolderLookup.@NotNull Provider registries) {
         return output;
     }
     @Override
-    public RecipeSerializer<?> getSerializer() {
+    public @NotNull RecipeSerializer<?> getSerializer() {
         return ModRecipes.JADE_FURNACE_SERIALIZER.get();
     }
     @Override
-    public RecipeType<?> getType() {
+    public @NotNull RecipeType<?> getType() {
         return ModRecipes.JADE_FURNACE_TYPE.get();
     }
     public static class Serializer implements RecipeSerializer<JadeFurnaceRecipe> {
@@ -67,18 +66,17 @@ public record JadeFurnaceRecipe(List<Ingredient> inputItems, ItemStack output) i
                 Ingredient.CODEC_NONEMPTY.listOf().fieldOf("ingredients").forGetter(JadeFurnaceRecipe::inputItems),
                 ItemStack.CODEC.fieldOf("result").forGetter(JadeFurnaceRecipe::output)
         ).apply(inst, JadeFurnaceRecipe::new));
-
         public static final StreamCodec<RegistryFriendlyByteBuf, JadeFurnaceRecipe> STREAM_CODEC =
                 StreamCodec.composite(
                         Ingredient.CONTENTS_STREAM_CODEC.apply(ByteBufCodecs.list()), JadeFurnaceRecipe::inputItems,
                         ItemStack.STREAM_CODEC, JadeFurnaceRecipe::output,
                         JadeFurnaceRecipe::new);
         @Override
-        public MapCodec<JadeFurnaceRecipe> codec() {
+        public @NotNull MapCodec<JadeFurnaceRecipe> codec() {
             return CODEC;
         }
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, JadeFurnaceRecipe> streamCodec() {
+        public @NotNull StreamCodec<RegistryFriendlyByteBuf, JadeFurnaceRecipe> streamCodec() {
             return STREAM_CODEC;
         }
     }

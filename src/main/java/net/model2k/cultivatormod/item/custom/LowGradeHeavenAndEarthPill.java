@@ -1,6 +1,5 @@
 package net.model2k.cultivatormod.item.custom;
 
-
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -11,14 +10,14 @@ import net.minecraft.world.level.Level;
 import net.model2k.cultivatormod.datagen.ModAttachments;
 import net.model2k.cultivatormod.datagen.PlayerData;
 import net.model2k.cultivatormod.network.ModNetwork;
+import org.jetbrains.annotations.NotNull;
 
 public class LowGradeHeavenAndEarthPill extends Item {
-
     static int usedTimes = 0;
     public LowGradeHeavenAndEarthPill(Properties properties) {
         super(properties);
     }
-    public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity livingEntity) {
+    public @NotNull ItemStack finishUsingItem(@NotNull ItemStack stack, @NotNull Level level, LivingEntity livingEntity) {
         PlayerData data = livingEntity.getData(ModAttachments.PLAYER_DATA);
         if (usedTimes == 0 && !level.isClientSide()) {
            if(data.getQiQuality() < 5) {

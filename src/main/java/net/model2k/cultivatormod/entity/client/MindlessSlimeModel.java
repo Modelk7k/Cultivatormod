@@ -8,13 +8,11 @@ import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.Entity;
 import net.model2k.cultivatormod.entity.custom.SlimeEntity;
-
+import org.jetbrains.annotations.NotNull;
 
 public class MindlessSlimeModel<T extends SlimeEntity> extends HierarchicalModel<SlimeEntity> {
-    public static final ModelLayerLocation LAYER_LOCATION =
-            new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath("cultivatormod", "mindlessslime"), "main");
+    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath("cultivatormod", "mindlessslime"), "main");
     private final ModelPart bb_main;
     public MindlessSlimeModel(ModelPart root) {
         this.bb_main = root.getChild("bb_main");
@@ -27,15 +25,15 @@ public class MindlessSlimeModel<T extends SlimeEntity> extends HierarchicalModel
         return LayerDefinition.create(meshdefinition, 16, 16);
     }
     @Override
-    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
+    public void renderToBuffer(@NotNull PoseStack poseStack, @NotNull VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
         Object alpha;
         bb_main.render(poseStack, buffer, packedLight, packedOverlay, color);
     }
     @Override
-    public ModelPart root() {
+    public @NotNull ModelPart root() {
         return bb_main;
     }
     @Override
-    public void setupAnim(SlimeEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    public void setupAnim(@NotNull SlimeEntity entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
     }
 }

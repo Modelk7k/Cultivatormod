@@ -12,15 +12,12 @@ import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 import net.minecraft.world.level.levelgen.placement.*;
 import net.model2k.cultivatormod.CultivatorMod;
 import net.model2k.cultivatormod.block.ModBlocks;
-
 import java.util.List;
 
 public class ModPlacedFeatures {
-
     public static final ResourceKey<PlacedFeature> LOW_GRADE_JADE_ORE_PLACED_KEY = registerKey("low_grade_jade_ore_placed");
     public static final ResourceKey<PlacedFeature> QUARK_PLACED_KEY = registerKey("quark_placed");
     public static final ResourceKey<PlacedFeature> YANG_BUSH_PLACED_KEY = registerKey("yang_bush_placed");
-
     public static void bootstrap(BootstrapContext<PlacedFeature> context) {
         var configuredFeatures = context.lookup(Registries.CONFIGURED_FEATURE);
 //Spawn Jade In stone and deepslate
@@ -33,15 +30,11 @@ public class ModPlacedFeatures {
 //Bushes
         register(context, YANG_BUSH_PLACED_KEY, configuredFeatures.getOrThrow(ModConfiguredFeatures.YANG_BUSH_KEY),
                 List.of(RarityFilter.onAverageOnceEvery(32), InSquarePlacement.spread(), PlacementUtils.HEIGHTMAP_WORLD_SURFACE,BiomeFilter.biome()));
-
     }
-
     private static ResourceKey<PlacedFeature> registerKey(String name) {
         return ResourceKey.create(Registries.PLACED_FEATURE, ResourceLocation.fromNamespaceAndPath(CultivatorMod.MOD_ID, name));
     }
-
-    private static void register(BootstrapContext<PlacedFeature> context, ResourceKey<PlacedFeature> key, Holder<ConfiguredFeature<?, ?>> configuration,
-                                 List<PlacementModifier> modifiers) {
+    private static void register(BootstrapContext<PlacedFeature> context, ResourceKey<PlacedFeature> key, Holder<ConfiguredFeature<?, ?>> configuration, List<PlacementModifier> modifiers) {
         context.register(key, new PlacedFeature(configuration, List.copyOf(modifiers)));
     }
 }

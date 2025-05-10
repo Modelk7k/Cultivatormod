@@ -21,6 +21,7 @@ import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import net.model2k.cultivatormod.block.ModBlocks;
 import net.model2k.cultivatormod.block.custom.SpiritFlower;
 import net.model2k.cultivatormod.item.ModItems;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Set;
 
@@ -28,11 +29,8 @@ public class ModBlockLootTableProvider extends BlockLootSubProvider {
     protected ModBlockLootTableProvider( HolderLookup.Provider registries) {
         super(Set.of(), FeatureFlags.REGISTRY.allFlags(), registries);
     }
-
     @Override
     protected void generate() {
-
-
         this.dropSelf(ModBlocks.LOW_GRADE_JADE_FURNACE.get());
         this.dropSelf(ModBlocks.QUARK_LOG.get());
         this.dropSelf(ModBlocks.QUARK_WOOD.get());
@@ -49,9 +47,6 @@ public class ModBlockLootTableProvider extends BlockLootSubProvider {
         this.dropSelf(ModBlocks.CHINESE_LAMP.get());
         this.dropSelf(ModBlocks.QUARK_SAPLING.get());
         this.dropSelf(ModBlocks.LOW_GRADE_JADE.get());
-
-
-
         this.dropSelf(ModBlocks.ALIEN_DIRT.get());
         this.dropSelf(ModBlocks.GREEN_GRASS.get());
         this.dropSelf(ModBlocks.BLUE_GRASS.get());
@@ -66,7 +61,6 @@ public class ModBlockLootTableProvider extends BlockLootSubProvider {
         this.dropSelf(ModBlocks.RAINBOW_GRASS.get());
         this.dropSelf(ModBlocks.BROWN_GRASS.get());
         this.dropSelf(ModBlocks.PURPLE_GRASS.get());
-
         this.dropSelf(ModBlocks.BROWN_SAND.get());
         this.dropSelf(ModBlocks.GREEN_SAND.get());
         this.dropSelf(ModBlocks.MAGENTA_SAND.get());
@@ -82,55 +76,33 @@ public class ModBlockLootTableProvider extends BlockLootSubProvider {
         this.dropSelf(ModBlocks.PINK_SAND.get());
         this.dropSelf(ModBlocks.MAGENTA_SAND.get());
         this.dropSelf(ModBlocks.ORANGE_SAND.get());
-
-
-
         this.dropSelf(ModBlocks.NUKE.get());
-
-
-
-
-
-
-        this.add(ModBlocks.QUARK_LEAVES.get(), block ->
-                createLeavesDrops(block,ModBlocks.QUARK_SAPLING.get(), NORMAL_LEAVES_SAPLING_CHANCES));
-
-        add(ModBlocks.QUARK_DOOR.get(),
-                block -> createDoorTable(ModBlocks.QUARK_DOOR.get()));
-        add(ModBlocks.QUARK_SLAB.get(),
-                block -> createSlabItemTable(ModBlocks.QUARK_SLAB.get()));
-        add(ModBlocks.LOW_GRADE_HERB.get(),
-                block -> createOreDrop(ModBlocks.LOW_GRADE_HERB.get(), ModItems.LOW_GRADE_HERB_CLUMP.get()));
-
+        this.add(ModBlocks.QUARK_LEAVES.get(), block -> createLeavesDrops(block, ModBlocks.QUARK_SAPLING.get(), NORMAL_LEAVES_SAPLING_CHANCES));
+        add(ModBlocks.QUARK_DOOR.get(), block -> createDoorTable(ModBlocks.QUARK_DOOR.get()));
+        add(ModBlocks.QUARK_SLAB.get(), block -> createSlabItemTable(ModBlocks.QUARK_SLAB.get()));
+        add(ModBlocks.LOW_GRADE_HERB.get(), block -> createOreDrop(ModBlocks.LOW_GRADE_HERB.get(), ModItems.LOW_GRADE_HERB_CLUMP.get()));
         LootItemCondition.Builder lootItemConditionBuilder = LootItemBlockStatePropertyCondition.hasBlockStateProperties(ModBlocks.LOW_GRADE_SPIRIT_FLOWER.get())
                 .setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(SpiritFlower.AGE, 3));
-
         this.add(ModBlocks.LOW_GRADE_SPIRIT_FLOWER.get(), this.createCropDrops(ModBlocks.LOW_GRADE_SPIRIT_FLOWER.get(),
                 ModItems.LOW_GRADE_SPIRIT_FLOWER_BUNDLE.get(), ModItems.LOW_GRADE_SPIRIT_FLOWER_SEEDS.get(), lootItemConditionBuilder));
-
-
-
         HolderLookup.RegistryLookup<Enchantment> registrylookup = this.registries.lookupOrThrow(Registries.ENCHANTMENT);
-
         this.add(ModBlocks.LOW_GRADE_YANG_FRUIT_BUSH.get(), block -> this.applyExplosionDecay(
-            block, LootTable.lootTable().withPool(LootPool.lootPool().when(
-            LootItemBlockStatePropertyCondition.hasBlockStateProperties(ModBlocks.LOW_GRADE_YANG_FRUIT_BUSH.get())
-            .setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(SweetBerryBushBlock.AGE, 3))
-            ).add(LootItem.lootTableItem(ModItems.LOW_GRADE_YANG_FRUIT.get()))
-            .apply(SetItemCountFunction.setCount(UniformGenerator.between(2.0F, 3.0F)))
-            .apply(ApplyBonusCount.addUniformBonusCount(registrylookup.getOrThrow(Enchantments.FORTUNE)))
-            ).withPool(LootPool.lootPool().when(
-            LootItemBlockStatePropertyCondition.hasBlockStateProperties(ModBlocks.LOW_GRADE_YANG_FRUIT_BUSH.get())
-            .setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(SweetBerryBushBlock.AGE, 2))
-            ).add(LootItem.lootTableItem(ModItems.LOW_GRADE_YANG_FRUIT.get()))
-            .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0F, 2.0F)))
-            .apply(ApplyBonusCount.addUniformBonusCount(registrylookup.getOrThrow(Enchantments.FORTUNE)))
-            )));
-}
-
-
+                block, LootTable.lootTable().withPool(LootPool.lootPool().when(
+                                        LootItemBlockStatePropertyCondition.hasBlockStateProperties(ModBlocks.LOW_GRADE_YANG_FRUIT_BUSH.get())
+                                                .setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(SweetBerryBushBlock.AGE, 3))
+                                ).add(LootItem.lootTableItem(ModItems.LOW_GRADE_YANG_FRUIT.get()))
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(2.0F, 3.0F)))
+                                .apply(ApplyBonusCount.addUniformBonusCount(registrylookup.getOrThrow(Enchantments.FORTUNE)))
+                ).withPool(LootPool.lootPool().when(
+                                        LootItemBlockStatePropertyCondition.hasBlockStateProperties(ModBlocks.LOW_GRADE_YANG_FRUIT_BUSH.get())
+                                                .setProperties(StatePropertiesPredicate.Builder.properties().hasProperty(SweetBerryBushBlock.AGE, 2))
+                                ).add(LootItem.lootTableItem(ModItems.LOW_GRADE_YANG_FRUIT.get()))
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0F, 2.0F)))
+                                .apply(ApplyBonusCount.addUniformBonusCount(registrylookup.getOrThrow(Enchantments.FORTUNE)))
+                )));
+    }
     @Override
-    protected Iterable<Block> getKnownBlocks() {
+    protected @NotNull Iterable<Block> getKnownBlocks() {
         return ModBlocks.BLOCKS.getEntries().stream().map(Holder::value)::iterator;
     }
 }

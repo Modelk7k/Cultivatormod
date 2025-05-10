@@ -14,14 +14,12 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.model2k.cultivatormod.datagen.ModAttachments;
 import net.model2k.cultivatormod.datagen.PlayerData;
-
 import java.util.*;
 
 public class HomeCommand {
     public HomeCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("home")
                 .executes(this::listHomes)
-
                 .then(Commands.argument("arg1", StringArgumentType.string())
                         .suggests((context, builder) -> {
                             ServerPlayer player = context.getSource().getPlayer();
@@ -31,26 +29,19 @@ public class HomeCommand {
                         .executes(context -> {
                             ServerPlayer player = context.getSource().getPlayer();
                             String arg1 = StringArgumentType.getString(context, "arg1");
-
-                            // check if arg1 is the name of one of *your own* homes
                             PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
                             if (data.getAllHomes().containsKey(arg1)) {
                                 return teleportToHome(context, player, player, arg1);
                             }
-
-                            // otherwise, assume it's a player name (staff only)
                             if (!player.getTags().contains("staff")) {
                                 context.getSource().sendFailure(Component.literal("Invalid home name or no permission to view other players' homes."));
                                 return -1;
                             }
-
                             ServerPlayer target = context.getSource().getServer().getPlayerList().getPlayerByName(arg1);
                             if (target == null) {
                                 context.getSource().sendFailure(Component.literal("Player '" + arg1 + "' not found or not online."));
                                 return -1;
                             }
-
-                            // list target's homes
                             PlayerData targetData = target.getData(ModAttachments.PLAYER_DATA);
                             Set<String> homes = targetData.getAllHomes().keySet();
                             context.getSource().sendSuccess(() ->
@@ -73,22 +64,18 @@ public class HomeCommand {
                                         context.getSource().sendFailure(Component.literal("You do not have permission to teleport to others' homes."));
                                         return -1;
                                     }
-
                                     String targetName = StringArgumentType.getString(context, "arg1");
                                     String homeName = StringArgumentType.getString(context, "arg2");
-
                                     ServerPlayer target = context.getSource().getServer().getPlayerList().getPlayerByName(targetName);
                                     if (target == null) {
                                         context.getSource().sendFailure(Component.literal("Player '" + targetName + "' is not online."));
                                         return -1;
                                     }
-
                                     return teleportToHome(context, player, target, homeName);
                                 })
                         )
                 )
         );
-
         dispatcher.register(Commands.literal("set")
                 .then(Commands.literal("home")
                         .then(Commands.argument("name", StringArgumentType.string())
@@ -96,7 +83,6 @@ public class HomeCommand {
                         )
                 )
         );
-
         dispatcher.register(Commands.literal("delhome")
                 .then(Commands.argument("name", StringArgumentType.string())
                         .suggests((context, builder) -> {
@@ -108,7 +94,6 @@ public class HomeCommand {
                 )
         );
     }
-
     private int listHomes(CommandContext<CommandSourceStack> context) {
         ServerPlayer player = context.getSource().getPlayer();
         PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
@@ -117,12 +102,10 @@ public class HomeCommand {
                 Component.literal(homes.isEmpty() ? "You have no homes set." : "Your homes: " + String.join(", ", homes)), false);
         return 1;
     }
-
     private int home(CommandContext<CommandSourceStack> context) {
         ServerPlayer player = context.getSource().getPlayer();
         return teleportToHome(context, player, player, StringArgumentType.getString(context, "name"));
     }
-
     private int staffHome(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         ServerPlayer staff = context.getSource().getPlayer();
         GameProfile targetProfile = GameProfileArgument.getGameProfiles(context, "player").iterator().next();
@@ -134,22 +117,18 @@ public class HomeCommand {
         String name = StringArgumentType.getString(context, "name");
         return teleportToHome(context, staff, targetPlayer, name);
     }
-
     private int teleportToHome(CommandContext<CommandSourceStack> context, ServerPlayer teleporter, ServerPlayer dataOwner, String name) {
         PlayerData data = dataOwner.getData(ModAttachments.PLAYER_DATA);
         String home = data.getHomes(name);
-
         if (home == null || home.isEmpty()) {
             context.getSource().sendFailure(Component.literal("No home named '" + name + "' found."));
             return -1;
         }
-
         String[] coords = home.split(",");
         if (coords.length != 3) {
             context.getSource().sendFailure(Component.literal("Invalid coordinates for home '" + name + "'"));
             return -1;
         }
-
         try {
             double x = Double.parseDouble(coords[0]);
             double y = Double.parseDouble(coords[1]);
@@ -163,40 +142,33 @@ public class HomeCommand {
             return -1;
         }
     }
-
     private int setHome(CommandContext<CommandSourceStack> context) {
         ServerPlayer player = context.getSource().getPlayer();
         PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
         String name = StringArgumentType.getString(context, "name");
         boolean isStaff = player.getTags().contains("staff");
-
         if (!isStaff && data.getAllHomes().size() >= 10 && !data.getAllHomes().containsKey(name)) {
             context.getSource().sendFailure(Component.literal("You already have 10 homes. Delete one or get the 'staff' tag."));
             return -1;
         }
-
         BlockPos pos = player.blockPosition();
         String coords = pos.getX() + "," + pos.getY() + "," + pos.getZ();
         data.setHomes(name, coords);
         context.getSource().sendSuccess(() -> Component.literal("Set home '" + name + "' at " + coords), true);
         return 1;
     }
-
     private int deleteHome(CommandContext<CommandSourceStack> context) {
         ServerPlayer player = context.getSource().getPlayer();
         PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
         String name = StringArgumentType.getString(context, "name");
-
         if (!data.getAllHomes().containsKey(name)) {
             context.getSource().sendFailure(Component.literal("No home named '" + name + "' found."));
             return -1;
         }
-
         data.removeHome(name);
         context.getSource().sendSuccess(() -> Component.literal("Deleted home '" + name + "'."), true);
         return 1;
     }
-
     private int listOtherHomes(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         GameProfile targetProfile = GameProfileArgument.getGameProfiles(context, "player").iterator().next();
         ServerPlayer targetPlayer = context.getSource().getServer().getPlayerList().getPlayer(targetProfile.getId());
@@ -204,7 +176,6 @@ public class HomeCommand {
             context.getSource().sendFailure(Component.literal("Target player is not online."));
             return -1;
         }
-
         PlayerData data = targetPlayer.getData(ModAttachments.PLAYER_DATA);
         Set<String> homes = data.getAllHomes().keySet();
         context.getSource().sendSuccess(() ->

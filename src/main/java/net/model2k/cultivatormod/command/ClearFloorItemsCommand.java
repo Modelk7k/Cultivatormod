@@ -28,10 +28,13 @@ public class ClearFloorItemsCommand {
         return clearFloorItems(level, context);
     }
     private int clearFloorItems(ServerLevel level, CommandContext<CommandSourceStack> context) {
-        AABB aabb = new AABB(level.getMinBuildHeight(), 0, level.getMinBuildHeight(), level.getMaxBuildHeight(), level.getMaxBuildHeight(), level.getMaxBuildHeight());
+        AABB aabb = new AABB(
+                -30000000, level.getMinBuildHeight(), -30000000,
+                30000000, level.getMaxBuildHeight(),  30000000
+        );
         int removed = 0;
         for (ItemEntity item : level.getEntitiesOfClass(ItemEntity.class, aabb)) {
-            item.discard(); // Remove the item from the world
+            item.discard();
             removed++;
         }
         if (context != null) {

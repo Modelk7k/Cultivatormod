@@ -26,6 +26,7 @@ import net.model2k.cultivatormod.recipe.JadeFurnaceRecipeInput;
 import net.model2k.cultivatormod.recipe.ModRecipes;
 import net.model2k.cultivatormod.screen.custom.LowGradeJadeFurnaceMenu;
 import net.neoforged.neoforge.items.ItemStackHandler;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
@@ -37,11 +38,11 @@ public class JadeFurnaceEntity extends BlockEntity implements MenuProvider {
     static Player CurrentPlayer;
     public final ItemStackHandler inventory = new ItemStackHandler(4) {
         @Override
-        public boolean isItemValid(int slot, ItemStack stack) {
+        public boolean isItemValid(int slot, @NotNull ItemStack stack) {
             return slot != 3;
         }
         @Override
-        protected int getStackLimit(int slot, ItemStack stack) {
+        protected int getStackLimit(int slot, @NotNull ItemStack stack) {
             if (slot == 3) {
                 return 64;
             }
@@ -78,12 +79,12 @@ public class JadeFurnaceEntity extends BlockEntity implements MenuProvider {
         }
     }
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+    protected void saveAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
         super.saveAdditional(tag, registries);
         tag.put("inventory", this.inventory.serializeNBT(registries));
     }
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+    protected void loadAdditional(@NotNull CompoundTag tag, HolderLookup.@NotNull Provider registries) {
         super.loadAdditional(tag, registries);
         this.inventory.deserializeNBT(registries, tag.getCompound("inventory"));
     }
@@ -123,12 +124,12 @@ public class JadeFurnaceEntity extends BlockEntity implements MenuProvider {
        QiCost -= 1;
     }
     @Override
-    public Component getDisplayName() {
+    public @NotNull Component getDisplayName() {
         return Component.literal("Jade Furnace");
     }
     @Nullable
     @Override
-    public  AbstractContainerMenu createMenu(int containerId, Inventory playerInventory, Player player) {
+    public  AbstractContainerMenu createMenu(int containerId, @NotNull Inventory playerInventory, @NotNull Player player) {
         return new LowGradeJadeFurnaceMenu(containerId, playerInventory, this);
     }
     @Nullable
@@ -137,7 +138,7 @@ public class JadeFurnaceEntity extends BlockEntity implements MenuProvider {
         return ClientboundBlockEntityDataPacket.create(this);
     }
     @Override
-    public CompoundTag getUpdateTag(HolderLookup.Provider pRegistries) {
+    public @NotNull CompoundTag getUpdateTag(HolderLookup.@NotNull Provider pRegistries) {
         return saveWithoutMetadata(pRegistries);
     }
     public static void onPlayerInteracts(Player player) {

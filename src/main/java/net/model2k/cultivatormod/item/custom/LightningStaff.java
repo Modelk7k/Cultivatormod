@@ -21,7 +21,7 @@ import net.model2k.cultivatormod.block.ModBlocks;
 import net.model2k.cultivatormod.datagen.ModAttachments;
 import net.model2k.cultivatormod.datagen.PlayerData;
 import net.model2k.cultivatormod.network.ModNetwork;
-
+import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Map;
 
@@ -52,7 +52,7 @@ public class LightningStaff extends Item {
         super(properties);
     }
     @Override
-    public InteractionResult useOn(UseOnContext context) {
+    public @NotNull InteractionResult useOn(UseOnContext context) {
         Level level = context.getLevel();
         if (!(context.getPlayer() instanceof ServerPlayer player)) {
             return InteractionResult.PASS;
@@ -79,7 +79,7 @@ public class LightningStaff extends Item {
                 }
             }
             for (BlockPos boltPos : boltPositions) {
-                LightningBolt bolt = EntityType.LIGHTNING_BOLT.create((ServerLevel) level);
+                LightningBolt bolt = EntityType.LIGHTNING_BOLT.create(level);
                 if (bolt != null) {
                     bolt.moveTo(boltPos.getX(), boltPos.getY(), boltPos.getZ());
                     bolt.setVisualOnly(false);
@@ -105,7 +105,7 @@ public class LightningStaff extends Item {
                         return;
                     }
                     if (!SAND_TO_GLASS.containsKey(block) && block != ModBlocks.RAINBOW_SAND.get() && !RAINBOW_GLASS.contains(block)) {
-                        level.destroyBlock(p, true); // true = drops items
+                        level.destroyBlock(p, true);
                     }
                 });
                 level.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.WEATHER, .5f, 1f);
@@ -132,10 +132,7 @@ public class LightningStaff extends Item {
             Blocks.LIGHT_BLUE_STAINED_GLASS, Blocks.PINK_STAINED_GLASS
     };
     @Override
-    public boolean canAttackBlock(BlockState state, Level level, BlockPos pos, Player player) {
-        if (player.position().distanceTo(pos.getCenter()) < 5) {
-            return true;
-        }
-        return false;
+    public boolean canAttackBlock(@NotNull BlockState state, @NotNull Level level, BlockPos pos, Player player) {
+        return player.position().distanceTo(pos.getCenter()) < 5;
     }
 }

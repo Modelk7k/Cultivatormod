@@ -6,6 +6,7 @@ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import net.model2k.cultivatormod.CultivatorMod;
+import org.jetbrains.annotations.NotNull;
 
 public class QiSlashPacket implements CustomPacketPayload {
     public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(CultivatorMod.MOD_ID, "qislash");
@@ -26,7 +27,7 @@ public class QiSlashPacket implements CustomPacketPayload {
             buf -> new QiSlashPacket(new Vec3(buf.readDouble(), buf.readDouble(), buf.readDouble()))
     );
     @Override
-    public Type<? extends CustomPacketPayload> type() {
+    public @NotNull Type<? extends CustomPacketPayload> type() {
         return TYPE;
     }
     public Vec3 getDirection() {

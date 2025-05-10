@@ -9,6 +9,7 @@ import net.minecraft.world.level.Level;
 import net.model2k.cultivatormod.datagen.ModAttachments;
 import net.model2k.cultivatormod.datagen.PlayerData;
 import net.model2k.cultivatormod.network.ModNetwork;
+import org.jetbrains.annotations.NotNull;
 
 public class LowGradeSpiritPill extends Item {
     static int usedTimes = 0;
@@ -16,7 +17,7 @@ public class LowGradeSpiritPill extends Item {
         super(properties);
     }
     @Override
-    public ItemStack finishUsingItem(ItemStack stack, Level level, LivingEntity livingEntity) {
+    public @NotNull ItemStack finishUsingItem(@NotNull ItemStack stack, @NotNull Level level, LivingEntity livingEntity) {
             PlayerData data = livingEntity.getData(ModAttachments.PLAYER_DATA);
         if (data.getMaxSpiritPower() < 50 && usedTimes == 0 && !level.isClientSide()) {
             data.setMaxSpiritPower(data.getMaxSpiritPower() + 5);
@@ -30,4 +31,3 @@ public class LowGradeSpiritPill extends Item {
         return super.finishUsingItem(stack, level, livingEntity);
     }
 }
-

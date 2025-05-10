@@ -13,7 +13,6 @@ public class ModRecipes {
             DeferredRegister.create(Registries.RECIPE_SERIALIZER, CultivatorMod.MOD_ID);
     public static final DeferredRegister<RecipeType<?>> TYPES =
             DeferredRegister.create(Registries.RECIPE_TYPE, CultivatorMod.MOD_ID);
-
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<JadeFurnaceRecipe>> JADE_FURNACE_SERIALIZER =
             SERIALIZERS.register("jade_furnace", JadeFurnaceRecipe.Serializer::new);
     public static final DeferredHolder<RecipeType<?>, RecipeType<JadeFurnaceRecipe>> JADE_FURNACE_TYPE =

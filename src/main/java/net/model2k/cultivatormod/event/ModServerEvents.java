@@ -41,7 +41,6 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import java.util.*;
 
-@SuppressWarnings("ALL")
 @EventBusSubscriber(modid = CultivatorMod.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public class ModServerEvents {
     private static final Set<String> Immortals = new HashSet<>();
@@ -79,15 +78,15 @@ public class ModServerEvents {
                 }
             }
             if (data.getQiType("Water Qi")) {
-                player.getAttribute(Attributes.WATER_MOVEMENT_EFFICIENCY).setBaseValue(Integer.MAX_VALUE);
-                player.getAttribute(Attributes.OXYGEN_BONUS).setBaseValue(Integer.MAX_VALUE);
+                Objects.requireNonNull(player.getAttribute(Attributes.WATER_MOVEMENT_EFFICIENCY)).setBaseValue(Integer.MAX_VALUE);
+                Objects.requireNonNull(player.getAttribute(Attributes.OXYGEN_BONUS)).setBaseValue(Integer.MAX_VALUE);
                 data.setWalkOnWater(true);
             }
             if (data.getQiType("Fire Qi")) {
-                player.getAttribute(Attributes.BURNING_TIME).setBaseValue(0);
+                Objects.requireNonNull(player.getAttribute(Attributes.BURNING_TIME)).setBaseValue(0);
             }
             if (!player.level().isClientSide && data.getCanFly()) {
-                player.getAbilities().mayfly = true;  // Allow flying
+                player.getAbilities().mayfly = true;
                 player.onUpdateAbilities();
             }
             if (data.getSpeed() > 0) {
@@ -129,11 +128,11 @@ public class ModServerEvents {
             PlayerData data = event.getEntity().getData(ModAttachments.PLAYER_DATA);
             if (data.getMajorRealm() > 0) {
                 event.setNewDamage(0);
-                player.getAttribute(Attributes.BURNING_TIME).setBaseValue(0);
+                Objects.requireNonNull(player.getAttribute(Attributes.BURNING_TIME)).setBaseValue(0);
             } else {
                 event.setNewDamage(0);
                 data.setHealth(data.getHealth() - damage);
-                ModNetwork.sendSyncPlayerData((ServerPlayer) player);
+                ModNetwork.sendSyncPlayerData(player);
             }
         }
         if (event.getEntity() instanceof ServerPlayer player) {
@@ -178,7 +177,7 @@ public class ModServerEvents {
             double headYEnd = zombie.getY() + zombie.getBbHeight();
             if (hitPos.y >= headYStart && hitPos.y <= headYEnd) {
                 if (Math.random() < 0.5) {
-                    SeveredZombieHeadEntity severedHead = new SeveredZombieHeadEntity(zombie, zombie.level());
+                    SeveredZombieHeadEntity severedHead = new SeveredZombieHeadEntity(zombie.level());
                     severedHead.setPos(zombie.getX(), zombie.getY() + zombie.getBbHeight() - 0.25, zombie.getZ());
                     zombie.level().addFreshEntity(severedHead);
                     severedHead.setPos(zombie.getX(), zombie.getY() + zombie.getBbHeight() + 0.2, zombie.getZ());
@@ -206,7 +205,6 @@ public class ModServerEvents {
                                         source.sendFailure(Component.literal("🛡️ You can't kill " + target + "!"));
                                         return 0;
                                     }
-                                    CommandSourceStack source = ctx.getSource();
                                     return 1;
                                 })
                         )
@@ -215,14 +213,12 @@ public class ModServerEvents {
                 Commands.literal("kick")
                         .then(Commands.argument("targets", EntityArgument.players())
                                 .executes(ctx -> {
-                                    // Get the target player name
                                     String target = EntityArgument.getPlayers(ctx, "targets").iterator().next().getName().getString();
                                     if (Immortals.contains(target)) {
                                         CommandSourceStack source = ctx.getSource();
                                         source.sendFailure(Component.literal("🛡️ You can't kick " + target + "!"));
                                         return 0;
                                     }
-                                    CommandSourceStack source = ctx.getSource();
                                     return 1;
                                 })
                         )
@@ -230,7 +226,7 @@ public class ModServerEvents {
     }
     @SubscribeEvent
     private static void onPlayerTick(PlayerTickEvent.Post event) {
-        if (event.getEntity() != null && !event.getEntity().level().isClientSide) {
+        if (!event.getEntity().level().isClientSide) {
             ServerPlayer player = (ServerPlayer) event.getEntity();
             PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
             data.charge(player);
@@ -267,25 +263,12 @@ public class ModServerEvents {
     @SubscribeEvent
     private static void onAttackEntity(AttackEntityEvent event) {
         Player player = event.getEntity();
-
         if (!player.level().isClientSide && event.getTarget() instanceof LivingEntity target) {
             event.setCanceled(true); // Cancel vanilla damage handling
-
-            // Base attack damage from player attributes
-            double baseDamage = player.getAttribute(Attributes.ATTACK_DAMAGE).getValue();
-
-            // Modern NeoForge: get enchantment bonus using a static helper
-
-
+            double baseDamage = Objects.requireNonNull(player.getAttribute(Attributes.ATTACK_DAMAGE)).getValue();
             float totalDamage = (float) baseDamage;
-
-            // Build damage source
             DamageSource source = player.damageSources().playerAttack(player);
-
-            // Apply the damage manually
             target.hurt(source, totalDamage);
-
-            // Reset animation + cooldown visuals (optional)
             player.resetAttackStrengthTicker();
             player.swing(player.getUsedItemHand(), true);
         }
@@ -336,12 +319,12 @@ public class ModServerEvents {
                 }
             }
             if (data.getQiType("Water Qi")) {
-                player.getAttribute(Attributes.WATER_MOVEMENT_EFFICIENCY).setBaseValue(Integer.MAX_VALUE);
-                player.getAttribute(Attributes.OXYGEN_BONUS).setBaseValue(Integer.MAX_VALUE);
+                Objects.requireNonNull(player.getAttribute(Attributes.WATER_MOVEMENT_EFFICIENCY)).setBaseValue(Integer.MAX_VALUE);
+                Objects.requireNonNull(player.getAttribute(Attributes.OXYGEN_BONUS)).setBaseValue(Integer.MAX_VALUE);
                 data.setWalkOnWater(true);
             }
             if (data.getQiType("Fire Qi")) {
-                player.getAttribute(Attributes.BURNING_TIME).setBaseValue(0);
+                Objects.requireNonNull(player.getAttribute(Attributes.BURNING_TIME)).setBaseValue(0);
             }
             if (!player.level().isClientSide && data.getCanFly()) {
                 player.getAbilities().mayfly = true;  // Allow flying
@@ -357,9 +340,7 @@ public class ModServerEvents {
     private static void onPlayerJump(LivingEvent.LivingJumpEvent event) {
         if (event.getEntity() instanceof ServerPlayer player) {
             PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
-            if (data != null) {
                 data.applyJumpBoost(player);
-                }
             }
         }
-    }
+}

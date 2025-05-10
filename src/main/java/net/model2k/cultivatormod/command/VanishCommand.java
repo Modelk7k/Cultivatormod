@@ -9,7 +9,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.model2k.cultivatormod.network.ModNetwork;
 
 public class VanishCommand {
-
     public VanishCommand(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("vanish")
                 .requires(source -> source.getPlayer() != null && source.getPlayer().getTags().contains("staff")) // Require staff tag here

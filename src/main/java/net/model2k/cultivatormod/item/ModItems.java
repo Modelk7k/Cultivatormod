@@ -12,7 +12,6 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 public class ModItems {
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(CultivatorMod.MOD_ID);
-
     //Gems and Bars
     public static final DeferredItem<Item> LOW_GRADE_JADE_STONE  = ITEMS.register("low_grade_jade_stone" ,
             () -> new Item(new Item.Properties()));
@@ -70,7 +69,6 @@ public class ModItems {
     //Misc
     public static final DeferredItem<Item> CULT_LOGO  = ITEMS.register("cult_logo" ,
             () -> new Item(new Item.Properties()));
-
     //Register
     public static void register(IEventBus eventBus) {
         ITEMS.register(eventBus);

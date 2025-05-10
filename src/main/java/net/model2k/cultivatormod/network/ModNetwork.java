@@ -1,12 +1,10 @@
 package net.model2k.cultivatormod.network;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.monster.Zombie;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.model2k.cultivatormod.CultivatorMod;
 import net.model2k.cultivatormod.datagen.ModAttachments;
@@ -26,119 +24,110 @@ public class ModNetwork {
         registrar.playToClient(
                 SyncPlayerDataPacket.TYPE,
                 SyncPlayerDataPacket.STREAM_CODEC,
-                (packet, context) -> {
-                    context.enqueueWork(() -> {
-                        int maxHealth = packet.getMaxHealth();
-                        int health = packet.getHealth();
-                        int qi = packet.getQi();
-                        int maxQi = packet.getMaxQi();
-                        int maxSpiritPower = packet.getMaxSpiritPower();
-                        int spiritPower = packet.getSpiritPower();
-                        int speed = packet.getSpeed();
-                        int jump = packet.getJump();
-                        int dash = packet.getDash();
-                        int jumpLevel = packet.getJumpLevel();
-                        int speedLevel = packet.getSpeedLevel();
-                        boolean canDash = packet.getCanDash();
-                        boolean walkOnWater = packet.getWalkOnWater();
-                        boolean canFly = packet.getCanFly();
-                        PlayerStatsClient.setMaxHealth(maxHealth);
-                        PlayerStatsClient.setHealth(health);
-                        PlayerStatsClient.setQi(qi);
-                        PlayerStatsClient.setMaxQi(maxQi);
-                        PlayerStatsClient.setSpiritPower(spiritPower);
-                        PlayerStatsClient.setMaxSpiritPower(maxSpiritPower);
-                        PlayerStatsClient.setSpeed(speed);
-                        PlayerStatsClient.setJump(jump);
-                        PlayerStatsClient.setDash(dash);
-                        PlayerStatsClient.setJumpLevel(jumpLevel);
-                        PlayerStatsClient.setSpeedLevel(speedLevel);
-                        PlayerStatsClient.setCanDash(canDash);
-                        PlayerStatsClient.setWalkOnWater(walkOnWater);
-                        PlayerStatsClient.setCanFly(canFly);
-                        PlayerStatsClient.setHasSynced(true);
+                (packet, context) -> context.enqueueWork(() -> {
+                    int maxHealth = packet.getMaxHealth();
+                    int health = packet.getHealth();
+                    int qi = packet.getQi();
+                    int maxQi = packet.getMaxQi();
+                    int maxSpiritPower = packet.getMaxSpiritPower();
+                    int spiritPower = packet.getSpiritPower();
+                    int speed = packet.getSpeed();
+                    int jump = packet.getJump();
+                    int dash = packet.getDash();
+                    int jumpLevel = packet.getJumpLevel();
+                    int speedLevel = packet.getSpeedLevel();
+                    boolean canDash = packet.getCanDash();
+                    boolean walkOnWater = packet.getWalkOnWater();
+                    boolean canFly = packet.getCanFly();
+                    PlayerStatsClient.setMaxHealth(maxHealth);
+                    PlayerStatsClient.setHealth(health);
+                    PlayerStatsClient.setQi(qi);
+                    PlayerStatsClient.setMaxQi(maxQi);
+                    PlayerStatsClient.setSpiritPower(spiritPower);
+                    PlayerStatsClient.setMaxSpiritPower(maxSpiritPower);
+                    PlayerStatsClient.setSpeed(speed);
+                    PlayerStatsClient.setJump(jump);
+                    PlayerStatsClient.setDash(dash);
+                    PlayerStatsClient.setJumpLevel(jumpLevel);
+                    PlayerStatsClient.setSpeedLevel(speedLevel);
+                    PlayerStatsClient.setCanDash(canDash);
+                    PlayerStatsClient.setWalkOnWater(walkOnWater);
+                    PlayerStatsClient.setCanFly(canFly);
+                    PlayerStatsClient.setHasSynced(true);
 
-                    });
-                }
+                })
         );
-        registrar.playToServer(
+        PayloadRegistrar payloadRegistrar = registrar.playToServer(
                 QiSlashPacket.TYPE,
                 QiSlashPacket.STREAM_CODEC,
-                (packet, context) -> {
-                    context.enqueueWork(() -> {
-                        ServerPlayer player = (ServerPlayer) context.player();
-                        if (player != null && player.isAlive()) {
-                            Vec3 look = player.getLookAngle();
-                            QiSlashEntity slash = new QiSlashEntity(player.level(), player, look);
-                            player.level().addFreshEntity(slash); // Only add the entity on the server side
-                        }
-                    });
-                }
+                (packet, context) -> context.enqueueWork(() -> {
+                    ServerPlayer player = (ServerPlayer) context.player();
+                    if (player.isAlive()) {
+                        Vec3 look = player.getLookAngle();
+                        QiSlashEntity slash = new QiSlashEntity(player.level(), player, look);
+                        player.level().addFreshEntity(slash); // Only add the entity on the server side
+                    }
+                })
         );
         registrar.playToClient(
                 VanishStatusPacket.TYPE,
                 VanishStatusPacket.STREAM_CODEC,
-                (packet, context) -> {
-                    // Handle the packet using the VanishStatusPacketHandler
-                    new VanishStatusPacketHandler().handle(packet);
-                }
+                (packet, context) -> context.enqueueWork(() -> {
+                    ServerPlayer player = (ServerPlayer) context.player();
+                    if (player.isAlive()) {
+                        boolean isVanished = packet.isVanished();
+                        player.setInvisible(isVanished);
+                    }
+                })
         );
         registrar.playToServer(
                 DashPacket.TYPE,
                 DashPacket.STREAM_CODEC,
-                (packet, context) -> {
-                    context.enqueueWork(() -> {
-                        ServerPlayer player = (ServerPlayer) context.player();
-                        if (!player.level().isClientSide() && player != null && player.isAlive()) {
-                            PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
-                            data.dashForward(player, data.getDash());
-                        }
-                    });
-                }
+                (packet, context) -> context.enqueueWork(() -> {
+                    ServerPlayer player = (ServerPlayer) context.player();
+                    if (!player.level().isClientSide() && player.isAlive()) {
+                        PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
+                        data.dashForward(player, data.getDash());
+                    }
+                })
         );
         registrar.playToServer(
                 SpeedPacket.TYPE,
                 SpeedPacket.STREAM_CODEC,
-                (packet, context) -> {
-                    context.enqueueWork(() -> {
-                        ServerPlayer player = (ServerPlayer) context.player();
-                        if (player != null && player.isAlive() && !player.level().isClientSide()) {
-                            PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
-                            data.toggleSpeedLevel(player);
-                            data.applySpeedToPlayer(player);
-                        }
-                    });
-                }
+                (packet, context) -> context.enqueueWork(() -> {
+                    ServerPlayer player = (ServerPlayer) context.player();
+                    if (player.isAlive() && !player.level().isClientSide()) {
+                        PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
+                        data.toggleSpeedLevel(player);
+                        data.applySpeedToPlayer(player);
+                    }
+                })
         );
         registrar.playToServer(
                 JumpPacket.TYPE,
                 JumpPacket.STREAM_CODEC,
-                (packet, context) -> {
-                    context.enqueueWork(() -> {
-                        ServerPlayer player = (ServerPlayer) context.player();
-                        if (player != null && player.isAlive() && !player.level().isClientSide()) {
-                            PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
-                            data.toggleJumpLevel(player);
-                        }
-                    });
-                }
+                (packet, context) -> context.enqueueWork(() -> {
+                    ServerPlayer player = (ServerPlayer) context.player();
+                    if (player.isAlive() && !player.level().isClientSide()) {
+                        PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
+                        data.toggleJumpLevel(player);
+                    }
+                })
         );
         registrar.playToClient(
                 ZombieBeheadPacket.TYPE,
                 ZombieBeheadPacket.STREAM_CODEC,
-                (packet, context) -> {
-                    context.enqueueWork(() -> {
-                        Minecraft mc = Minecraft.getInstance();
-                        if (mc.level != null) {
-                            Entity entity = Minecraft.getInstance().level.getEntity(packet.getEntityId());
-                            if (entity instanceof Zombie zombie) {
-                                zombie.getPersistentData().putBoolean("Beheaded", true);
-                            }
-
-
+                (packet, context) -> context.enqueueWork(() -> {
+                    Minecraft mc = Minecraft.getInstance();
+                    if (mc.level != null) {
+                        Entity entity = Minecraft.getInstance().level.getEntity(packet.getEntityId());
+                        if (entity instanceof Zombie zombie) {
+                            zombie.getPersistentData().putBoolean("Beheaded", true);
                         }
-                    });
-                }
+
+
+                    }
+                })
         );
     }
     public static void sendSyncPlayerData(ServerPlayer player) {

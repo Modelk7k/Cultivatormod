@@ -15,18 +15,14 @@ import net.neoforged.neoforge.client.model.generators.ConfiguredModel;
 import net.neoforged.neoforge.client.model.generators.ModelFile;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
 import net.neoforged.neoforge.registries.DeferredBlock;
-
 import java.util.function.Function;
 
 public class ModBlockStateProvider extends BlockStateProvider {
     public ModBlockStateProvider(PackOutput output, ExistingFileHelper exFileHelper) {
         super(output, CultivatorMod.MOD_ID, exFileHelper);
     }
-
     @Override
     protected void registerStatesAndModels() {
-
-
         blockWithItem(ModBlocks.LOW_GRADE_JADE);
         blockWithItem(ModBlocks.QUARK_PLANK);
         blockWithItem(ModBlocks.BLACK_SAND);
@@ -43,31 +39,20 @@ public class ModBlockStateProvider extends BlockStateProvider {
         blockWithItem(ModBlocks.GREY_SAND);
         blockWithItem(ModBlocks.RAINBOW_SAND);
         blockWithItem(ModBlocks.MAGENTA_SAND);
-
         simpleBlockWithItem(ModBlocks.LOW_GRADE_HERB.get(), models().cross("low_grade_herb",modLoc("block/low_grade_herb")).renderType("cutout"));
-
         stairsBlock(ModBlocks.QUARK_STAIRS.get(), blockTexture(ModBlocks.QUARK_PLANK.get()));
-
         fenceBlock(ModBlocks.QUARK_FENCE.get(), blockTexture(ModBlocks.QUARK_PLANK.get()));
-
         fenceGateBlock(ModBlocks.QUARK_FENCE_GATE.get(), blockTexture(ModBlocks.QUARK_PLANK.get()));
-
         slabBlock(ModBlocks.QUARK_SLAB.get(), blockTexture(ModBlocks.QUARK_PLANK.get()), blockTexture(ModBlocks.QUARK_PLANK.get()));
-
         pressurePlateBlock(ModBlocks.QUARK_PRESSURE_PLATE.get(), blockTexture(ModBlocks.QUARK_PLANK.get()));
-
         buttonBlock(ModBlocks.QUARK_BUTTON.get(), blockTexture(ModBlocks.QUARK_PLANK.get()));
-
         wallBlock(ModBlocks.QUARK_WALL.get(), blockTexture(ModBlocks.QUARK_PLANK.get()));
-
         doorBlockWithRenderType(ModBlocks.QUARK_DOOR.get(), modLoc("block/quark_plank"), modLoc("block/quark_plank"), "cutout");
         trapdoorBlockWithRenderType(ModBlocks.QUARK_TRAP_DOOR.get(), modLoc("block/quark_plank"), true, "cutout");
-
-        logBlock((RotatedPillarBlock) ModBlocks.QUARK_LOG.get());
-        axisBlock(((RotatedPillarBlock) ModBlocks.QUARK_WOOD.get()), blockTexture(ModBlocks.QUARK_LOG.get()), blockTexture(ModBlocks.QUARK_LOG.get()));
-        logBlock((RotatedPillarBlock) ModBlocks.QUARK_STRIPPED_LOG.get());
-        axisBlock((RotatedPillarBlock) ModBlocks.QUARK_STRIPPED_WOOD.get(), blockTexture(ModBlocks.QUARK_STRIPPED_LOG.get()), blockTexture(ModBlocks.QUARK_STRIPPED_LOG.get()));
-//Grass
+        logBlock(ModBlocks.QUARK_LOG.get());
+        axisBlock(ModBlocks.QUARK_WOOD.get(), blockTexture(ModBlocks.QUARK_LOG.get()), blockTexture(ModBlocks.QUARK_LOG.get()));
+        logBlock(ModBlocks.QUARK_STRIPPED_LOG.get());
+        axisBlock(ModBlocks.QUARK_STRIPPED_WOOD.get(), blockTexture(ModBlocks.QUARK_STRIPPED_LOG.get()), blockTexture(ModBlocks.QUARK_STRIPPED_LOG.get()));
         simpleBlockWithItem(ModBlocks.ALIEN_DIRT.get(), models().cubeAll("alien_dirt_block", modLoc("block/alien_dirt_block")));
         simpleBlockWithItem(ModBlocks.GREEN_GRASS.get(), models().cubeBottomTop("green_grass_block", modLoc("block/green_grass_block"), modLoc("block/alien_dirt_block"), modLoc("block/green_grass_block_top")));
         simpleBlockWithItem(ModBlocks.BLUE_GRASS.get(), models().cubeBottomTop("blue_grass_block", modLoc("block/blue_grass_block"), modLoc("block/alien_dirt_block"), modLoc("block/blue_grass_block_top")));
@@ -82,38 +67,34 @@ public class ModBlockStateProvider extends BlockStateProvider {
         simpleBlockWithItem(ModBlocks.BROWN_GRASS.get(), models().cubeBottomTop("brown_grass_block", modLoc("block/brown_grass_block"), modLoc("block/alien_dirt_block"), modLoc("block/brown_grass_block_top")));
         simpleBlockWithItem(ModBlocks.BLACK_GRASS.get(), models().cubeBottomTop("black_grass_block", modLoc("block/black_grass_block"), modLoc("block/alien_dirt_block"), modLoc("block/black_grass_block_top")));
         simpleBlockWithItem(ModBlocks.RAINBOW_GRASS.get(), models().cubeBottomTop("rainbow_grass_block", modLoc("block/rainbow_grass_block"), modLoc("block/alien_dirt_block"), modLoc("block/rainbow_grass_block_top")));
-//BlockItems
         blockItem(ModBlocks.QUARK_LOG);
         blockItem(ModBlocks.QUARK_WOOD);
         blockItem(ModBlocks.QUARK_STRIPPED_LOG);
         blockItem(ModBlocks.QUARK_STAIRS);
-        blockItem(ModBlocks.QUARK_TRAP_DOOR, "_bottom");
+        blockItem();
         blockItem(ModBlocks.QUARK_FENCE_GATE);
         blockItem(ModBlocks.QUARK_PRESSURE_PLATE);
         blockItem(ModBlocks.QUARK_SLAB);
         blockItem(ModBlocks.CHINESE_LAMP);
         blockItem(ModBlocks.QUARK_WOOD);
         blockItem(ModBlocks.QUARK_STRIPPED_WOOD);
-
         makeCrop((CropBlock) ModBlocks.LOW_GRADE_SPIRIT_FLOWER.get(), "low_grade_spirit_flower_stage", "low_grade_spirit_flower_stage");
         makeBush(((SweetBerryBushBlock) ModBlocks.LOW_GRADE_YANG_FRUIT_BUSH.get()), "low_grade_yang_fruit_bush_stage", "low_grade_yang_fruit_bush_stage");
-        leavesBlock(ModBlocks.QUARK_LEAVES);
-        saplingBlock(ModBlocks.QUARK_SAPLING);
-        //simpleBlock(ModBlocks.OLD_SCHOOL_FIRE.get(), models().cross("old_school_fire", modLoc("block/fire_layer_0")).renderType("cutout"));
+        leavesBlock();
+        saplingBlock();
         customLamp();
     }
-    private void saplingBlock(DeferredBlock<Block> blockRegistryObject) {
-        simpleBlock(blockRegistryObject.get(),
-                models().cross(BuiltInRegistries.BLOCK.getKey(blockRegistryObject.get()).getPath(), blockTexture(blockRegistryObject.get())).renderType("cutout"));
+    private void saplingBlock() {
+        simpleBlock(ModBlocks.QUARK_SAPLING.get(),
+                models().cross(BuiltInRegistries.BLOCK.getKey(ModBlocks.QUARK_SAPLING.get()).getPath(), blockTexture(ModBlocks.QUARK_SAPLING.get())).renderType("cutout"));
     }
-    private void leavesBlock(DeferredBlock<Block> blockRegistryObject) {
-        simpleBlockWithItem(blockRegistryObject.get(),
-                models().singleTexture(BuiltInRegistries.BLOCK.getKey(blockRegistryObject.get()).getPath(), ResourceLocation.parse("minecraft:block/leaves"),
-                        "all", blockTexture(blockRegistryObject.get())).renderType("cutout"));
+    private void leavesBlock() {
+        simpleBlockWithItem(ModBlocks.QUARK_LEAVES.get(),
+                models().singleTexture(BuiltInRegistries.BLOCK.getKey(ModBlocks.QUARK_LEAVES.get()).getPath(), ResourceLocation.parse("minecraft:block/leaves"),
+                        "all", blockTexture(ModBlocks.QUARK_LEAVES.get())).renderType("cutout"));
     }
     public void makeBush(BushBlock block, String modelName, String textureName) {
         Function<BlockState, ConfiguredModel[]> function = state -> states(state, modelName, textureName);
-
         getVariantBuilder(block).forAllStates(function);
     }
     private ConfiguredModel[] states(BlockState state, String modelName, String textureName) {
@@ -124,7 +105,6 @@ public class ModBlockStateProvider extends BlockStateProvider {
     }
     public void makeCrop(CropBlock block, String modelName, String textureName) {
         Function<BlockState, ConfiguredModel[]> function = state -> states(state, block, modelName, textureName);
-
         getVariantBuilder(block).forAllStates(function);
     }
     private ConfiguredModel[] states(BlockState state, CropBlock block, String modelName, String textureName) {
@@ -152,7 +132,7 @@ public class ModBlockStateProvider extends BlockStateProvider {
         private void blockItem (DeferredBlock < ? > deferredBlock) {
             simpleBlockItem(deferredBlock.get(), new ModelFile.UncheckedModelFile("cultivatormod:block/" + deferredBlock.getId().getPath()));
         }
-        private void blockItem (DeferredBlock < ? > deferredBlock, String appendix){
-            simpleBlockItem(deferredBlock.get(), new ModelFile.UncheckedModelFile("cultivatormod:block/" + deferredBlock.getId().getPath() + appendix));
+        private void blockItem (){
+            simpleBlockItem(((DeferredBlock<?>) ModBlocks.QUARK_TRAP_DOOR).get(), new ModelFile.UncheckedModelFile("cultivatormod:block/" + ModBlocks.QUARK_TRAP_DOOR.getId().getPath() + "_bottom"));
         }
     }

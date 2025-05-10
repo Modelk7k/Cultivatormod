@@ -5,6 +5,7 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.model2k.cultivatormod.CultivatorMod;
+import org.jetbrains.annotations.NotNull;
 
 public class SyncPlayerDataPacket implements CustomPacketPayload {
     public static final ResourceLocation ID = ResourceLocation.fromNamespaceAndPath(CultivatorMod.MOD_ID, "sync_player_data");
@@ -103,7 +104,7 @@ public class SyncPlayerDataPacket implements CustomPacketPayload {
     public boolean getCanDash(){return canDash;}
     public boolean getCanFly(){return canFly;}
     @Override
-    public Type<SyncPlayerDataPacket> type() {
+    public @NotNull Type<SyncPlayerDataPacket> type() {
         return TYPE;
     }
 }
