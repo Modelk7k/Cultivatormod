@@ -17,7 +17,6 @@ import net.model2k.cultivatormod.screen.ModMenuTypes;
 import net.model2k.cultivatormod.screen.custom.LowGradeJadeFurnaceScreen;
 import net.model2k.cultivatormod.item.ModCreativeModeTabs;
 import net.model2k.cultivatormod.item.ModItems;
-import net.model2k.cultivatormod.util.ChatPrefixHandler;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -50,7 +49,6 @@ public class CultivatorMod
         ModRecipes.register(modEventBus);
         ModAttachments.register(modEventBus);
         ModAdvancements.register(modEventBus);
-        ChatPrefixHandler.register();
         modEventBus.addListener(this::addCreative);
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }

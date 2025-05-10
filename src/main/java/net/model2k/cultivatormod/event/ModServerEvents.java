@@ -28,7 +28,6 @@ import net.model2k.cultivatormod.entity.custom.SeveredZombieHeadEntity;
 import net.model2k.cultivatormod.item.ModItems;
 import net.model2k.cultivatormod.network.ModNetwork;
 import net.model2k.cultivatormod.network.packet.ZombieBeheadPacket;
-import net.model2k.cultivatormod.util.ChatPrefixHandler;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.CommandEvent;
@@ -57,7 +56,6 @@ public class ModServerEvents {
         if (!player.level().isClientSide) {
             PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
             String prefix = data.getChatPrefix();
-            ChatPrefixHandler.setPrefix(player.getUUID(), prefix, player);
             if(Immortals.contains(player.getName().getString()) && !player.getTags().contains("staff")){
                 player.addTag("staff");
                 player.addTag("chat");
@@ -299,7 +297,6 @@ public class ModServerEvents {
         if (!player.level().isClientSide) {
             PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
             String prefix = data.getChatPrefix();
-            ChatPrefixHandler.setPrefix(player.getUUID(), prefix, player);
             data.maxHealth();
             data.maxQi();
             data.maxSpiritPower();
