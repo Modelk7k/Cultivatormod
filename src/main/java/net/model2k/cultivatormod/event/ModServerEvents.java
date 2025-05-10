@@ -1,7 +1,5 @@
 package net.model2k.cultivatormod.event;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.ZombieRenderer;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -19,19 +17,13 @@ import net.minecraft.world.entity.animal.Sheep;
 import net.minecraft.world.entity.monster.Zombie;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.model2k.cultivatormod.CultivatorMod;
 import net.model2k.cultivatormod.command.*;
 import net.model2k.cultivatormod.datagen.ModAttachments;
 import net.model2k.cultivatormod.datagen.PlayerData;
-import net.model2k.cultivatormod.entity.ModEntities;
-import net.model2k.cultivatormod.entity.client.CustomZombieModel;
-import net.model2k.cultivatormod.entity.client.CustomZombieRenderer;
 import net.model2k.cultivatormod.entity.custom.SeveredZombieHeadEntity;
 import net.model2k.cultivatormod.item.ModItems;
 import net.model2k.cultivatormod.network.ModNetwork;
@@ -47,7 +39,6 @@ import net.neoforged.neoforge.event.entity.living.LivingEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
-
 import java.util.*;
 
 @EventBusSubscriber(modid = CultivatorMod.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
