@@ -228,7 +228,6 @@ public class ModClientEvents {
                 }
             }
         }
-
     }
     private static void displayLookedAtInfo(Minecraft mc, PoseStack poseStack, int screenWidth, int screenHeight) {
         if (mc.player != null && mc.level != null) {
