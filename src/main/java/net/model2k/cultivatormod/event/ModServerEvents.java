@@ -41,6 +41,7 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import java.util.*;
 
+@SuppressWarnings("ALL")
 @EventBusSubscriber(modid = CultivatorMod.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
 public class ModServerEvents {
     private static final Set<String> Immortals = new HashSet<>();

@@ -25,8 +25,6 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.model2k.cultivatormod.CultivatorMod;
-import net.model2k.cultivatormod.datagen.ModAttachments;
-import net.model2k.cultivatormod.datagen.PlayerData;
 import net.model2k.cultivatormod.item.ModItems;
 import net.model2k.cultivatormod.network.packet.*;
 import net.model2k.cultivatormod.util.ModKeyBinds;
@@ -45,6 +43,7 @@ public class ModClientEvents {
         if (!PlayerStatsClient.isHasSynced()) return;
         Minecraft mc = Minecraft.getInstance();
         GuiGraphics gui = event.getGuiGraphics();
+        Font font = Minecraft.getInstance().font;
         int screenHeight = mc.getWindow().getGuiScaledHeight();
         int screenWidth = mc.getWindow().getGuiScaledWidth();
         int barWidth = 180;
@@ -59,36 +58,36 @@ public class ModClientEvents {
         int qiBarY = healthBarY - barHeight - spacing;
         int spiritBarY = qiBarY - barHeight - spacing;
         int barX = (screenWidth - barWidth) / 2;
-        displayLookedAtInfo(mc, event.getGuiGraphics().pose(), screenWidth, screenHeight);
+        displayLookedAtInfo(mc, event.getGuiGraphics().pose(), screenWidth);
+        assert mc.player != null;
         if(mc.player.isCreative()){return;}
         // === Health Bar (Bottom) ===
         float health = PlayerStatsClient.getHealth() < 1 ? 20 : PlayerStatsClient.getHealth();
         float maxHealth = PlayerStatsClient.getMaxHealth() < 1 ? 20 : PlayerStatsClient.getMaxHealth();
-        float healthRatio = maxHealth > 0 ? Math.min(health / maxHealth, 1.0f) : 0.0f;
+        float healthRatio = Math.min(health / maxHealth, 1.0f);
         int healthFillWidth = (int) (barWidth * healthRatio);
-        event.getGuiGraphics().fill(barX, healthBarY, barX + barWidth, healthBarY + barHeight, 0xFF333333);
-        event.getGuiGraphics().fill(barX, healthBarY, barX + healthFillWidth, healthBarY + barHeight, 0xFFFF0000);
+        gui.fill(barX, healthBarY, barX + barWidth, healthBarY + barHeight, 0xFF333333);
+        gui.fill(barX, healthBarY, barX + healthFillWidth, healthBarY + barHeight, 0xFFFF0000);
         // === Qi Bar (Middle) ===
         int qi = PlayerStatsClient.getQi();
         int maxQi = PlayerStatsClient.getMaxQi();
         float qiRatio = Math.min((float) qi / maxQi, 1.0f);
         int qiFillWidth = (int) (barWidth * qiRatio);
-        event.getGuiGraphics().fill(barX, qiBarY, barX + barWidth, qiBarY + barHeight, 0xFF333333);
-        event.getGuiGraphics().fill(barX, qiBarY, barX + qiFillWidth, qiBarY + barHeight, 0xFFFFFF00);
+        gui.fill(barX, qiBarY, barX + barWidth, qiBarY + barHeight, 0xFF333333);
+        gui.fill(barX, qiBarY, barX + qiFillWidth, qiBarY + barHeight, 0xFFFFFF00);
         // === Spirit Bar (Top) ===
         int spirit = PlayerStatsClient.getSpiritPower();
         int maxSpirit = PlayerStatsClient.getMaxSpiritPower();
         float spiritRatio = Math.min((float) spirit / maxSpirit, 1.0f);
         int spiritFillWidth = (int) (barWidth * spiritRatio);
-        event.getGuiGraphics().fill(barX, spiritBarY, barX + barWidth, spiritBarY + barHeight, 0xFF333333);
-        event.getGuiGraphics().fill(barX, spiritBarY, barX + spiritFillWidth, spiritBarY + barHeight, 0xFF00FFFF);
+        gui.fill(barX, spiritBarY, barX + barWidth, spiritBarY + barHeight, 0xFF333333);
+        gui.fill(barX, spiritBarY, barX + spiritFillWidth, spiritBarY + barHeight, 0xFF00FFFF);
         // === Experience Level (Left of Health Bar) ===
         int experienceLevel = mc.player.experienceLevel;
         int experienceLevelX = barX - 20;
         int experienceLevelY = healthBarY + (barHeight / 2) - 4;
         Component text = Component.literal("" + experienceLevel).setStyle(Style.EMPTY.withColor(TextColor.fromRgb(0x00FF00)));
-        Font font = Minecraft.getInstance().font;
-        event.getGuiGraphics().drawString(font, text, experienceLevelX, experienceLevelY, 0x00FF00);
+        gui.drawString(font, text, experienceLevelX, experienceLevelY, 0x00FF00);
         // === Breathe Bar ===
         float breathe = mc.player.getAirSupply();
         if(mc.player.isUnderWater() || breathe != 300) {
@@ -189,14 +188,7 @@ public class ModClientEvents {
     }
     @SubscribeEvent
     public static void onFovUpdate(ComputeFovModifierEvent event) {
-        Player player = event.getPlayer();
-        if (player != null) {
-            PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
-            if (data != null) {
-                // Lock FOV to default value and block speed-based FOV changes
-                event.setNewFovModifier(Minecraft.getInstance().options.fov().get().floatValue());
-            }
-        }
+        event.setNewFovModifier(Minecraft.getInstance().options.fov().get().floatValue());
     }
     @SubscribeEvent
     public static void inputEvent(InputEvent.Key event) {
@@ -229,26 +221,26 @@ public class ModClientEvents {
             }
         }
     }
-    private static void displayLookedAtInfo(Minecraft mc, PoseStack poseStack, int screenWidth, int screenHeight) {
+    private static void displayLookedAtInfo(Minecraft mc, PoseStack poseStack, int screenWidth) {
         if (mc.player != null && mc.level != null) {
             Vec3 eyePos = mc.player.getEyePosition(1.0F);
             Vec3 lookVec = mc.player.getViewVector(1.0F);
             Vec3 reachVec = eyePos.add(lookVec.scale(2.5D));
-            HitResult hit = mc.level.clip(new ClipContext(eyePos, reachVec, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, mc.player));
+            BlockHitResult hit = mc.level.clip(new ClipContext(eyePos, reachVec, ClipContext.Block.OUTLINE, ClipContext.Fluid.NONE, mc.player));
             Component text = null;
-            if (hit != null && hit.getType() == HitResult.Type.BLOCK) {
-                BlockHitResult blockHit = (BlockHitResult) hit;
-                BlockState state = mc.level.getBlockState(blockHit.getBlockPos());
-                String modId = state.getBlock().getDescriptionId().toString();
+            if (hit.getType() == HitResult.Type.BLOCK) {
+                BlockState state = mc.level.getBlockState(hit.getBlockPos());
+                String modId = state.getBlock().getDescriptionId();
                 text = Component.literal(modId.toUpperCase());
             }
-            if (hit == null || hit.getType() != HitResult.Type.BLOCK) {
-                List<Entity> entities = mc.level.getEntities(mc.player, mc.player.getBoundingBox().expandTowards(lookVec.scale(5.0D)), e -> e instanceof LivingEntity); // Filter for living entities
+            if ( hit.getType() != HitResult.Type.BLOCK) {
+                List<Entity> entities = mc.level.getEntities(mc.player, mc.player.getBoundingBox().expandTowards(lookVec.scale(5.0D)), e -> e instanceof LivingEntity);
                 for (Entity entity : entities) {
                     Vec3 entityPos = entity.getPosition(1.0F);
                     double distance = eyePos.distanceTo(entityPos);
                     if (distance < 2.5D && entity.getBoundingBox().intersects(eyePos, reachVec)) {
-                        String entityName = entity.getEncodeId().toString();
+                        String entityName = entity.getEncodeId();
+                        assert entityName != null;
                         text = Component.literal(entityName.toUpperCase());
                         break;
                     }
