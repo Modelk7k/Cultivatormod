@@ -3,7 +3,6 @@ package net.model2k.cultivatormod.block.custom;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -22,6 +21,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.model2k.cultivatormod.block.entity.JadeFurnaceEntity;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class JadeFurnace extends BaseEntityBlock {
@@ -31,28 +31,23 @@ public class JadeFurnace extends BaseEntityBlock {
     public JadeFurnace(Properties properties) {
         super(properties);
     }
-
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+    protected @NotNull VoxelShape getShape(@NotNull BlockState state, @NotNull BlockGetter level, @NotNull BlockPos pos, @NotNull CollisionContext context) {
         return SHAPE;    }
-
     @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
+    protected @NotNull MapCodec<? extends BaseEntityBlock> codec() {
         return CODEC;
     }
-
     @Override
-    public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+    public @Nullable BlockEntity newBlockEntity(@NotNull BlockPos pos, @NotNull BlockState state) {
         return new JadeFurnaceEntity(pos, state);
     }
-
     @Override
-    protected RenderShape getRenderShape(BlockState state) {
+    protected @NotNull RenderShape getRenderShape(@NotNull BlockState state) {
         return RenderShape.MODEL;
     }
-
     @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean movedByPiston) {
+    protected void onRemove(BlockState state, @NotNull Level level, @NotNull BlockPos pos, BlockState newState, boolean movedByPiston) {
         if(state.getBlock() != newState.getBlock()) {
             if(level.getBlockEntity(pos) instanceof JadeFurnaceEntity jadeFurnaceEntity) {
                 jadeFurnaceEntity.drops();
@@ -61,12 +56,11 @@ public class JadeFurnace extends BaseEntityBlock {
         }
         super.onRemove(state, level, pos, newState, movedByPiston);
     }
-
     @Override
-    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+    protected @NotNull ItemInteractionResult useItemOn(@NotNull ItemStack stack, @NotNull BlockState state, Level level, @NotNull BlockPos pos, @NotNull Player player, @NotNull InteractionHand hand, @NotNull BlockHitResult hitResult) {
         if(level.getBlockEntity(pos) instanceof JadeFurnaceEntity jadeFurnaceEntity) {
             if(!player.isCrouching() && !level.isClientSide()){
-                ((ServerPlayer) player).openMenu(new SimpleMenuProvider(jadeFurnaceEntity, Component.literal("Jade Furnace")),pos);
+                (player).openMenu(new SimpleMenuProvider(jadeFurnaceEntity, Component.literal("Jade Furnace")),pos);
                 JadeFurnaceEntity.onPlayerInteracts(player);
             }
               if(stack.isEmpty() && player.isCrouching()) {

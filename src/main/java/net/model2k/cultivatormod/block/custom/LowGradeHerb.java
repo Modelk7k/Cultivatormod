@@ -11,42 +11,30 @@ import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.model2k.cultivatormod.util.ModTags;
-
-import java.awt.*;
-
+import org.jetbrains.annotations.NotNull;
 
 public class LowGradeHerb extends BushBlock {
-
     public LowGradeHerb(Properties properties) {
         super(properties);
     }
-
     @Override
-    protected boolean isPathfindable(BlockState state, PathComputationType pathComputationType) {
-
+    protected boolean isPathfindable(@NotNull BlockState state, @NotNull PathComputationType pathComputationType) {
         return super.isPathfindable(state, pathComputationType);
     }
-
     @Override
-    protected MapCodec<? extends BushBlock> codec() {
+    protected @NotNull MapCodec<? extends BushBlock> codec() {
         return null;
     }
-
     @Override
-    public void stepOn(Level level, BlockPos pos, BlockState state, Entity entity) {
+    public void stepOn(@NotNull Level level, @NotNull BlockPos pos, @NotNull BlockState state, @NotNull Entity entity) {
         if(entity instanceof ItemEntity itemEntity){
             if(isValidItem(itemEntity.getItem())){
                 entity.kill();
             }
         }
-
         super.stepOn(level, pos, state, entity);
     }
-
     private boolean isValidItem(ItemStack item) {
         return item.is(ModTags.Items.CULTIVATOR_ITEMS);
     }
 }
-
-
-

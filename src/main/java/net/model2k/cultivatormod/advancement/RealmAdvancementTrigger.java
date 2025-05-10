@@ -9,14 +9,16 @@ import net.model2k.cultivatormod.datagen.ModAttachments;
 import net.model2k.cultivatormod.datagen.PlayerData;
 import net.minecraft.advancements.critereon.ContextAwarePredicate;
 import net.minecraft.advancements.critereon.CriterionValidator;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Optional;
+
 public class RealmAdvancementTrigger extends SimpleCriterionTrigger<RealmAdvancementTrigger.TriggerInstance> {
     public static Criterion<TriggerInstance> hasMinorRealm(int minorRealm) {
         return new RealmAdvancementTrigger().createCriterion(new TriggerInstance(minorRealm));
     }
     @Override
-    public Codec<RealmAdvancementTrigger.TriggerInstance> codec() {
+    public @NotNull Codec<RealmAdvancementTrigger.TriggerInstance> codec() {
         return TriggerInstance.CODEC;
     }
     public void trigger(ServerPlayer player) {
@@ -36,10 +38,10 @@ public class RealmAdvancementTrigger extends SimpleCriterionTrigger<RealmAdvance
             return data.getMinorRealm() == this.minorRealm;
         }
         @Override
-        public void validate(CriterionValidator validator) {
+        public void validate(@NotNull CriterionValidator validator) {
         }
         @Override
-        public Optional<ContextAwarePredicate> player() {
+        public @NotNull Optional<ContextAwarePredicate> player() {
             return Optional.empty();
         }
     }
