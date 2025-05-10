@@ -1,17 +1,14 @@
 package net.model2k.cultivatormod.entity;
 
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.minecraft.world.entity.monster.Zombie;
 import net.model2k.cultivatormod.CultivatorMod;
 import net.model2k.cultivatormod.entity.custom.QiSlashEntity;
 import net.model2k.cultivatormod.entity.custom.SeveredZombieHeadEntity;
 import net.model2k.cultivatormod.entity.custom.SlimeEntity;
 import net.model2k.cultivatormod.entity.custom.YangBearEntity;
 import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 
 import java.util.function.Supplier;
