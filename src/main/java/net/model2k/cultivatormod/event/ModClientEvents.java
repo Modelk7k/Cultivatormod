@@ -221,6 +221,24 @@ public class ModClientEvents {
             }
         }
     }
+    @SubscribeEvent
+    public static void onRenderPlayerPre(RenderPlayerEvent.Pre event) {
+//     if(!(event.getEntity() instanceof AbstractClientPlayer)){
+//         return;
+//     }
+//     if (PlayerStatsClient.getVanished()) {
+//             RenderSystem.enableBlend();
+//             RenderSystem.defaultBlendFunc();
+//             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 0.5f); // 50% transparency
+//             System.out.println("Applying transparency for staff target.");
+//     } else {
+//         Minecraft.getInstance().player.setInvisible(false);
+//         RenderSystem.defaultBlendFunc();
+//         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F); // Full opacity
+//         RenderSystem.disableBlend();
+//     }
+ }
+
     private static void displayLookedAtInfo(Minecraft mc, PoseStack poseStack, int screenWidth) {
         if (mc.player != null && mc.level != null) {
             Vec3 eyePos = mc.player.getEyePosition(1.0F);

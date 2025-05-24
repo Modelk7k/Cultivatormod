@@ -32,6 +32,7 @@ public class ModEntities  {
                     .clientTrackingRange(8)
                     .updateInterval(10)
                     .build("severed_zombie_head"));
+
     public static void register(IEventBus eventBus){
         ENTITY_TYPES.register(eventBus);
     }

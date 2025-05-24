@@ -16,19 +16,20 @@ import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
 public class ModEventBusEvents {
     @SubscribeEvent
     public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event) {
-        event.registerLayerDefinition((MindlessSlimeModel.LAYER_LOCATION), MindlessSlimeModel:: createBodyLayer);
-        event.registerLayerDefinition((YangBearModel.LAYER_LOCATION), YangBearModel:: createBodyLayer);
-        event.registerLayerDefinition((QiSlashModel.LAYER_LOCATION), QiSlashModel:: createBodyLayer);
+        event.registerLayerDefinition((MindlessSlimeModel.LAYER_LOCATION), MindlessSlimeModel::createBodyLayer);
+        event.registerLayerDefinition((YangBearModel.LAYER_LOCATION), YangBearModel::createBodyLayer);
+        event.registerLayerDefinition((QiSlashModel.LAYER_LOCATION), QiSlashModel::createBodyLayer);
     }
+
     @SubscribeEvent
     public static void onRegisterRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(EntityType.ZOMBIE, CustomZombieRenderer::new);
+
     }
-@SubscribeEvent
+    @SubscribeEvent
     public static void registerAttributes(EntityAttributeCreationEvent event) {
         event.put(ModEntities.MINDLESS_SLIME.get(), SlimeEntity.createAttributes().build());
         event.put(ModEntities.YANG_BEAR.get(), YangBearEntity.createAttributes().build());
         event.put(ModEntities.QI_SLASH.get(), Mob.createMobAttributes().build());
-
     }
 }

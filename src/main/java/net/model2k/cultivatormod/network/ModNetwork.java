@@ -39,6 +39,7 @@ public class ModNetwork {
                     boolean canDash = packet.getCanDash();
                     boolean walkOnWater = packet.getWalkOnWater();
                     boolean canFly = packet.getCanFly();
+                    boolean vanished = packet.getVanished();
                     PlayerStatsClient.setMaxHealth(maxHealth);
                     PlayerStatsClient.setHealth(health);
                     PlayerStatsClient.setQi(qi);
@@ -53,8 +54,8 @@ public class ModNetwork {
                     PlayerStatsClient.setCanDash(canDash);
                     PlayerStatsClient.setWalkOnWater(walkOnWater);
                     PlayerStatsClient.setCanFly(canFly);
+                    PlayerStatsClient.setVanished(vanished);
                     PlayerStatsClient.setHasSynced(true);
-
                 })
         );
         PayloadRegistrar payloadRegistrar = registrar.playToServer(
@@ -65,18 +66,7 @@ public class ModNetwork {
                     if (player.isAlive()) {
                         Vec3 look = player.getLookAngle();
                         QiSlashEntity slash = new QiSlashEntity(player.level(), player, look);
-                        player.level().addFreshEntity(slash); // Only add the entity on the server side
-                    }
-                })
-        );
-        registrar.playToClient(
-                VanishStatusPacket.TYPE,
-                VanishStatusPacket.STREAM_CODEC,
-                (packet, context) -> context.enqueueWork(() -> {
-                    ServerPlayer player = (ServerPlayer) context.player();
-                    if (player.isAlive()) {
-                        boolean isVanished = packet.isVanished();
-                        player.setInvisible(isVanished);
+                        player.level().addFreshEntity(slash);
                     }
                 })
         );
@@ -114,6 +104,17 @@ public class ModNetwork {
                     }
                 })
         );
+        registrar.playToServer(
+                QiChargePacket.TYPE,
+                QiChargePacket.STREAM_CODEC,
+                (packet, context) -> context.enqueueWork(() -> {
+                    ServerPlayer player = (ServerPlayer) context.player();
+                    if (player.isAlive() && !player.level().isClientSide()) {
+                        PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
+                        data.setQiCharge(20);
+                    }
+                })
+        );
         registrar.playToClient(
                 ZombieBeheadPacket.TYPE,
                 ZombieBeheadPacket.STREAM_CODEC,
@@ -124,8 +125,6 @@ public class ModNetwork {
                         if (entity instanceof Zombie zombie) {
                             zombie.getPersistentData().putBoolean("Beheaded", true);
                         }
-
-
                     }
                 })
         );
@@ -146,12 +145,9 @@ public class ModNetwork {
                 data.getSpeedLevel(),
                 data.getCanDash(),
                 data.getWalkOnWater(),
-                data.getCanFly()
+                data.getCanFly(),
+                data.getVanished()
         );
-        player.connection.send(new ClientboundCustomPayloadPacket(packet));
-    }
-    public static void sendVanishStatus(ServerPlayer player, boolean isVanished) {
-        VanishStatusPacket packet = new VanishStatusPacket(player.getUUID(), isVanished);
         player.connection.send(new ClientboundCustomPayloadPacket(packet));
     }
 }

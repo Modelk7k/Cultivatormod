@@ -1,6 +1,10 @@
 package net.model2k.cultivatormod;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.entity.EntityRenderers;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
 import net.model2k.cultivatormod.advancement.ModAdvancements;
 import net.model2k.cultivatormod.block.ModBlocks;
 import net.model2k.cultivatormod.block.entity.ModBlockEntities;
@@ -8,10 +12,7 @@ import net.model2k.cultivatormod.component.ModDataComponents;
 import net.model2k.cultivatormod.datagen.ModAttachments;
 import net.model2k.cultivatormod.effect.ModEffects;
 import net.model2k.cultivatormod.entity.ModEntities;
-import net.model2k.cultivatormod.entity.client.MindlessSlimeRenderer;
-import net.model2k.cultivatormod.entity.client.QiSlashRenderer;
-import net.model2k.cultivatormod.entity.client.SeveredZombieHeadRenderer;
-import net.model2k.cultivatormod.entity.client.YangBearRenderer;
+import net.model2k.cultivatormod.entity.client.*;
 import net.model2k.cultivatormod.recipe.ModRecipes;
 import net.model2k.cultivatormod.screen.ModMenuTypes;
 import net.model2k.cultivatormod.screen.custom.LowGradeJadeFurnaceScreen;
@@ -69,6 +70,7 @@ public class CultivatorMod
             EntityRenderers.register(ModEntities.YANG_BEAR.get(), YangBearRenderer::new);
             EntityRenderers.register(ModEntities.QI_SLASH.get(), QiSlashRenderer::new);
             EntityRenderers.register(ModEntities.SEVERED_ZOMBIE_HEAD.get(), SeveredZombieHeadRenderer::new);
+
         }
         @SubscribeEvent
         public static void registerScreens(RegisterMenuScreensEvent event) {

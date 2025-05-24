@@ -90,7 +90,6 @@ public class ModServerEvents {
             if (data.getSpeed() > 0) {
                 data.applySpeedToPlayer(player);
             }
-            ModNetwork.sendSyncPlayerData(player);
         }
         ModNetwork.sendSyncPlayerData(player);
     }
@@ -193,6 +192,7 @@ public class ModServerEvents {
         new ClearFloorItemsCommand(event.getDispatcher());
         new VanishCommand(event.getDispatcher());
         new StatsCommand(event.getDispatcher());
+        new GameModeAbbreviatorCommand(event.getDispatcher());
         event.getDispatcher().register(
                 Commands.literal("kill")
                         .then(Commands.argument("targets", EntityArgument.players())
@@ -228,6 +228,7 @@ public class ModServerEvents {
             ServerPlayer player = (ServerPlayer) event.getEntity();
             PlayerData data = player.getData(ModAttachments.PLAYER_DATA);
             data.charge(player);
+            data.regen(player);
             if(player.getFoodData().needsFood()){
                 player.getFoodData().setFoodLevel(20);
                 player.getFoodData().setSaturation(5);
@@ -289,7 +290,6 @@ public class ModServerEvents {
                 break;
             }
         }
-
     }
     @SubscribeEvent
     private static void respawnEvent(PlayerEvent.PlayerRespawnEvent event) {

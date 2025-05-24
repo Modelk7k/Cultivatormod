@@ -20,9 +20,9 @@ import java.util.Objects;
 
 public class PlayerData implements INBTSerializable {
     private int SpeedLevel = 1, JumpStrength = 1,MaxHealth = 20, Health = 20, Defense = 0, Jump = 1, Dash = 0, Speed = 1,  SpiritPower,
-            MaxSpiritPower = 10, QiQuality = 0, MinorRealm = 0, MajorRealm = 0, Strength = 0, Qi = 0, MaxQi = 10,tick = 0;
+            MaxSpiritPower = 10, QiQuality = 0, MinorRealm = 0, MajorRealm = 0, Strength = 0, Qi = 0, MaxQi = 10,tick = 0, QiCharge = 10, SpiritCharge = 10;
     private String ChatPrefix = "", ChatColor = "";
-    private boolean CanFly = false, WalkOnWater = false, CanDash = false, FirstQiType = false;
+    private boolean CanFly = false, WalkOnWater = false, CanDash = false, FirstQiType = false, Vanished = false;
     private final Map<String, Boolean> QiType = new HashMap<>(), Body = new HashMap<>(), Principles = new HashMap<>(), Race = new HashMap<>();
     private final Map<String, String> Homes = new HashMap<>();
     public PlayerData() {
@@ -36,7 +36,7 @@ public class PlayerData implements INBTSerializable {
         Body.put("Pill Body", false);
         Body.put("Artifact Body", false);
         Body.put("Dragon Body", false);
-        Body.put("Phoenix Body", false);
+        Body.put("Array Body", false);
         Body.put("Poison Body", false);
         Body.put("Ghost Body", false);
         Body.put("Demon Body", false);
@@ -59,19 +59,17 @@ public class PlayerData implements INBTSerializable {
         Principles.put("Strength Principle", false);
         Principles.put("Gold Principle", false);
         Principles.put("Blood Principle", false);
+        Principles.put("Lightning Principle", false);
         //Human SubRaces
         Race.put("Human", false);
         Race.put("Dwarf", false);
-        //Beast SubRace
         Race.put("Dragon", false);
         Race.put("Phoenix", false);
         Race.put("Werewolf", false);
         Race.put("Orc", false);
         Race.put("Ogre", false);
-        //Undead SubRace
         Race.put("Vampire", false);
         Race.put("Zombie", false);
-        //Elf SubRace
         Race.put("WoodElf", false);
         Race.put("HighElf", false);
         Race.put("DarkElf", false);
@@ -196,6 +194,18 @@ public class PlayerData implements INBTSerializable {
                 ", ArchDemon=" + getRace("ArchDemon") +
                 '}';
     }
+    public int getQiCharge() {
+        return this.QiCharge;
+    }
+    public void setQiCharge(int qiCharge) {
+        this.QiCharge = qiCharge;
+    }
+    public int getSpiritCharge() {
+        return this.SpiritCharge;
+    }
+    public void setSpiritCharge(int spiritCharge) {
+        this.SpiritCharge = spiritCharge;
+    }
     public int getSpeedLevel() {
         return this.SpeedLevel;
     }
@@ -273,6 +283,12 @@ public class PlayerData implements INBTSerializable {
     }
     public void setDefense(int defense) {
         this.Defense = defense;
+    }
+    public boolean getVanished() {
+        return this.Vanished;
+    }
+    public void setVanished(boolean vanished) {
+        this.Vanished = vanished;
     }
     public boolean getFirstQiType() {
         return this.FirstQiType;
@@ -377,32 +393,146 @@ public class PlayerData implements INBTSerializable {
     public Map<String, Boolean> getAllSubRaces() {
         return this.Race;
     }
+    @Override
+    public Tag serializeNBT(HolderLookup.@NotNull Provider provider) {
+        CompoundTag tag = new CompoundTag();
+        tag.putInt("SpeedLevel", getSpeedLevel());
+        tag.putInt("JumpStrength", getJumpStrength());
+        tag.putString("ChatPrefix", getChatPrefix());
+        tag.putString("ChatColor", getChatColor());
+        tag.putBoolean("CanFly", getCanFly());
+        tag.putBoolean("WalkOnWater", getWalkOnWater());
+        tag.putBoolean("CanDash", getCanDash());
+        tag.putInt("MaxHealth", getMaxHealth());
+        tag.putInt("Health", getHealth());
+        tag.putInt("Defense", getDefense());
+        tag.putInt("Speed", getSpeed());
+        tag.putInt("Jump", getJump());
+        tag.putInt("Dash", getDash());
+        tag.putBoolean("FirstQiType", getFirstQiType());
+        tag.putInt("MinorRealm", getMinorRealm());
+        tag.putInt("MajorRealm", getMajorRealm());
+        tag.putInt("Strength", getStrength());
+        tag.putInt("Qi", getQi());
+        tag.putInt("MaxQi", getMaxQi());
+        tag.putInt("SpiritPower", getSpiritPower());
+        tag.putInt("MaxSpiritPower", getMaxSpiritPower());
+        tag.putInt("QiQuality", getQiQuality());
+        tag.putBoolean("Vanished", getVanished());
+        for (String key : this.QiType.keySet()) {
+            tag.putBoolean("QiType" + key, getQiType(key));
+        }
+        for (String key : this.Body.keySet()) {
+            tag.putBoolean("Body" + key, getBody(key));
+        }
+        for (String key : this.Principles.keySet()) {
+            tag.putBoolean("Principles" + key, getPrinciples(key));
+        }
+        for (String key : this.Race.keySet()) {
+            tag.putBoolean("Race" + key, getRace(key));
+        }
+        for (String key : this.Homes.keySet()) {
+            tag.putString("Homes" + key, getHomes(key));
+        }
+        return tag;
+    }
+    @Override
+    public void deserializeNBT(HolderLookup.@NotNull Provider provider, @NotNull Tag tag) {
+        if (tag instanceof CompoundTag compoundTag) {
+            setSpeedLevel(compoundTag.getInt("SpeedLevel"));
+            setJumpStrength(compoundTag.getInt("JumpStrength"));
+            setChatPrefix(compoundTag.getString("ChatPrefix"));
+            setChatColor(compoundTag.getString("ChatColor"));
+            setCanFly(compoundTag.getBoolean("CanFly"));
+            setWalkOnWater(compoundTag.getBoolean("WalkOnWater"));
+            setCanDash(compoundTag.getBoolean("CanDash"));
+            setMaxHealth(compoundTag.getInt("MaxHealth"));
+            setHealth(compoundTag.getInt("Health"));
+            setDefense(compoundTag.getInt("Defense"));
+            setSpeed(compoundTag.getInt("Speed"));
+            setJump(compoundTag.getInt("Jump"));
+            setDash(compoundTag.getInt("Dash"));
+            setFirstQiType(compoundTag.getBoolean("FirstQiType"));
+            setMinorRealm(compoundTag.getInt("MinorRealm"));
+            setMajorRealm(compoundTag.getInt("MajorRealm"));
+            setStrength(compoundTag.getInt("Strength"));
+            setQi(compoundTag.getInt("Qi"));
+            setMaxQi(compoundTag.getInt("MaxQi"));
+            setSpiritPower(compoundTag.getInt("SpiritPower"));
+            setMaxSpiritPower(compoundTag.getInt("MaxSpiritPower"));
+            setQiQuality(compoundTag.getInt("QiQuality"));
+            setVanished(compoundTag.getBoolean("Vanished"));
+            for (String key : this.QiType.keySet()) {
+                setQiType(key, compoundTag.getBoolean("QiType" + key));
+            }
+            for (String key : this.Body.keySet()) {
+                setBody(key, compoundTag.getBoolean("Body" + key));
+            }
+            for (String key : this.Principles.keySet()) {
+                setPrinciples(key, compoundTag.getBoolean("Principles" + key));
+            }
+            for (String key : this.Race.keySet()) {
+                setRace(key, compoundTag.getBoolean("Race" + key));
+            }
+            for (String key : compoundTag.getAllKeys()) {
+                if (key.startsWith("Homes")) {
+                    String homeName = key.substring("Homes".length());
+                    setHomes(homeName, compoundTag.getString(key));
+                }
+            }
+
+        }
+    }
     public void charge(Player player) {
         tick++;
         if (tick >= 20) {
-            if (player.isHolding(ModItems.BAODING_BALLS.get()) && player.isShiftKeyDown()) {
-                int newQi = getQi() + qiChargeEfficiency();
-                setQi(Math.min(newQi, getMaxQi()));
-                int newSpiritPower = getSpiritPower() + spiritPowerChargeEfficiency();
-                setSpiritPower(Math.min(newSpiritPower, getMaxSpiritPower()));
-                int healingAmount = healEfficiency(player);
-                int currentHealth = getHealth();
-                int newHealth = currentHealth + healingAmount;
-                setHealth(Math.min(newHealth, getMaxHealth()));
+            if (player.isHolding(ModItems.BAODING_BALLS.get()) && player.isShiftKeyDown() && player.getData(ModAttachments.PLAYER_DATA).getMajorRealm() >= 1) {
+                regen(player);
+                realmChecker(player);
+                ModNetwork.sendSyncPlayerData((ServerPlayer) player);
+                tick = 0;
+            }else if (player.isShiftKeyDown()) {
+                regenStats(player);
                 realmChecker(player);
                 ModNetwork.sendSyncPlayerData((ServerPlayer) player);
                 tick = 0;
             }
         }
     }
+    public void regen(Player player){
+        tick++;
+        if (tick >= 200) {
+            if(!player.isShiftKeyDown()) {
+               regenStats(player);
+                ModNetwork.sendSyncPlayerData((ServerPlayer) player);
+                tick = 0;
+            }
+        }
+    }
+    public void regenStats(Player player){
+        int newQi = getQi() + qiChargeEfficiency();
+        setQi(Math.min(newQi, getMaxQi()));
+        int newSpiritPower = getSpiritPower() + spiritPowerChargeEfficiency();
+        setSpiritPower(Math.min(newSpiritPower, getMaxSpiritPower()));
+        int healingAmount = healEfficiency(player);
+        int currentHealth = getHealth();
+        int newHealth = currentHealth + healingAmount;
+        setHealth(Math.min(newHealth, getMaxHealth()));
+    }
     public int qiChargeEfficiency() {
-        return getMaxQi() / 10;
+        return getMaxQi() / getQiCharge();
     }
     public int spiritPowerChargeEfficiency() {
-        return getMaxSpiritPower() / 10;
+        return getMaxSpiritPower() / getSpiritCharge();
     }
     public int healEfficiency(Player player) {
-        return (int) player.getMaxHealth() / 10;
+        return player.getData(ModAttachments.PLAYER_DATA).getMaxHealth() / 10;
+    }
+    public long getTimeSinceLastDamage(Player player) {
+        return player.level().getGameTime() - player.getLastHurtByMobTimestamp();
+    }
+    public boolean hasTimePassedSinceLastDamage(Player player, int ticks) {
+        return getTimeSinceLastDamage(player) > ticks;
     }
     public void maxHealth(){
         setHealth(getMaxHealth());
@@ -785,94 +915,6 @@ public class PlayerData implements INBTSerializable {
             case 3:
                 player.sendSystemMessage(Component.literal("Jump Power set to 100%"));
                 break;
-        }
-    }
-    @Override
-    public Tag serializeNBT(HolderLookup.@NotNull Provider provider) {
-        CompoundTag tag = new CompoundTag();
-        tag.putInt("SpeedLevel", getSpeedLevel());
-        tag.putInt("JumpStrength", getJumpStrength());
-        tag.putString("ChatPrefix", getChatPrefix());
-        tag.putString("ChatColor", getChatColor());
-        tag.putBoolean("CanFly", getCanFly());
-        tag.putBoolean("WalkOnWater", getWalkOnWater());
-        tag.putBoolean("CanDash", getCanDash());
-        tag.putInt("MaxHealth", getMaxHealth());
-        tag.putInt("Health", getHealth());
-        tag.putInt("Defense", getDefense());
-        tag.putInt("Speed", getSpeed());
-        tag.putInt("Jump", getJump());
-        tag.putInt("Dash", getDash());
-        tag.putBoolean("FirstQiType", getFirstQiType());
-        tag.putInt("MinorRealm", getMinorRealm());
-        tag.putInt("MajorRealm", getMajorRealm());
-        tag.putInt("Strength", getStrength());
-        tag.putInt("Qi", getQi());
-        tag.putInt("MaxQi", getMaxQi());
-        tag.putInt("SpiritPower", getSpiritPower());
-        tag.putInt("MaxSpiritPower", getMaxSpiritPower());
-        tag.putInt("QiQuality", getQiQuality());
-        for (String key : this.QiType.keySet()) {
-            tag.putBoolean("QiType" + key, getQiType(key));
-        }
-        for (String key : this.Body.keySet()) {
-            tag.putBoolean("Body" + key, getBody(key));
-        }
-        for (String key : this.Principles.keySet()) {
-            tag.putBoolean("Principles" + key, getPrinciples(key));
-        }
-        for (String key : this.Race.keySet()) {
-            tag.putBoolean("Race" + key, getRace(key));
-        }
-        for (String key : this.Homes.keySet()) {
-            tag.putString("Homes" + key, getHomes(key));
-        }
-        return tag;
-    }
-    @Override
-    public void deserializeNBT(HolderLookup.@NotNull Provider provider, @NotNull Tag tag) {
-        if (tag instanceof CompoundTag compoundTag) {
-            setSpeedLevel(compoundTag.getInt("SpeedLevel"));
-            setJumpStrength(compoundTag.getInt("JumpStrength"));
-            setChatPrefix(compoundTag.getString("ChatPrefix"));
-            setChatColor(compoundTag.getString("ChatColor"));
-            setCanFly(compoundTag.getBoolean("CanFly"));
-            setWalkOnWater(compoundTag.getBoolean("WalkOnWater"));
-            setCanDash(compoundTag.getBoolean("CanDash"));
-            setMaxHealth(compoundTag.getInt("MaxHealth"));
-            setHealth(compoundTag.getInt("Health"));
-            setDefense(compoundTag.getInt("Defense"));
-            setSpeed(compoundTag.getInt("Speed"));
-            setJump(compoundTag.getInt("Jump"));
-            setDash(compoundTag.getInt("Dash"));
-            setFirstQiType(compoundTag.getBoolean("FirstQiType"));
-            setMinorRealm(compoundTag.getInt("MinorRealm"));
-            setMajorRealm(compoundTag.getInt("MajorRealm"));
-            setStrength(compoundTag.getInt("Strength"));
-            setQi(compoundTag.getInt("Qi"));
-            setMaxQi(compoundTag.getInt("MaxQi"));
-            setSpiritPower(compoundTag.getInt("SpiritPower"));
-            setMaxSpiritPower(compoundTag.getInt("MaxSpiritPower"));
-            setQiQuality(compoundTag.getInt("QiQuality"));
-            for (String key : this.QiType.keySet()) {
-                setQiType(key, compoundTag.getBoolean("QiType" + key));
-            }
-            for (String key : this.Body.keySet()) {
-                setBody(key, compoundTag.getBoolean("Body" + key));
-            }
-            for (String key : this.Principles.keySet()) {
-                setPrinciples(key, compoundTag.getBoolean("Principles" + key));
-            }
-            for (String key : this.Race.keySet()) {
-                setRace(key, compoundTag.getBoolean("Race" + key));
-            }
-            for (String key : compoundTag.getAllKeys()) {
-                if (key.startsWith("Homes")) {
-                    String homeName = key.substring("Homes".length());
-                    setHomes(homeName, compoundTag.getString(key));
-                }
-            }
-
         }
     }
 }
